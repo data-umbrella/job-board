@@ -1,5 +1,5 @@
 <div class="flex items-center rounded shadow mb-8">
-  <div class="w-5/6 lg:w-3/4 px-10 py-4">
+  <div class="w-3/4 lg:w-3/4 px-10 py-4">
     <p class="mb-2 text-xl lg:text-base">
       <%= job.company_name %>
     </p>
@@ -11,7 +11,7 @@
     </p>
   </div>
   <div class="flex-1">
-    <p>
+    <p class="text-xl lg:text-base">
       <% if job.date %>
         <%= Time.parse(job.date).strftime('%b %e') %>
       <% end %>

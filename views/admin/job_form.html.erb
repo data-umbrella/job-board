@@ -83,7 +83,7 @@
 
       <div class="flex items-center justify-between">
         <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
-          Add new job
+          Add job
         </button>
       </div>
 
@@ -96,19 +96,18 @@
 
   let descBox = new SimpleMDE({
     element: document.getElementById("original-description"),
-    hideIcons: ["heading", "quote", "image", "side-by-side", "fullscreen"],
+    hideIcons: ["quote", "image",],
     status: false,
   });
   let respsBox = new SimpleMDE({
     element: document.getElementById("original-resps"),
-    hideIcons: ["heading", "quote", "image", "side-by-side", "fullscreen"],
+    hideIcons: ["quote", "image",],
     status: false,
   });
   let reqsBox = new SimpleMDE({
     element: document.getElementById("original-reqs"),
-    hideIcons: ["heading", "quote", "image", "side-by-side", "fullscreen"],
+    hideIcons: ["quote", "image",],
     status: false,
   });
 
 </script>
-

@@ -1,4 +1,4 @@
-<div class="rounded shadow my-8 bg-white w-2/3 p-10 mx-auto">
+<div class="rounded shadow my-8 bg-white w-5/6 p-10 mx-auto">
   <div class="font-bold text-2xl mb-2 ">
     Job Postings
   </div>
@@ -8,6 +8,9 @@
         <tr>
           <th class="px-4 py-2">Position</th>
           <th class="px-4 py-2">Company</th>
+          <th class="px-4 py-2">Location</th>
+          <th class="px-4 py-2">Name</th>
+          <th class="px-4 py-2">Email</th>
           <th class="px-4 py-2">Date Posted</th>
           <th class="px-4 py-2" span="2"></th>
         </tr>
@@ -17,6 +20,9 @@
           <tr>
             <td class="border px-4 py-2"><%= job.position %></td>
             <td class="border px-4 py-2"><%= job.company_name %></td>
+            <td class="border px-4 py-2"><%= job.location %></td>
+            <td class="border px-4 py-2"><%= job.name %></td>
+            <td class="border px-4 py-2"><%= job.contact %></td>
             <td class="border px-4 py-2"><%= Time.parse(job.date).strftime('%B %d, %Y') %></td>
             <td class="border px-4 py-2 underline">
               <a href="/board/<%= @account.slug %>/jobs/<%= job.slug %>" target="_blank">View</a>

@@ -10,7 +10,7 @@
         Account Name
       </label>
       <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" name="org_name" type="text" value="<%= @account.org_name %>">
-      <p class="text-gray-500 text-xs italic">The name of your organization or business.</p>
+      <p class="text-gray-600 text-xs italic">The name of your organization or business.</p>
     </div>
 
     <div class="mb-4">
@@ -18,7 +18,7 @@
         Summary
       </label>
       <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" name="org_bio" type="text" rows="10"><%= @account.org_bio %></textarea>
-      <p class="text-gray-500 text-xs italic">Provide a few sentences to summarize what your organization does and what jobs people can find here.</p>
+      <p class="text-gray-600 text-xs italic">Provide a few sentences to summarize what your organization does and what jobs people can find here.</p>
     </div>
 
     <div class="mb-4">
@@ -26,7 +26,7 @@
         Posting Offer
       </label>
       <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" name="posting_offer" type="text" rows="10"><%= @account.posting_offer %></textarea>
-      <p class="text-gray-500 text-xs italic">Explain what paying for a job posting gets someone, for example, "Your job listing will be posted for 90 days, shared to our 2k+ Twitter followers and 700+ newsletter subscribers."</p>
+      <p class="text-gray-600 text-xs italic">Explain what paying for a job posting gets someone, for example, "Your job listing will be posted for 90 days, shared to our 2k+ Twitter followers and 700+ newsletter subscribers."</p>
     </div>
 
     <div class="mb-4">
@@ -43,7 +43,7 @@
           <% end %>
         <% end %>
       </select>
-      <p class="text-gray-500 text-xs italic">You can choose a different font.</p>
+      <p class="text-gray-600 text-xs italic">You can choose a different font.</p>
     </div>
 
     <div class="mb-4">
@@ -61,7 +61,7 @@
           <% end %>
         <% end %>
       </select>
-      <p class="text-gray-500 text-xs italic">You can choose a different color for buttons and links.</p>
+      <p class="text-gray-600 text-xs italic">You can choose a different color for buttons and links.</p>
     </div>
 
     <div class="mb-4">
@@ -69,7 +69,7 @@
         Job Expiration Days
       </label>
       <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" name="job_expiry" type="number" value="<%= @account.job_expiry %>">
-      <p class="text-gray-500 text-xs italic">After X days the jobs will no longer be listed. Set to 0 for no expiration.</p>
+      <p class="text-gray-600 text-xs italic">After X days the jobs will no longer be listed. Set to 0 for no expiration.</p>
     </div>
 
     <div class="flex items-center justify-between">

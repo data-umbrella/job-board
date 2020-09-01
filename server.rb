@@ -276,7 +276,7 @@ host_names.each do |host|
       @jobs = []
 
       @all_jobs.each do |job|
-        if job.position.include? search_term or job.description.include? search_term or job.responsible.include? search_term or job.requirements.include? search_term
+        if job.position.downcase.include? search_term or job.description.downcase.include? search_term or job.responsible.downcase.include? search_term or job.requirements.downcase.include? search_term
           @jobs.append(job)
         end
       end

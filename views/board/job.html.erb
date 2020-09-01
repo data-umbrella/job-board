@@ -22,7 +22,7 @@
 
   <% if !@job['responsible'].empty? %>
     <div class="mb-4">
-      <p class="text-2xl lg:text-xl font-bold mb-2">
+      <p class="text-3xl lg:text-xl font-bold mb-2">
         Responsibilities
       </p>
       <p class="markdown-text"><%= @job.responsible %></p>
@@ -31,7 +31,7 @@
 
   <% if !@job['requirements'].empty? %>
     <div class="mb-4">
-      <p class="text-2xl lg:text-xl font-bold mb-2">
+      <p class="text-3xl lg:text-xl font-bold mb-2">
         Requirements
       </p>
       <p class="markdown-text"><%= @job.requirements %></p>
@@ -39,12 +39,10 @@
   <% end %>
 
   <div class="mb-4">
-    <p class="text-2xl lg:text-xl font-bold mb-2">
+    <p class="text-3xl lg:text-xl font-bold mb-2">
       Company Background
     </p>
-    <p>
-      <%= @job.company_bio %>
-    </p>
+    <p class="markdown-text"><%= @job.company_bio %></p>
   </div>
 </section>
 

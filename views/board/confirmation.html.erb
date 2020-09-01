@@ -1,56 +1,52 @@
 
-
 <div class="rounded shadow my-8 bg-white w-2/3 p-10 mx-auto">
 
   <div class="font-bold text-2xl mb-4">
     Thanks for submitting a job!
   </div>
 
-  <div class="markdown-text mb-2">
+  <div class="markdown-text mb-2 text-xl lg:text-base">
     <p>
       An official receipt will be sent to the email you provided.
     </p>
   </div>
 
   <% if @other_host %>
-    <div class="markdown-text mb-2">
+    <div class="markdown-text mb-2 text-xl lg:text-base">
       <p>
         In case you want to edit your job posting, <a href="/jobs/<%= @job_slug %>/<%= @jid %>/edit" target="_blank">here is a private link to do so</a>. Please save this link and do not share it with anyone else outside of your company!
       </p>
     </div>
 
-    <div class="markdown-text mb-2">
+    <div class="markdown-text mb-2 text-xl lg:text-base">
       <p>
         You can view <a href="/jobs/<%= @job_slug %>" target="_blank">your public job posting here</a>.
       </p>
     </div>
 
-      <div class="markdown-text mb-2">
+      <div class="markdown-text mb-2 text-xl lg:text-base">
       <p>
         Or go back to <a href="/" target="_blank">the job board home page</a>.
       </p>
     </div>
   <% else %>
-    <div class="markdown-text mb-2">
+    <div class="markdown-text mb-2 text-xl lg:text-base">
       <p>
         In case you want to edit your job posting, <a href="/board/<%= @account_slug %>/jobs/<%= @job_slug %>/<%= @jid %>/edit" target="_blank">here is a private link to do so</a>. Please save this link and do not share it with anyone else outside of your company!
       </p>
     </div>
 
-    <div class="markdown-text mb-2">
+    <div class="markdown-text mb-2 text-xl lg:text-base">
       <p>
         You can view <a href="/board/<%= @account_slug %>/jobs/<%= @job_slug %>" target="_blank">your public job posting here</a>.
       </p>
     </div>
 
-      <div class="markdown-text mb-2">
+      <div class="markdown-text mb-2 text-xl lg:text-base">
       <p>
         Or go back to <a href="/board/<%= @account_slug %>" target="_blank">the job board home page</a>.
       </p>
     </div>
   <% end %>
-
-
-
 
 </div>

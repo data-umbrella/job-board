@@ -1,0 +1,88 @@
+<div class="mb-4">
+  <label class="block text-gray-700 text-sm font-bold mb-2">
+    Job Responsibilities
+  </label>
+  <div id="resp-toolbar">
+    <button class="ql-bold">Bold</button>
+    <button class="ql-italic">Italic</button>
+  </div>
+
+  <!-- Create the editor container -->
+  <div id="resp-editor">
+    <p>List the job responsibilities here.</p>
+  </div>
+</div>
+
+<script>
+  var editor = new Quill('#resp-editor', {
+    modules: { toolbar: '#resp-toolbar' },
+    theme: 'snow'
+  });
+</script>
+
+
+
+<a href="/job">
+  <%= erb :'shared/job_card', locals: {
+    company: 'New York Times',
+    position: 'Data Scientist',
+    location: 'New York, NY',
+    date: Time.new(2020,8,1).strftime("%b %e")
+  } %>
+</a>
+
+
+<div class="w-full mb-8">
+  <p class="font-bold mb-3">
+    Board Settings
+  </p>
+  <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+    <div class="mb-4">
+      <label class="block text-gray-700 text-sm font-bold mb-2" for="username">
+        Job Posting Price
+      </label>
+      <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="username" type="number">
+      <p class="text-gray-500 text-xs italic">How much will it cost to post a job. Set to 0 if you want job postings to be free.</p>
+    </div>
+    <div class="mb-4">
+      <label class="block text-gray-700 text-sm font-bold mb-2" for="username">
+        Job Expiration Days
+      </label>
+      <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="username" type="number">
+      <p class="text-gray-500 text-xs italic">After X days the jobs will no longer be listed. Set to 0 for no expiration.</p>
+    </div>
+    <div class="mb-4">
+      <label class="block text-gray-700 text-sm font-bold mb-2" for="username">
+        Stripe Connection Key
+      </label>
+      <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="username" type="number">
+      <p class="text-gray-500 text-xs italic underline">Make sure you create a Stripe account, then follow the directions.</p>
+    </div>
+  </form>
+</div>
+
+
+<a class="flex items-center mt-5 py-2 px-8 text-gray-600 border-r-4 border-white hover:bg-gray-200 hover:text-gray-700 hover:border-gray-700" href="#">
+    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+    <span class="mx-4 font-medium">Accounts</span>
+</a>
+
+
+
+<div class="w-full mb-8">
+  <p class="font-bold mb-3">
+    Payment Details
+  </p>
+  <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+    <div class="mb-4">
+      <label class="block text-gray-700 text-sm font-bold mb-2">
+        Credit Card
+      </label>
+      <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" type="text">
+    </div>
+  </div>
+</div>

@@ -1,0 +1,20 @@
+<div class="flex items-center rounded shadow mb-8">
+  <div class="w-5/6 lg:w-3/4 px-10 py-4">
+    <p class="mb-2 text-xl lg:text-base">
+      <%= job.company_name %>
+    </p>
+    <div class="font-bold text-2xl lg:text-xl mb-2">
+      <%= job.position %>
+    </div>
+    <p class="text-gray-600 text-xl lg:text-base">
+      <%= job.location %>
+    </p>
+  </div>
+  <div class="flex-1">
+    <p>
+      <% if job.date %>
+        <%= Time.parse(job.date).strftime('%b %e') %>
+      <% end %>
+    </p>
+  </div>
+</div>

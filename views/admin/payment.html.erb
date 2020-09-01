@@ -1,0 +1,79 @@
+<div class="rounded shadow my-8 bg-white w-2/3 p-10 mx-auto">
+  <div class="mb-6">
+    <p class="font-bold text-2xl">
+      Payment Settings
+    </p>
+  </div>
+
+  <div class="mb-4">
+    <label class="block text-gray-700 text-sm font-bold mb-2">
+      Stripe Connection
+    </label>
+    <% if @charges == 'yes' %>
+      <p>Your stripe account has been successfully connected!</p>
+    <% elsif @charges == 'no' %>
+      <button class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded" id="stripe-connect">
+        Finish Stripe setup
+      </button>
+      <p class="text-gray-500 text-xs italic underline">You have connected your Stripe account, but your account is not approved for payments. Please login to Stripe and finish your onboarding.</p>
+    <% else %>
+      <button class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded" id="stripe-connect">
+        Setup payouts on Stripe
+      </button>
+      <p class="text-gray-500 text-xs italic underline">You will need to create a connected account with Stripe.</p>
+    <% end %>
+  </div>
+
+  <% if @charges == 'yes' %>
+    <form class="my-6" method="POST" action="payment/update">
+      <input name="_method" value="patch" type="hidden">
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2">
+          Job Posting Price
+        </label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" name="job_price" type="number" value="<%= @account.job_price %>">
+        <p class="text-gray-500 text-xs italic">How much will it cost to post a job. Set to 0 if you want job postings to be free.</p>
+      </div>
+      <div class="flex items-center justify-between">
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+          Update your payment settings
+        </button>
+      </div>
+    </form>
+  <% end %>
+
+</div>
+
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+  let elmButton = document.querySelector("#stripe-connect");
+  if (elmButton) {
+    elmButton.addEventListener(
+      "click",
+      e => {
+        elmButton.setAttribute("disabled", "disabled");
+        elmButton.textContent = "Opening...";
+
+        fetch("/admin/<%= @account.slug %>/payment/stripe", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        })
+          .then(response => response.json())
+          .then(data => {
+            if (data.url) {
+              window.location = data.url;
+            } else {
+              elmButton.removeAttribute("disabled");
+              elmButton.textContent = "<Something went wrong>";
+              console.log("data", data);
+            }
+          });
+      },
+      false
+    );
+  }
+
+</script>

@@ -1,0 +1,62 @@
+<% content_for :social do %>
+  <meta property="og:title" content="<%= @job.position %>">
+  <meta property="og:description" content="<%= truncate(@job.description, 200) %>">
+  <meta property="og:image" content="https://www.tryferret.com/now-hiring.png">
+  <!-- <meta property="og:url" content="http://www.google.com/"> -->
+  <meta name="twitter:card" content="summary">
+<% end %>
+
+<% content_for :head do %>
+  <script src="/marked.min.js"></script>
+  <title>Job Board - <%= @account.org_name %></title>
+<% end %>
+
+<section class="mt-10">
+  <%= erb :'shared/job_card', locals: { job: @job } %>
+</section>
+
+<section class="text-2xl lg:text-base">
+  <div class="mb-4">
+    <p class="markdown-text"><%= @job.description %></p>
+  </div>
+
+  <% if !@job['responsible'].empty? %>
+    <div class="mb-4">
+      <p class="text-xl font-bold mb-2">
+        Responsibilities
+      </p>
+      <p class="markdown-text"><%= @job.responsible %></p>
+    </div>
+  <% end %>
+
+  <% if !@job['requirements'].empty? %>
+    <div class="mb-4">
+      <p class="text-xl font-bold mb-2">
+        Requirements
+      </p>
+      <p class="markdown-text"><%= @job.requirements %></p>
+    </div>
+  <% end %>
+
+  <div class="mb-4">
+    <p class="text-xl font-bold mb-2">
+      Company Background
+    </p>
+    <p>
+      <%= @job.company_bio %>
+    </p>
+  </div>
+</section>
+
+<section class="mt-8">
+  <a href="<%= @job.application %>" target="_blank">
+    <button class="bg-blue-500 hover:bg-blue-700 text-white text-xl font-bold py-3 px-5 rounded">
+      Apply to job
+    </button>
+  </a>
+</section>
+
+<script>
+  const markdownText = Array.from(document.querySelectorAll('.markdown-text'));
+  markdownText.forEach(text => text.innerHTML = marked(text.innerHTML))
+</script>

@@ -1,0 +1,7 @@
+test/
+data/
+
+.DS_Store
+.env
+config.ru
+README.md

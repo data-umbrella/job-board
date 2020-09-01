@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+
+    <%= yield_content :social %>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/tailwind.min.css">
+    <link rel="stylesheet" href="/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Raleway:wght@300;400;500;600;700&family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="/favicon.png">
+
+    <!-- Choose custom font -->
+    <% if (@account.font_family) and (!@account.font_family.empty?) %>
+      <style>
+        body {
+          font-family: "<%= @account.font_family %>", sans-serif;
+        }
+      </style>
+    <% end %>
+
+    <!-- JavaScript -->
+    <script src="/moment.min.js"></script>
+
+    <%= yield_content :head %>
+
+    <title>Job Board - <%= @account.org_name %></title>
+    
+  </head>
+  <body>
+    <nav class="flex items-center justify-between flex-wrap bg-white p-6 w-3/4 mx-auto text-xl lg:text-base">
+      <div class="flex items-center flex-shrink-0 text-gray-600 mr-6">
+        <% if @other_host %>
+          <a href="/">
+        <% else %>
+          <a href="/board/<%= @account.slug %>">
+        <% end %>
+
+          <span class="font-semibold text-xl tracking-tight"><%= @account.org_name %></span>
+        </a>
+      </div>
+      <div class="block lg:flex lg:items-center lg:w-auto justify-end">
+        <div>
+          <% if @other_host %>
+            <a href="/search" class="inline-block text-sm px-4 py-2 leading-none border rounded text-gray border-gray hover:border-transparent hover:text-gray-500 hover:bg-white mt-0">Search Jobs</a>
+          <% else %>
+            <a href="/board/<%= @account.slug %>/search" class="inline-block text-sm px-4 py-2 leading-none border rounded text-gray border-gray hover:border-transparent hover:text-gray-500 hover:bg-white mt-0">Search Jobs</a>
+          <% end %>
+
+        </div>
+      </div>
+    </nav>
+
+    <div class="container mx-auto w-full lg:w-3/4">
+      <%= yield %>
+    </div>
+
+    <!-- Choose accent color -->
+    <% if (@account.accent_color) and (!@account.accent_color.empty?) %>
+      <% @color = @account.accent_color %>
+      <script>
+        const color = "<%= @color %>";
+        const bgClass = `bg-${color}-500`;
+        const hoverClass = `hover:bg-${color}-700`;
+        const buttons = Array.from(document.querySelectorAll('button'));
+
+        buttons.forEach(button => button.classList.remove("bg-blue-500", "hover:bg-blue-700"));
+        buttons.forEach(button => button.classList.add(bgClass, hoverClass));
+
+        const textClass = `text-${color}-500`
+        const links = Array.from(document.querySelectorAll('div p a'));
+        links.forEach(link => link.classList.remove("text-blue-500"));
+        links.forEach(link => link.classList.add(textClass));
+      </script>
+    <% end %>
+
+  </body>
+</html>

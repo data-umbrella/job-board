@@ -1,0 +1,47 @@
+<!-- Hero section -->
+<section class="mt-16">
+  <div class="text-center">
+    <div class="text-2xl font-bold mb-2">
+      Search all jobs
+    </div>
+
+    <!-- Search box -->
+    <div class="w-1/2 mx-auto mt-10">
+      <form method="POST" action="" class="">
+        <div class="mb-4 inline-block w-64">
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" placeholder="Search jobs by keyword" type="text" name="query" required>
+        </div>
+        <div class="inline-block">
+          <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="submit">
+            Go
+          </button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</section>
+
+<section class="mt-24">
+
+  <% if @jobs.nil? %>
+    <p class="text-xl text-center">
+      Search something above!
+    </p>
+  <% elsif @jobs.empty? %>
+    <p class="text-xl text-center">
+      No jobs matched the terms you search. Try another keyword?
+    </p>
+  <% elsif @jobs %>
+    <% @jobs.each_with_index do |job, index| %>
+      <% if @other_host %>
+        <a href="jobs/<%= job.slug %>">
+      <% else %>
+        <a href="<%= params['account'] %>/jobs/<%= job.slug %>">
+      <% end %>
+          <%= erb :'shared/job_card', locals: { job: job } %>
+        </a>
+    <% end %>
+  <% end %>
+
+</section>

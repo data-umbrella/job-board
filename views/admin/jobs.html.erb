@@ -1,0 +1,49 @@
+<div class="rounded shadow my-8 bg-white w-2/3 p-10 mx-auto">
+  <div class="font-bold text-2xl mb-2 ">
+    Job Postings
+  </div>
+  <div class="my-8">
+    <table class="table-auto">
+      <thead>
+        <tr>
+          <th class="px-4 py-2">Position</th>
+          <th class="px-4 py-2">Company</th>
+          <th class="px-4 py-2">Date Posted</th>
+          <th class="px-4 py-2" span="2"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @jobs.each_with_index do |job, index| %>
+          <tr>
+            <td class="border px-4 py-2"><%= job.position %></td>
+            <td class="border px-4 py-2"><%= job.company_name %></td>
+            <td class="border px-4 py-2"><%= Time.parse(job.date).strftime('%B %d, %Y') %></td>
+            <td class="border px-4 py-2 underline">
+              <a href="/board/<%= @account.slug %>/jobs/<%= job.slug %>" target="_blank">View</a>
+            </td>
+            <td class="border px-4 py-2 underline">
+              <a href="jobs/<%= job.slug %>/edit">
+                Edit
+              </a>
+            </td>
+            <td class="border px-4 py-2 underline">
+              <form method="POST" action="jobs/<%= job.slug %>/delete" onsubmit="return confirm('Are you sure you want to delete this job?');">
+                <div style="margin:0;padding:0">
+                  <input name="_method" value="delete" type="hidden" />
+                  <button class="text-red-500 font-semibold underline" type="submit">Delete</button>
+                </div>
+              </form>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <div class="flex items-center justify-between">
+    <a href="jobs/new">
+      <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+        Add a new job
+      </button>
+    </a>
+  </div>
+</div>

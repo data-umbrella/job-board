@@ -1,0 +1,68 @@
+<!-- Hero section -->
+<section class="mt-24 w-3/4 mx-auto">
+  <div class="text-center">
+    <div class="text-3xl font-bold mb-2">
+      Create a new job board
+    </div>
+    <div class="text-2xl text-gray-500 mb-8 max-w-3xl m-auto">
+      Fill in the details below to get started.
+    </div>
+    <% if @message %>
+      <%= erb :'shared/error', locals: { message: @message } %>
+    <% end %>
+  </div>
+</section>
+
+<!-- Job Listings -->
+<section class="my-16 w-3/4 mx-auto">
+  <form method="POST" action="/register">
+    <div class="mb-8">
+      <p class="font-bold mb-3">
+        Login Details
+      </p>
+      <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2">
+            Email
+          </label>
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" type="text" name="email" required>
+          <p class="text-gray-500 text-xs italic">This will be used for logging in and sending product updates.</p>
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2">
+            Password
+          </label>
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" type="password" name="password" required>
+          <p class="text-gray-500 text-xs italic">This will need to be 8 characters or more.</p>
+        </div>
+      </div>
+    </div>
+    <div class="w-full mb-8">
+      <p class="font-bold mb-3">
+        Organization Details
+      </p>
+      <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2">
+            Name
+          </label>
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" type="text" name="org-name" required>
+          <p class="text-gray-500 text-xs italic">What is the name of the organization or what would you like to call the job board.</p>
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2">
+            Summary
+          </label>
+          <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" type="text" rows="5" name="org-bio" required></textarea>
+          <p class="text-gray-500 text-xs italic">What is goal of the organization and what types of jobs will be posted.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between">
+      <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+        Submit registration
+      </button>
+    </div>
+  </form>
+</section>

@@ -1,0 +1,45 @@
+<section class="mt-24 w-3/4 mx-auto">
+  <div class="text-center">
+    <div class="text-3xl font-bold mb-8">
+      Login to your account
+    </div>
+
+    <% if @message %>
+      <%= erb :'shared/error', locals: { message: @message } %>
+    <% end %>
+  </div>
+</section>
+
+<section class="my-16 w-3/4 mx-auto">
+  <form method="POST" action="/login">
+    <div class="mb-8">
+      <p class="font-bold mb-3">
+        Access Details
+      </p>
+      <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2">
+            Email
+          </label>
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" type="text" name="email" required>
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2">
+            Password
+          </label>
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" type="password" name="password" required>
+        </div>
+      </div>
+    </div>
+    <div class="flex items-center justify-between">
+      <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+        Go to dashboard
+      </button>
+    </div>
+  </form>
+  <div class="markdown-text mt-6">
+    <p>
+      <a href="/forgot">Did you forget your password?</a>
+    </p>
+  </div>
+</section>

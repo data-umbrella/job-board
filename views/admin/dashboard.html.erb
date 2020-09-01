@@ -1,0 +1,90 @@
+<div class="text-gray-700 text-center my-10">
+  <p class="text-2xl font-bold">
+    Welcome to your dashboard!
+  </p>
+  <p>
+    You can customize various options and moderate job postings here.
+  </p>
+</div>
+
+<div class="w-3/4 mx-auto">
+
+  <a href="/board/<%= @account.slug %>" target="_blank">
+    <div class="flex items-center rounded shadow mb-8 bg-white">
+      <div class="px-10 py-10">
+        <div class="font-bold text-2xl mb-2">
+          View your Board
+        </div>
+        <p class="text-gray-600 text-base">
+          Visit your public job board
+        </p>
+      </div>
+    </div>
+  </a>
+
+  <a href="/admin/<%= @account.slug %>/jobs">
+    <div class="flex items-center rounded shadow mb-8 bg-white">
+      <div class="px-10 py-10">
+        <div class="font-bold text-2xl mb-2">
+          Moderate Jobs
+        </div>
+        <p class="text-gray-600 text-base">
+          Add, edit or delete postings
+        </p>
+      </div>
+    </div>
+  </a>
+
+  <a href="/admin/<%= @account.slug %>/settings">
+    <div class="flex items-center rounded shadow mb-8 bg-white">
+      <div class="px-10 py-10">
+        <div class="font-bold text-2xl mb-2">
+          Board Settings
+        </div>
+        <p class="text-gray-600 text-base">
+          Modify settings like your name and description
+        </p>
+      </div>
+    </div>
+  </a>
+
+  <a href="/admin/<%= @account.slug %>/domain">
+    <div class="flex items-center rounded shadow mb-8 bg-white">
+      <div class="px-10 py-10">
+        <div class="font-bold text-2xl mb-2">
+          Domain Settings
+        </div>
+        <p class="text-gray-600 text-base">
+          Use a custom domain or forward your subdomain
+        </p>
+      </div>
+    </div>
+  </a>
+
+  <a href="/admin/<%= @account.slug %>/payment">
+    <div class="flex items-center rounded shadow mb-8 bg-white">
+      <div class="px-10 py-10">
+        <div class="font-bold text-2xl mb-2">
+          Payment Settings
+        </div>
+        <p class="text-gray-600 text-base">
+          Start charging for jobs and making money
+        </p>
+      </div>
+    </div>
+  </a>
+
+  <a href="/docs" target="_blank">
+    <div class="flex items-center rounded shadow mb-8 bg-white">
+      <div class="px-10 py-10">
+        <div class="font-bold text-2xl mb-2">
+          Tutorials & Support
+        </div>
+        <p class="text-gray-600 text-base">
+          Need to re-watch a tutorial video? Have questions? Got an idea for a feature?
+        </p>
+      </div>
+    </div>
+  </a>
+
+</div>

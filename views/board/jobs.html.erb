@@ -1,0 +1,58 @@
+<% content_for :head do %>
+  <link rel="stylesheet" href="/simplemde.min.css">
+  <script src="/simplemde.min.js"></script>
+<% end %>
+
+<!-- Board title and summary -->
+<section class="mt-10">
+  <div class="text-center">
+    <div class="text-6xl font-bold mb-2">
+      <%= @account.org_name %>
+    </div>
+    <div class="text-3xl lg:text-2xl text-gray-500 mb-6 max-w-3xl m-auto">
+      <%= @account.org_bio %>
+    </div>
+
+      <% if @other_host %>
+        <a href="jobs/new">
+      <% else %>
+        <a href="<%= @account.slug %>/jobs/new">
+      <% end %>
+      <button class="bg-blue-500 hover:bg-blue-700 text-2xl lg:text-base text-white font-bold py-2 px-4 rounded">
+        <% if @account.job_price.to_i > 0 %>
+          Post a job for $<%= @account.job_price %>
+        <% else %>
+          Post a job for free
+        <% end %>
+      </button>
+    </a>
+  </div>
+</section>
+
+<!-- List all jobs -->
+<section class="mt-24 ">
+  <% if @jobs.nil? or @jobs.empty? %>
+    <p class="text-xl text-center">
+      There are no jobs here. Please add one!
+    </p>
+  <% elsif @jobs %>
+    <% @jobs.each_with_index do |job, index| %>
+      <% if @other_host %>
+        <a href="jobs/<%= job.slug %>">
+      <% else %>
+        <a href="<%= params['account'] %>/jobs/<%= job.slug %>">
+      <% end %>
+          <%= erb :'shared/job_card', locals: { job: job } %>
+        </a>
+    <% end %>
+  <% end %>
+</section>
+
+<!-- Footer link back to ferret -->
+<section>
+  <div class="text-center mt-64 mb-8 text-gray-500">
+    <p>
+      This job board was <a href="http://www.tryferret.com" target="_blank" class="text-blue-500">created using Ferret</a>
+    </p>
+  </div>
+</section>

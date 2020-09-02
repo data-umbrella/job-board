@@ -17,6 +17,10 @@ accounts.transaction(true) do
     if slug and tmp_domain
       p slug, tmp_domain
 
+      if tmp_domain == ''
+        next
+      end
+
       # check if subdomain or regular domain and remove www
       if tmp_domain.include? 'www.'
         tmp_domain.slice! 'www.'

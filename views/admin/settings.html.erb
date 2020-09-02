@@ -9,8 +9,16 @@
       <label class="block text-gray-700 text-sm font-bold mb-2">
         Account Name
       </label>
-      <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" name="org_name" type="text" value="<%= @account.org_name %>">
+      <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" name="org_name" type="text" value="<%= @account.org_name %>" required>
       <p class="text-gray-600 text-xs italic">The name of your organization or business.</p>
+    </div>
+
+    <div class="mb-4">
+      <label class="block text-gray-700 text-sm font-bold mb-2">
+        Homepage Link
+      </label>
+      <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" name="homepage" type="url" value="<%= @account.homepage %>">
+      <p class="text-gray-600 text-xs italic">This will add a link on the top navigation menu to your main website or homepage. This is optional</p>
     </div>
 
     <div class="mb-4">

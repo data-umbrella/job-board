@@ -911,6 +911,7 @@ patch '/admin/:account/settings/update' do
   # Find account and update values
   @account.org_name = params["org_name"]
   @account.org_bio = params["org_bio"]
+  @account.homepage = params["homepage"]
   @account.font_family = params["font_family"]
   @account.accent_color = params["accent_color"]
   @account.job_expiry = params["job_expiry"].to_i

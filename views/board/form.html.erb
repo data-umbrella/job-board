@@ -104,7 +104,8 @@
           <label class="block text-gray-700 lg:text-sm font-bold mb-2">
             Company Background
           </label>
-          <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="original-background" type="text" rows="6" name="company-bio" required></textarea>
+          <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="original-background" type="text" rows="6" name="company-bio" required>Your company background goes here</textarea>
+          <p class="text-gray-600 text-sm lg:text-xs italic mt-2">Not required.</p>
         </div>
       </div>
     </div>
@@ -116,10 +117,17 @@
       <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
         <div class="mb-4">
           <label class="block text-gray-700 lg:text-sm font-bold mb-2">
+            Your Name
+          </label>
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="contact" type="text" name="owner" required>
+          <p class="text-gray-600 text-sm lg:text-xs italic">Stays private, used for record keeping.</p>
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 lg:text-sm font-bold mb-2">
             Your Email
           </label>
           <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="contact" type="email" name="contact" required>
-          <p class="text-gray-600 text-sm lg:text-xs italic">Stays private, used for invoice.</p>
+          <p class="text-gray-600 text-sm lg:text-xs italic">Stays private, used for record keeping.</p>
         </div>
 
         <% if @account.job_price.to_i > 0 %>
@@ -226,7 +234,7 @@
 </script>
 
 <script>
-  const textAreas = ['original-description', 'original-resps', 'original-reqs']
+  const textAreas = ['original-description', 'original-resps', 'original-reqs', 'original-background']
 
   let descBox = new SimpleMDE({
     element: document.getElementById("original-description"),
@@ -243,6 +251,11 @@
     hideIcons: ["quote", "image",],
     status: false,
   });
+  let compBox = new SimpleMDE({
+    element: document.getElementById("original-background"),
+    hideIcons: ["quote", "image",],
+    status: false,
+  });
 
   let previewTimer = setInterval(updateMarkdown, 10000)
 
@@ -255,6 +268,9 @@
 
     const reqsOutput = document.querySelector('#preview-reqs')
     reqsOutput.innerHTML = reqsBox.markdown(reqsBox.value())
+
+    const compOutput = document.querySelector('#preview-background')
+    compOutput.innerHTML = compBox.markdown(compBox.value())
   }
 
 </script>

@@ -193,21 +193,26 @@
 </script>
 
 <script>
-  const textAreas = ['original-description', 'original-resps', 'original-reqs']
+  const textAreas = ['original-description', 'original-resps', 'original-reqs', 'original-background']
 
   let descBox = new SimpleMDE({
     element: document.getElementById("original-description"),
-    hideIcons: ["heading", "quote", "image", "side-by-side", "fullscreen"],
+    hideIcons: ["quote", "image",],
     status: false,
   });
   let respsBox = new SimpleMDE({
     element: document.getElementById("original-resps"),
-    hideIcons: ["heading", "quote", "image", "side-by-side", "fullscreen"],
+    hideIcons: ["quote", "image",],
     status: false,
   });
   let reqsBox = new SimpleMDE({
     element: document.getElementById("original-reqs"),
-    hideIcons: ["heading", "quote", "image", "side-by-side", "fullscreen"],
+    hideIcons: ["quote", "image",],
+    status: false,
+  });
+  let compBox = new SimpleMDE({
+    element: document.getElementById("original-background"),
+    hideIcons: ["quote", "image",],
     status: false,
   });
 
@@ -222,6 +227,9 @@
 
     const reqsOutput = document.querySelector('#preview-reqs')
     reqsOutput.innerHTML = reqsBox.markdown(reqsBox.value())
+
+    const compOutput = document.querySelector('#preview-background')
+    compOutput.innerHTML = compBox.markdown(compBox.value())
   }
 
 </script>

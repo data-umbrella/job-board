@@ -38,12 +38,16 @@
     </div>
   <% end %>
 
-  <div class="mb-4">
-    <p class="text-3xl lg:text-xl font-bold mb-2">
-      Company Background
-    </p>
-    <p class="markdown-text"><%= @job.company_bio %></p>
-  </div>
+  <% if !@job['company_bio'].empty? %>
+    <div class="mb-4">
+      <p class="text-3xl lg:text-xl font-bold mb-2">
+        Company Background
+      </p>
+      <p class="markdown-text"><%= @job.company_bio %></p>
+    </div>
+  <% end %>
+
+
 </section>
 
 <section class="mt-8 mb-16">

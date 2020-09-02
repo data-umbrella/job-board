@@ -242,6 +242,7 @@ host_names.each do |host|
           company_name: params["company-name"],
           company_bio: params["company-bio"],
           contact: params["contact"],
+          owner: params["owner"],
           edit_id: @jid,
           date: date,
           paid: paid,

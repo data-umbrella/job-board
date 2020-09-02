@@ -5,11 +5,13 @@
     Thanks for submitting a job!
   </div>
 
+  <% if @account.job_price.to_i > 0 %>
   <div class="markdown-text mb-2 text-xl lg:text-base">
     <p>
       An official receipt will be sent to the email you provided.
     </p>
   </div>
+  <% end %>
 
   <% if @other_host %>
     <div class="markdown-text mb-2 text-xl lg:text-base">

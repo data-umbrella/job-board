@@ -69,8 +69,12 @@
         const hoverClass = `hover:bg-${color}-700`;
         const buttons = Array.from(document.querySelectorAll('button'));
 
-        buttons.forEach(button => button.classList.remove("bg-blue-500", "hover:bg-blue-700"));
-        buttons.forEach(button => button.classList.add(bgClass, hoverClass));
+        buttons.forEach(function(button) {
+          if (button.classList.contains("bg-blue-500")) {
+            button.classList.remove("bg-blue-500", "hover:bg-blue-700")
+            button.classList.add(bgClass, hoverClass)
+          }
+        }
 
         const textClass = `text-${color}-500`
         const links = Array.from(document.querySelectorAll('div p a'));

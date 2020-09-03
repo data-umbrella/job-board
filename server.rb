@@ -211,7 +211,9 @@ host_names.each do |host|
 
     # New job form
     get '/jobs/new' do
-      erb :"board/form", :layout => :"board/layout"
+      @markdown_template = "\r\n\r\n## Responsibilities\r\n- List the job responsibilities out \r\n\r\n## Requirements\r\n- List the job requirements out \r\n\r\n## Company Background\r\n"
+      @job = OpenStruct.new()
+      erb :"board/new", :layout => :"board/layout"
     end
 
     # Create a new job
@@ -220,8 +222,8 @@ host_names.each do |host|
       store = YAML::Store.new "./data/jobs-#{@account_slug}.store"
 
       # Check if job already exists
-      date = Time.now.strftime("%Y-%-m-%-d-%k")
-      combined_string = params['position'] + '-' + params['company-name'] + '-' + date
+      date = Time.now
+      combined_string = params['position'] + '-' + params['company-name'] + '-' + date.strftime('%s')
       @job_slug = create_slug(combined_string)
 
       existing_job = store.transaction { store.fetch(@job_slug, false) }
@@ -239,17 +241,15 @@ host_names.each do |host|
 
         job = OpenStruct.new(
           position: params["position"],
-          location: params["location"],
           description: params["description"],
-          responsible: params["responsible"],
-          requirements: params["requirements"],
           application: params["application"],
           company_name: params["company-name"],
-          company_bio: params["company-bio"],
+          location: params["location"],
+          company_url: params["company-url"],
           contact: params["contact"],
           owner: params["owner"],
           edit_id: @jid,
-          date: date,
+          date: date.to_s,
           paid: paid,
           slug: @job_slug
         )
@@ -352,6 +352,8 @@ host_names.each do |host|
         store[@job_slug] = job
       end
 
+
+
       erb :"board/confirmation", :layout => :"board/layout"
     end
 
@@ -386,13 +388,13 @@ host_names.each do |host|
       if job.edit_id == params['edit_id']
         # replace values
         job.position = params["position"]
-        job.location = params["location"]
         job.description = params["description"]
-        job.responsible =params["responsible"]
-        job.requirements = params["requirements"]
         job.application = params["application"]
-        job.company_name= params["company-name"]
-        job.company_bio = params["company-bio"]
+        job.company_name = params["company-name"]
+        job.location = params["location"]
+        job.company_url = params["company-url"]
+        job.contact = params["contact"]
+        job.owner = params["owner"]
 
         # save job
         store = YAML::Store.new "./data/jobs-#{account_slug}.store"
@@ -597,7 +599,9 @@ end
 
 # New job form
 get '/board/:account/jobs/new' do
-  erb :"board/form", :layout => :"board/layout"
+  @markdown_template = "\r\n\r\n## Responsibilities\r\n- List the job responsibilities out \r\n\r\n## Requirements\r\n- List the job requirements out \r\n\r\n## Company Background\r\n"
+  @job = OpenStruct.new()
+  erb :"board/new", :layout => :"board/layout"
 end
 
 # Create a new job
@@ -606,8 +610,8 @@ post '/board/:account/jobs/create' do
   store = YAML::Store.new "./data/jobs-#{@account_slug}.store"
 
   # Check if job already exists
-  date = Time.now.strftime("%Y-%-m-%-d-%k")
-  combined_string = params['position'] + '-' + params['company-name'] + '-' + date
+  date = Time.now
+  combined_string = params['position'] + '-' + params['company-name'] + '-' + date.strftime('%s')
   @job_slug = create_slug(combined_string)
 
   existing_job = store.transaction { store.fetch(@job_slug, false) }
@@ -625,17 +629,15 @@ post '/board/:account/jobs/create' do
 
     job = OpenStruct.new(
       position: params["position"],
-      location: params["location"],
       description: params["description"],
-      responsible: params["responsible"],
-      requirements: params["requirements"],
       application: params["application"],
       company_name: params["company-name"],
-      company_bio: params["company-bio"],
+      location: params["location"],
+      company_url: params["company-url"],
       contact: params["contact"],
       owner: params["owner"],
       edit_id: @jid,
-      date: date,
+      date: date.to_s,
       paid: paid,
       slug: @job_slug
     )
@@ -772,13 +774,13 @@ patch '/board/:account/jobs/:job/:edit_id/update' do
   if job.edit_id == params['edit_id']
     # replace values
     job.position = params["position"]
-    job.location = params["location"]
     job.description = params["description"]
-    job.responsible =params["responsible"]
-    job.requirements = params["requirements"]
     job.application = params["application"]
-    job.company_name= params["company-name"]
-    job.company_bio = params["company-bio"]
+    job.company_name = params["company-name"]
+    job.location = params["location"]
+    job.company_url = params["company-url"]
+    job.contact = params["contact"]
+    job.owner = params["owner"]
 
     # save job
     store = YAML::Store.new "./data/jobs-#{account_slug}.store"
@@ -827,25 +829,25 @@ end
 
 # New job form
 get '/admin/:account/jobs/new' do
-  erb :"admin/job_form", :layout => :"admin/home"
+  @markdown_template = "\r\n\r\n## Responsibilities\r\n- List the job responsibilities out \r\n\r\n## Requirements\r\n- List the job requirements out \r\n\r\n## Company Background\r\n"
+  @job = OpenStruct.new()
+  erb :"admin/new", :layout => :"admin/home"
 end
 
 # Create a new job
 post '/admin/:account/jobs/create' do
   account_slug = params['account']
   date = Time.now
-  combined_string = params['position'] + '-' + params['company-name'] + '-' + date.strftime('%Y %m %d')
+  combined_string = params['position'] + '-' + params['company-name'] + '-' + date.strftime('%s')
   job_slug = create_slug(combined_string)
 
   job = OpenStruct.new(
     position: params["position"],
-    location: params["location"],
     description: params["description"],
-    responsible: params["responsible"],
-    requirements: params["requirements"],
     application: params["application"],
     company_name: params["company-name"],
-    company_bio: params["company-bio"],
+    location: params["location"],
+    company_url: params["company-url"],
     paid: true,
     date: date.to_s,
     slug: job_slug

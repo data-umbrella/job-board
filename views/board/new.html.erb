@@ -5,24 +5,29 @@
 
 <!-- Hero section -->
 <section class="mt-12">
-  <div class="text-center">
+  <div class="text-center w-2/3 mx-auto">
     <div class="text-3xl font-bold mb-2">
-      Edit this job posting
+      <% if @account.job_price.to_i > 0 %>
+        Post a job for $<%= @account.job_price %>
+      <% else %>
+        Post a job for free
+      <% end %>
     </div>
+    <p>
+      <%= @account.posting_offer %>
+    </p>
   </div>
 </section>
 
 <!-- Job Listings -->
-<section class="my-12 w-full lg:w-4/5 mx-auto">
-  <form method="POST" action="update">
-    <input name="_method" value="patch" type="hidden">
+<section class="my-12 w-full lg:w-4/5 mx-auto text-xl lg:text-base">
+  <form method="POST" action="create">
     <%= erb :'shared/job_form', locals: { job: @job } %>
     <div class="flex items-center justify-between">
-      <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
-        Update job details
+      <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" id="checkout-button" type="submit">
+        Submit your job
       </button>
     </div>
-
   </form>
 </section>
 
@@ -48,43 +53,18 @@
 </script>
 
 <script>
-  const textAreas = ['original-description', 'original-resps', 'original-reqs', 'original-background']
 
   let descBox = new SimpleMDE({
     element: document.getElementById("original-description"),
     hideIcons: ["quote", "image",],
     status: false,
   });
-  let respsBox = new SimpleMDE({
-    element: document.getElementById("original-resps"),
-    hideIcons: ["quote", "image",],
-    status: false,
-  });
-  let reqsBox = new SimpleMDE({
-    element: document.getElementById("original-reqs"),
-    hideIcons: ["quote", "image",],
-    status: false,
-  });
-  let compBox = new SimpleMDE({
-    element: document.getElementById("original-background"),
-    hideIcons: ["quote", "image",],
-    status: false,
-  });
 
-  let previewTimer = setInterval(updateMarkdown, 10000)
+  let previewTimer = setInterval(updateMarkdown, 1000)
 
   function updateMarkdown() {
     const descOutput = document.querySelector('#preview-description')
     descOutput.innerHTML = descBox.markdown(descBox.value())
-
-    const respsOutput = document.querySelector('#preview-resps')
-    respsOutput.innerHTML = respsBox.markdown(respsBox.value())
-
-    const reqsOutput = document.querySelector('#preview-reqs')
-    reqsOutput.innerHTML = reqsBox.markdown(reqsBox.value())
-
-    const compOutput = document.querySelector('#preview-background')
-    compOutput.innerHTML = compBox.markdown(compBox.value())
   }
 
 </script>

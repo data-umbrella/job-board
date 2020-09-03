@@ -19,43 +19,23 @@
   <div class="mb-4">
     <p class="markdown-text"><%= @job.description %></p>
   </div>
-
-  <% if !@job['responsible'].empty? %>
-    <div class="mb-4">
-      <p class="text-3xl lg:text-xl font-bold mb-2">
-        Responsibilities
-      </p>
-      <p class="markdown-text"><%= @job.responsible %></p>
-    </div>
-  <% end %>
-
-  <% if !@job['requirements'].empty? %>
-    <div class="mb-4">
-      <p class="text-3xl lg:text-xl font-bold mb-2">
-        Requirements
-      </p>
-      <p class="markdown-text"><%= @job.requirements %></p>
-    </div>
-  <% end %>
-
-  <% if !@job['company_bio'].empty? %>
-    <div class="mb-4">
-      <p class="text-3xl lg:text-xl font-bold mb-2">
-        Company Background
-      </p>
-      <p class="markdown-text"><%= @job.company_bio %></p>
-    </div>
-  <% end %>
-
-
 </section>
 
 <section class="mt-8 mb-16">
   <a href="<%= @job.application %>" target="_blank">
-    <button class="bg-blue-500 hover:bg-blue-700 text-white text-xl font-bold py-3 px-5 rounded">
+    <button class="bg-blue-500 hover:bg-blue-700 text-white text-xl lg:text-base font-bold py-3 px-5 rounded">
       Apply to job
     </button>
   </a>
+
+  <% if (@job.company_url) and (!@job.company_url.empty?) %>
+  <a href="<%= @job.company_url %>" target="_blank">
+    <button class="bg-transparent hover:bg-blue-500 text-blue-700 text-xl lg:text-base font-semibold hover:text-white py-3 px-5 border border-blue-500 hover:border-transparent rounded">
+      Learn about the company
+    </button>
+  </a>
+  <% end %>
+
 </section>
 
 <script>

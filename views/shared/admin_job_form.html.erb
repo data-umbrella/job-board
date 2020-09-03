@@ -1,0 +1,59 @@
+<div class="w-full mb-8">
+  <div class="mb-8">
+    <p class="font-bold mb-3">
+      Job Details
+    </p>
+    <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+      <div class="mb-4">
+        <label class="block text-gray-700 lg:text-sm font-bold mb-2">
+          Job Title
+        </label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="original-position" type="text" name="position" value="<%= @job.position %>"required>
+        <p class="text-gray-600 text-sm lg:text-xs italic">Please specifiy a job title like "Marketing Manger".</p>
+      </div>
+      <div class="mb-4">
+        <label class="block text-gray-700 lg:text-sm font-bold mb-2">
+          Job Description
+        </label>
+        <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="original-description" type="text" rows="20" name="description"><%= @job.description || @markdown_template %></textarea>
+        <p class="text-gray-600 text-sm lg:text-xs italic mt-2">This field uses Markdown. Click the question mark to learn how to format your text.</p>
+      </div>
+      <div class="mb-4">
+        <label class="block text-gray-700 lg:text-sm font-bold mb-2">
+          Link to Application
+        </label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" type="url" name="application" value="<%= @job.application %>" required>
+        <p class="text-gray-600 text-sm lg:text-xs italic">Please share the application URL.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="w-full mb-8">
+  <p class="font-bold mb-3">
+    Company Details
+  </p>
+  <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+    <div class="mb-4">
+      <label class="block text-gray-700 lg:text-sm font-bold mb-2">
+        Company Name
+      </label>
+      <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="original-company" type="text" name="company-name" value="<%= @job.company_name %>" required>
+      <p class="text-gray-600 text-sm lg:text-xs italic">Your brand or trade name without Inc or LLC.</p>
+    </div>
+    <div class="mb-4">
+      <label class="block text-gray-700 lg:text-sm font-bold mb-2">
+        Office Location
+      </label>
+      <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="original-location" type="text" name="location" value="<%= @job.location %>" required>
+      <p class="text-gray-600 text-sm lg:text-xs italic">Please specify the city, state or country. If remote, simply put "Remote".</p>
+    </div>
+    <div class="mb-4">
+      <label class="block text-gray-700 lg:text-sm font-bold mb-2">
+        Company Website
+      </label>
+      <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="original-website" type="url" name="company-url" value="<%= @job.company_url %>" required>
+      <p class="text-gray-600 text-sm lg:text-xs italic">You can link to your homepage, about page or careers page.</p>
+    </div>
+  </div>
+</div>

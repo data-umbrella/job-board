@@ -8,11 +8,9 @@
         <tr>
           <th class="px-4 py-2">Position</th>
           <th class="px-4 py-2">Company</th>
-          <th class="px-4 py-2">Location</th>
-          <th class="px-4 py-2">Owner</th>
-          <th class="px-4 py-2">Email</th>
+          <th class="px-4 py-2">Customer</th>
           <th class="px-4 py-2">Date Posted</th>
-          <th class="px-4 py-2" span="2"></th>
+          <th class="px-4 py-2" span="4"></th>
         </tr>
       </thead>
       <tbody>
@@ -20,9 +18,7 @@
           <tr>
             <td class="border px-4 py-2"><%= job.position %></td>
             <td class="border px-4 py-2"><%= job.company_name %></td>
-            <td class="border px-4 py-2"><%= job.location %></td>
-            <td class="border px-4 py-2"><%= job.owner %></td>
-            <td class="border px-4 py-2"><%= job.contact %></td>
+            <td class="border px-4 py-2"><%= job.owner %><br><%= job.contact %></td>
             <td class="border px-4 py-2"><%= Time.parse(job.date).strftime('%B %d, %Y') %></td>
             <td class="border px-4 py-2 underline">
               <a href="/board/<%= @account.slug %>/jobs/<%= job.slug %>" target="_blank">View</a>
@@ -31,6 +27,13 @@
               <a href="jobs/<%= job.slug %>/edit">
                 Edit
               </a>
+            </td>
+            <td class="border px-4 py-2 underline">
+              <% if job.edit_id %>
+                <a href="/board/<%= @account.slug %>/jobs/<%= job.slug %>/<%= job.edit_id %>/edit" target="_blank">
+                  Customer Edit Link
+                </a>
+              <% end %>
             </td>
             <td class="border px-4 py-2 underline">
               <form method="POST" action="jobs/<%= job.slug %>/delete" onsubmit="return confirm('Are you sure you want to delete this job?');">

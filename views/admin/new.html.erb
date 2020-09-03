@@ -1,0 +1,30 @@
+<% content_for :head do %>
+  <link rel="stylesheet" href="/simplemde.min.css">
+  <script src="/simplemde.min.js"></script>
+<% end %>
+
+<div class="rounded shadow my-8 bg-white w-2/3 p-10 mx-auto">
+  <div class="font-bold text-2xl mb-2 ">
+    Add a Job Posting
+  </div>
+  <section class="my-8">
+    <form method="POST" action="create">
+      <%= erb :'shared/admin_job_form', locals: { job: @job } %>
+      <div class="flex items-center justify-between">
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+          Add job
+        </button>
+      </div>
+    </form>
+  </section>
+</div>
+
+<script>
+
+  let descBox = new SimpleMDE({
+    element: document.getElementById("original-description"),
+    hideIcons: ["quote", "image",],
+    status: false,
+  });
+
+</script>

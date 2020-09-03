@@ -9,6 +9,9 @@
     <label class="block text-gray-700 text-sm font-bold mb-2">
       Stripe Connection
     </label>
+    <p class="mb-4">
+      If you already have a Stripe account, you will need to setup a new account connected to our platform. You can use the same login but it will appear as a separate account in your Stripe dashboard. Since you are creating a new account, you will need to have your bank account information available for the direct deposit feature.
+    </p>
     <% if @charges == 'yes' %>
       <p>Your stripe account has been successfully connected!</p>
     <% elsif @charges == 'no' %>

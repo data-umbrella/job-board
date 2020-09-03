@@ -1,0 +1,211 @@
+<% content_for :head do %>
+  <link rel="stylesheet" href="/simplemde.min.css">
+  <script src="/simplemde.min.js"></script>
+<% end %>
+
+<!-- Hero section -->
+<section class="mt-12">
+  <div class="text-center w-1/2 mx-auto">
+    <div class="text-3xl font-bold mb-2">
+      <% if @account.job_price.to_i > 0 %>
+        Post a job for $<%= @account.job_price %>
+      <% else %>
+        Post a job for free
+      <% end %>
+    </div>
+    <p>
+      <%= @account.posting_offer %>
+    </p>
+  </div>
+</section>
+
+<!-- Job Listings -->
+<section class="my-12 w-full lg:w-4/5 mx-auto text-xl lg:text-base">
+  <form method="POST" action="create">
+    <div class="w-full mb-8">
+      <div class="mb-8">
+        <p class="font-bold mb-3">
+          Job Details
+        </p>
+        <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+
+          <div class="mb-4">
+            <label class="block text-gray-700 lg:text-sm font-bold mb-2">
+              Job Title
+            </label>
+            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="original-position" type="text" name="position" value="<%= @job.position %>"required>
+            <p class="text-gray-600 text-sm lg:text-xs italic">Please specifiy a job title like "Marketing Manger".</p>
+          </div>
+
+          <div class="mb-4">
+            <label class="block text-gray-700 lg:text-sm font-bold mb-2">
+              Job Description
+            </label>
+            <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="original-description" type="text" rows="20" name="description"><%= @job.description || @markdown_template %></textarea>
+            <p class="text-gray-600 text-sm lg:text-xs italic mt-2">This field uses Markdown. Click the question mark to learn how to format your text.</p>
+          </div>
+          <div class="mb-4">
+            <label class="block text-gray-700 lg:text-sm font-bold mb-2">
+              Link to Application
+            </label>
+            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" type="url" name="application" value="<%= @job.application %>" required>
+            <p class="text-gray-600 text-sm lg:text-xs italic">Please share the application URL.</p>
+          </div>
+
+          <!-- <div class="mb-4">
+            <label class="block text-gray-700 lg:text-sm font-bold mb-2">
+              How to apply?
+            </label>
+            <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="original-app" type="text" rows="6" name="application"></textarea>
+            <p class="text-gray-600 text-sm lg:text-xs italic">Please share any special instructions.</p>
+          </div> -->
+        </div>
+      </div>
+    </div>
+
+    <div class="w-full mb-8">
+      <p class="font-bold mb-3">
+        Company Details
+      </p>
+      <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <div class="mb-4">
+          <label class="block text-gray-700 lg:text-sm font-bold mb-2">
+            Company Name
+          </label>
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="original-company" type="text" name="company-name" value="<%= @job.company_name %>" required>
+          <p class="text-gray-600 text-sm lg:text-xs italic">Your brand or trade name without Inc or LLC.</p>
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 lg:text-sm font-bold mb-2">
+            Office Location
+          </label>
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="original-location" type="text" name="location" value="<%= @job.location %>" required>
+          <p class="text-gray-600 text-sm lg:text-xs italic">Please specify the city, state or country. If remote, simply put "Remote".</p>
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 lg:text-sm font-bold mb-2">
+            Company Website
+          </label>
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="original-website" type="url" name="company-url" value="<%= @job.company_url %>" required>
+          <p class="text-gray-600 text-sm lg:text-xs italic">You can link to your homepage, about page or careers page.</p>
+        </div>
+        <!-- <div class="mb-4">
+          <label class="block text-gray-700 lg:text-sm font-bold mb-2">
+            Company Logo
+          </label>
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="original-logo" type="file">
+        </div> -->
+      </div>
+    </div>
+
+    <div class="w-full mb-8">
+      <p class="font-bold mb-3">
+        Your Details
+      </p>
+      <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <div class="mb-4">
+          <label class="block text-gray-700 lg:text-sm font-bold mb-2">
+            Your Name
+          </label>
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="contact" type="text" name="owner" value="<%= @job.owner %>" required>
+          <p class="text-gray-600 text-sm lg:text-xs italic">Stays private, used for record keeping.</p>
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 lg:text-sm font-bold mb-2">
+            Your Email
+          </label>
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="contact" type="email" name="contact" value="<%= @job.contact %>" required>
+          <p class="text-gray-600 text-sm lg:text-xs italic">Stays private, used for record keeping.</p>
+        </div>
+
+        <% if @account.job_price.to_i > 0 %>
+          <div class="mb-4">
+            <label class="block text-gray-700 lg:text-sm font-bold mb-2">
+              Credit Card Details
+            </label>
+            <p class="lg:text-sm text-gray-800">
+              You'll pay on the next page via Stripe. If you don't have a credit card handy, please come back when you do.
+            </p>
+          </div>
+        <% end %>
+
+      </div>
+    </div>
+
+  <div class="w-full mb-8">
+    <p class="font-bold mb-3">
+      This is how your job will appear to visitors
+    </p>
+
+    <!-- Card Preview -->
+    <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+      <div class="flex items-center rounded shadow mb-8 w-4/5 mx-auto">
+        <div class="w-3/4 px-10 py-4">
+          <p class="mb-2" id="preview-company">
+            Company
+          </p>
+          <div class="font-bold text-xl mb-2" id="preview-position">
+            Position
+          </div>
+          <p class="text-gray-600 text-base" id="preview-location">
+            Location
+          </p>
+        </div>
+        <div class="flex-1">
+          <p id="preview-date"></p>
+        </div>
+      </div>
+
+        <!-- Job Details -->
+      <div class="mb-4 markdown-text" id="preview-description">
+        Your job description goes here.
+      </div>
+    </div>
+  </div>
+
+  <div class="flex items-center justify-between">
+    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" id="checkout-button" type="submit">
+      Submit your job
+    </button>
+  </div>
+
+  </form>
+</section>
+
+<script>
+  // Add date
+  const dateEl = document.querySelector('#preview-date')
+  const date = moment().format('MMM D');
+  dateEl.innerText = date
+
+  // Add position
+  const textInputs = Array.from(document.querySelectorAll('input'));
+  const textBoxes = Array.from(document.querySelectorAll('textarea'));
+  const inputs = textInputs.concat(textBoxes);
+  inputs.forEach(input => input.addEventListener('input', updateValue));
+
+  function updateValue(e) {
+    const id = e.target.id
+    const previewId = id.replace('original', 'preview')
+    const el = document.querySelector(`#${previewId}`)
+    el.innerHTML = e.target.value;
+  }
+
+</script>
+
+<script>
+
+  let descBox = new SimpleMDE({
+    element: document.getElementById("original-description"),
+    hideIcons: ["quote", "image",],
+    status: false,
+  });
+
+  let previewTimer = setInterval(updateMarkdown, 1000)
+
+  function updateMarkdown() {
+    const descOutput = document.querySelector('#preview-description')
+    descOutput.innerHTML = descBox.markdown(descBox.value())
+  }
+
+</script>

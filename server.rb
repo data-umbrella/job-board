@@ -36,6 +36,11 @@ end
 enable :sessions
 
 helpers do
+
+  def get_environment
+    ENV['RACK_ENV']
+  end
+
   def request_headers
     env.each_with_object({}) { |(k, v), acc| acc[Regexp.last_match(1).downcase] = v if k =~ /^http_(.*)/i; }
   end
@@ -929,7 +934,7 @@ patch '/admin/:account/settings/update' do
     store[account_slug] = @account
   end
 
-  redirect "/admin/#{account_slug}"
+  redirect "/admin/#{account_slug}/settings"
 end
 
 get '/admin/:account/payment' do
@@ -961,7 +966,7 @@ patch '/admin/:account/payment/update' do
     store[account_slug] = @account
   end
 
-  redirect "/admin/#{account_slug}"
+  redirect "/admin/#{account_slug}/payment"
 end
 
 # Populate with default settings
@@ -1034,7 +1039,7 @@ patch '/admin/:account/domain/update' do
       store[account_slug] = @account
     end
 
-    redirect "/admin/#{account_slug}"
+    redirect "/admin/#{account_slug}/domain"
   end
 end
 

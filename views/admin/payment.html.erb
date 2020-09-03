@@ -9,17 +9,19 @@
     <label class="block text-gray-700 text-sm font-bold mb-2">
       Stripe Connection
     </label>
-    <p class="mb-4">
-      If you already have a Stripe account, you will need to setup a new account connected to our platform. You can use the same login but it will appear as a separate account in your Stripe dashboard. Since you are creating a new account, you will need to have your bank account information available for the direct deposit feature.
-    </p>
     <% if @charges == 'yes' %>
-      <p>Your stripe account has been successfully connected!</p>
+      <p class="my-4">
+        Your stripe account has been successfully connected!
+      </p>
     <% elsif @charges == 'no' %>
       <button class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded" id="stripe-connect">
         Finish Stripe setup
       </button>
       <p class="text-gray-600 text-xs italic underline">You have connected your Stripe account, but your account is not approved for payments. Please login to Stripe and finish your onboarding.</p>
     <% else %>
+      <p>
+        If you already have a Stripe account, you will need to setup a new account connected to our platform. You can use the same login but it will appear as a separate account in your Stripe dashboard. Since you are creating a new account, you will need to have your bank account information available for the direct deposit feature.
+      </p>
       <button class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded" id="stripe-connect">
         Setup payouts on Stripe
       </button>

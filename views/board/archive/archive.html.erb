@@ -11,3 +11,6 @@
         </div>
       </form>
     </div>
+
+
+<%= URI.parse(@account.homepage).host.gsub('www.', "") %>

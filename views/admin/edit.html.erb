@@ -3,6 +3,10 @@
   <script src="/simplemde.min.js"></script>
 <% end %>
 
+<% if @message %>
+  <%= erb :'shared/success', locals: { message: @message  } %>
+<% end %>
+
 <div class="rounded shadow my-8 bg-white w-2/3 p-10 mx-auto">
   <div class="font-bold text-2xl mb-2 ">
     Edit a Job Posting

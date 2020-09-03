@@ -318,7 +318,7 @@ host_names.each do |host|
       origin = request_headers['origin']
       stripe_amount = @account.job_price.to_i * 100
       stripe_id = @account.stripe_id
-      platform_fee = (stripe_amount * 0.082).round
+      platform_fee = (stripe_amount * 0.079).round + 30
 
       session = Stripe::Checkout::Session.create(
         payment_method_types: ['card'],
@@ -706,7 +706,7 @@ post '/board/:account/jobs/:job/pay' do
   origin = request_headers['origin']
   stripe_amount = @account.job_price.to_i * 100
   stripe_id = @account.stripe_id
-  platform_fee = (stripe_amount * 0.082).round
+  platform_fee = (stripe_amount * 0.079).round + 30
 
   session = Stripe::Checkout::Session.create(
     payment_method_types: ['card'],

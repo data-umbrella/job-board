@@ -155,7 +155,6 @@ def send_password_reset_email(email, password)
   mg_client.send_message 'mg.tryferret.com', mb_obj
 end
 
-
 # Extract out all linked domains
 host_names = []
 existing_domains = []
@@ -165,6 +164,12 @@ domain_store.transaction(true) do
     domain = domain_store[data_root_name]
     host_names.append(domain)
     existing_domains.append(domain.domain)
+
+    if domain.type == 'domain'
+      www_domain = domain.clone
+      www_domain.domain = "www." + domain.domain
+      host_names.append(www_domain)
+    end
   end
 end
 

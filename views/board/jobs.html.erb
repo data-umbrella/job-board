@@ -18,12 +18,8 @@
       <% else %>
         <a href="<%= @account.slug %>/jobs/new">
       <% end %>
-      <button class="bg-blue-500 hover:bg-blue-700 text-2xl lg:text-base text-white font-bold py-2 px-4 rounded">
-        <% if @account.job_price.to_i > 0 %>
-          Post a job for $<%= @account.job_price %>
-        <% else %>
-          Post a job for free
-        <% end %>
+      <button class="bg-blue-500 hover:bg-blue-700 text-2xl lg:text-xl text-white font-bold py-2 px-4 rounded">
+        Post a job
       </button>
     </a>
   </div>

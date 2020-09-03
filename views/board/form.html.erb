@@ -7,7 +7,11 @@
 <section class="mt-12">
   <div class="text-center w-1/2 mx-auto">
     <div class="text-3xl font-bold mb-2">
-      Post a job
+      <% if @account.job_price.to_i > 0 %>
+        Post a job for $<%= @account.job_price %>
+      <% else %>
+        Post a job for free
+      <% end %>
     </div>
     <p>
       <%= @account.posting_offer %>

@@ -875,13 +875,12 @@ patch '/admin/:account/jobs/:job/update' do
 
   # replace values
   job.position = params["position"]
-  job.location = params["location"]
   job.description = params["description"]
-  job.responsible =params["responsible"]
-  job.requirements = params["requirements"]
   job.application = params["application"]
+
   job.company_name= params["company-name"]
-  job.company_bio = params["company-bio"]
+  job.location = params["location"]
+  job.company_url = params["company-url"]
 
   # save job
   store = YAML::Store.new "./data/jobs-#{account_slug}.store"

@@ -12,7 +12,7 @@
     Edit a Job Posting
   </div>
   <section class="my-8">
-    <form method="POST" action="update">
+    <form method="POST" action="update" enctype="multipart/form-data">
       <input name="_method" value="patch" type="hidden">
       <%= erb :'shared/admin_job_form', locals: { job: @job } %>
       <div class="flex items-center justify-between">
@@ -30,4 +30,17 @@
     hideIcons: ["heading", "quote", "image", "side-by-side", "fullscreen"],
     status: false,
   });
+</script>
+
+
+<script>
+  const uploadField = document.getElementById("logo-upload");
+
+  uploadField.onchange = function() {
+    if(this.files[0].size > 1097152){
+       alert("File is too big!");
+       this.value = "";
+    };
+  };
+
 </script>

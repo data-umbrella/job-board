@@ -12,19 +12,9 @@
       We prevent jobs with the same name being posted within the same hour to avoid double posting and billing mistakes.
     </p>
   </div>
-
-  <% if @other_host %>
-    <div class="markdown-text mb-2 text-xl lg:text-base">
-      <p>
-        <a href="/jobs/new">You can try again with a different name</a> or wait another hour.
-      </p>
-    </div>
-  <% else %>
-    <div class="markdown-text mb-2 text-xl lg:text-base">
-      <p>
-        <a href="/board/<%= @account_slug %>/jobs/new">You can try again with a different name</a> or wait another hour.
-      </p>
-    </div>
-  <% end %>
-
+  <div class="markdown-text mb-2 text-xl lg:text-base">
+    <p>
+      <a href="/jobs/new">You can try again with a different name</a> or wait another hour.
+    </p>
+  </div>
 </div>

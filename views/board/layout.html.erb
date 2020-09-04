@@ -41,30 +41,25 @@
     <title>Job Board - <%= @account.org_name %></title>
 
   </head>
-  <body>
+  <body class="">
     <nav class="flex items-center justify-between flex-wrap bg-white p-6 w-3/4 mx-auto text-xl lg:text-base">
       <div class="flex items-center flex-shrink-0 text-gray-600 mr-6">
-        <% if @other_host %>
-          <a href="/">
+        <a href="/">
+        <!-- Logo or name  -->
+        <% if (@account.logo) and (!@account.logo.empty?) %>
+          <img src="/logos/<%= @account.logo %>" alt="" style="max-width: 200px; max-height: 100px">
         <% else %>
-          <a href="/board/<%= @account.slug %>">
+          <span class="font-semibold text-xl tracking-tight"><%= @account.org_name %></span>
         <% end %>
 
-          <span class="font-semibold text-xl tracking-tight"><%= @account.org_name %></span>
+        <% if (@account.homepage) and (!@account.homepage.empty?) %>
+          <a href="<%= @account.homepage %>" target="_blank" class="inline-block px-4 py-2 leading-none font-medium hover:text-gray-500 mt-0">About Us</a>
+        <% end %>
         </a>
       </div>
       <div class="block lg:flex lg:items-center lg:w-auto justify-end">
         <div>
-          <% if (@account.homepage) and (!@account.homepage.empty?) %>
-            <a href="<%= @account.homepage %>" target="_blank" class="inline-block px-4 py-2 leading-none text-gray hover:text-gray-600 mt-0">About Us</a>
-          <% end %>
-
-          <% if @other_host %>
-            <a href="/search" class="inline-block px-4 py-2 leading-none border rounded text-gray border-gray hover:border-transparent hover:text-gray-600 hover:bg-white mt-0">Search Jobs</a>
-          <% else %>
-            <a href="/board/<%= @account.slug %>/search" class="inline-block px-4 py-2 leading-none border rounded text-gray border-gray hover:border-transparent hover:text-gray-600 hover:bg-white mt-0">Search Jobs</a>
-          <% end %>
-
+          <a href="/search" class="inline-block px-4 py-2 leading-none border rounded text-gray border-gray hover:border-transparent hover:text-gray-600 hover:bg-white mt-0">Search Jobs</a>
         </div>
       </div>
     </nav>
@@ -78,14 +73,27 @@
       <% @color = @account.accent_color %>
       <script>
         const color = "<%= @color %>";
+
+        // Normal buttons
         const bgClass = `bg-${color}-500`;
         const hoverClass = `hover:bg-${color}-700`;
+
+        // Transparent buttons
+        const borderClass = `border-${color}-500`;
+        const borderHoverClass = `hover:bg-${color}-500`;
+        const borderTextClass = `text-${color}-700`
+
         const buttons = Array.from(document.querySelectorAll('button'));
 
         buttons.forEach(function(button) {
           if (button.classList.contains("bg-blue-500")) {
             button.classList.remove("bg-blue-500", "hover:bg-blue-700")
             button.classList.add(bgClass, hoverClass)
+          }
+
+          if (button.classList.contains("border-blue-500")) {
+            button.classList.remove("border-blue-500", "hover:bg-blue-500", "text-blue-700")
+            button.classList.add(borderClass, borderHoverClass, borderTextClass)
           }
         })
 
@@ -98,6 +106,7 @@
             link.classList.add(textClass)
           }
         })
+
       </script>
     <% end %>
 

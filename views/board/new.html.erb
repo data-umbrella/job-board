@@ -21,7 +21,7 @@
 
 <!-- Job Listings -->
 <section class="my-12 w-full lg:w-4/5 mx-auto text-xl lg:text-base">
-  <form method="POST" action="create">
+  <form method="POST" action="create" enctype="multipart/form-data">
     <%= erb :'shared/job_form', locals: { job: @job } %>
     <div class="flex items-center justify-between">
       <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" id="checkout-button" type="submit">
@@ -66,5 +66,18 @@
     const descOutput = document.querySelector('#preview-description')
     descOutput.innerHTML = descBox.markdown(descBox.value())
   }
+
+</script>
+
+
+<script>
+  const uploadField = document.getElementById("logo-upload");
+
+  uploadField.onchange = function() {
+    if(this.files[0].size > 1097152){
+       alert("File is too big!");
+       this.value = "";
+    };
+  };
 
 </script>

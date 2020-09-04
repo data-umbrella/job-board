@@ -1,5 +1,17 @@
 <div class="flex items-center rounded border border-gray-300 mb-3 hover:shadow">
-  <div class="w-3/4 lg:w-3/4 px-10 py-4">
+  <div class="w-20 ml-4">
+    <% if (job.company_logo) and (!job.company_logo.empty?) %>
+    <img src="/logos/<%= job.company_logo %>" alt="" style="max-width: 80px; max-height: 100px">
+    <% else %>
+    <div class="border text-center text-2xl text-gray-500 py-3 rounded">
+      <p>
+        <%= job.company_name.split.map{|i| i[0,1].upcase}.join %>
+      </p>
+
+    </div>
+    <% end %>
+  </div>
+  <div class="w-3/4 lg:w-4/6 px-6 py-4">
     <p class="mb-2 text-xl lg:text-base">
       <%= job.company_name %>
     </p>

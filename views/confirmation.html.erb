@@ -13,8 +13,14 @@
     </p>
   </div>
   <div class="markdown-text mb-2">
+    <% if get_environment == "development" %>
     <p>
-      You can access your public job board <a href="board/<%= @slug %>" target="_blank">right here</a>.
+      You can access your public job board <a href="http://<%= @slug %>.lvh.me:4242/" target="_blank">right here</a>.
     </p>
+    <% else %>
+    <p>
+      You can access your public job board <a href="http://<%= @slug %>.tryferret.com/" target="_blank">right here</a>.
+    </p>
+    <% end %>
   </div>
 </div>

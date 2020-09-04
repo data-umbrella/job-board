@@ -9,15 +9,17 @@
 
 <div class="w-3/4 mx-auto">
 
-  <a href="/board/<%= @account.slug %>" target="_blank">
+  <% if get_environment == "development" %>
+  <a href="http://<%= @account.slug %>.lvh.me:4242/" target="_blank">
+  <% else %>
+  <a href="http://<%= @slug %>.tryferret.com/" target="_blank">
+  <% end %>
     <div class="flex items-center rounded shadow mb-8 bg-white">
       <div class="px-10 py-10">
         <div class="font-bold text-2xl mb-2">
           Visit your public job board
         </div>
-        <p class="text-gray-600 text-base">
-
-        </p>
+        <p class="text-gray-600 text-base"></p>
       </div>
     </div>
   </a>
@@ -28,9 +30,7 @@
         <div class="font-bold text-2xl mb-2">
           Add, edit or delete job listings
         </div>
-        <p class="text-gray-600 text-base">
-
-        </p>
+        <p class="text-gray-600 text-base"></p>
       </div>
     </div>
   </a>
@@ -41,9 +41,7 @@
         <div class="font-bold text-2xl mb-2">
           Modify settings like your board name, description and fonts
         </div>
-        <p class="text-gray-600 text-base">
-
-        </p>
+        <p class="text-gray-600 text-base"></p>
       </div>
     </div>
   </a>
@@ -54,9 +52,7 @@
         <div class="font-bold text-2xl mb-2">
           Use a custom domain or forward your subdomain
         </div>
-        <p class="text-gray-600 text-base">
-
-        </p>
+        <p class="text-gray-600 text-base"></p>
       </div>
     </div>
   </a>
@@ -67,9 +63,7 @@
         <div class="font-bold text-2xl mb-2">
           Start charging for jobs and making money
         </div>
-        <p class="text-gray-600 text-base">
-
-        </p>
+        <p class="text-gray-600 text-base"></p>
       </div>
     </div>
   </a>
@@ -80,9 +74,7 @@
         <div class="font-bold text-2xl mb-2">
           Need to re-watch a tutorial video? Have questions?
         </div>
-        <p class="text-gray-600 text-base">
-
-        </p>
+        <p class="text-gray-600 text-base"></p>
       </div>
     </div>
   </a>

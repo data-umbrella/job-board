@@ -11,14 +11,10 @@
   <title>Job Board - <%= @account.org_name %></title>
 <% end %>
 
-<section class="mt-10">
+<section class="mt-4">
   <div>
     <p class="text-red-500 font-semibold">
-      <% if @other_host %>
       <a href="/">
-      <% else %>
-      <a href="/board/<%= @account.slug %>">
-      <% end %>
         &larr; Back to all jobs
       </a>
     </p>
@@ -37,14 +33,14 @@
 
 <section class="mt-8 mb-16">
   <a href="<%= @job.application %>" target="_blank">
-    <button class="bg-blue-500 hover:bg-blue-700 text-white text-xl lg:text-base font-bold py-2 px-4 rounded">
+    <button class="bg-blue-500 hover:bg-blue-700 text-white text-xl lg:text-base font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
       Apply to job
     </button>
   </a>
 
   <% if (@job.company_url) and (!@job.company_url.empty?) %>
   <a href="<%= @job.company_url %>" target="_blank">
-    <button class="bg-transparent hover:bg-blue-500 text-blue-700 text-xl lg:text-base font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">
+    <button class="bg-transparent hover:bg-blue-500 text-blue-700 hover:text-white text-xl lg:text-base font-semibold py-2 px-4 focus:outline-none focus:shadow-outline border border-blue-500 hover:border-transparent rounded">
       Learn about the company
     </button>
   </a>

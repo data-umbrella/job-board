@@ -544,6 +544,7 @@ post '/register' do
       accent_color: 'blue',
       logo: '',
       domain: '',
+      google_analytics: '',
       job_price: 0,
       job_expiry: 90,
       posting_offer: 'Your job listing will be posted for 90 days.',
@@ -923,6 +924,7 @@ patch '/admin/:account/settings/update' do
   @account.org_name = params["org_name"]
   @account.org_bio = params["org_bio"]
   @account.homepage = params["homepage"]
+  @account.google_analytics = params["google-analytics"]
   @account.font_family = params["font_family"]
   @account.accent_color = params["accent_color"]
   @account.job_expiry = params["job_expiry"].to_i

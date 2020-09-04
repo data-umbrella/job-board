@@ -1,6 +1,21 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <% if (@account.google_analytics) and (!@account.google_analytics.empty?) %>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=<%= @account.google_analytics %>"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', '<%= @account.google_analytics %>');
+    </script>
+    <% end %>
+
+
+
     <meta charset="utf-8">
 
     <%= yield_content :social %>

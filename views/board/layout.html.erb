@@ -14,8 +14,6 @@
     </script>
     <% end %>
 
-
-
     <meta charset="utf-8">
 
     <%= yield_content :social %>
@@ -93,8 +91,13 @@
 
         const textClass = `text-${color}-500`
         const links = Array.from(document.querySelectorAll('div p a'));
-        links.forEach(link => link.classList.remove("text-blue-500"));
-        links.forEach(link => link.classList.add(textClass));
+
+        links.forEach(function(link) {
+          if (link.classList.contains("text-blue-500")) {
+            link.classList.remove("text-blue-500")
+            link.classList.add(textClass)
+          }
+        })
       </script>
     <% end %>
 

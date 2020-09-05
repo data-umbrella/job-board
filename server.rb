@@ -276,13 +276,13 @@ def confirm_job_post(slug)
 end
 
 def get_search_results(slug)
-  search_term = params['query']
+  search_term = params['query'].downcase
   job_slug = params['job']
   all_jobs = current_jobs(slug)
   jobs = []
 
   all_jobs.each do |job|
-    if job.position.include? search_term or job.description.include? search_term or job.location.include? search_term or job.company_name.include? search_term
+    if job.position.downcase.include? search_term or job.description.downcase.include? search_term or job.location.downcase.include? search_term or job.company_name.downcase.include? search_term
       jobs.append(job)
     end
   end

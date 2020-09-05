@@ -311,14 +311,8 @@ subdomain /\Awww\d*\z/ do
   ['/admin/:account', '/admin/:account/*'].each do |path|
     before path do
       account_slug = params['account']
-      p "logged in? #{logged_in?}"
-      if logged_in?
-        p "current user: #{current_user}"
-        p "account slug: #{current_user.account_slug}"
-        if current_user.account_slug == account_slug
-          @account = current_account(account_slug)
-        end
-      else
+      # p "logged in? #{logged_in?}"
+      if !logged_in?
         # session.clear
         @message = "You don't have permission to do that."
         redirect '/login'
@@ -328,18 +322,20 @@ subdomain /\Awww\d*\z/ do
 
   # View the dashboard
   get '/admin/:account' do
+    @account = current_account(params['account'])
     erb :"admin/dashboard", :layout => :"admin/home"
   end
 
   # View all jobs
   get '/admin/:account/jobs' do
-    account_slug = params['account']
-    @jobs = current_jobs(account_slug)
+    @account = current_account(params['account'])
+    @jobs = current_jobs(@account.slug)
     erb :"admin/jobs", :layout => :"admin/home"
   end
 
   # New job form
   get '/admin/:account/jobs/new' do
+    @account = current_account(params['account'])
     @markdown_template = "\r\n\r\n## Responsibilities\r\n- List the job responsibilities out \r\n\r\n## Requirements\r\n- List the job requirements out \r\n\r\n## Company Background\r\n"
     @job = OpenStruct.new()
     erb :"admin/new", :layout => :"admin/home"
@@ -347,6 +343,7 @@ subdomain /\Awww\d*\z/ do
 
   # Create a new job
   post '/admin/:account/jobs/create' do
+    @account = current_account(params['account'])
     account_slug = params['account']
     date = Time.now
     combined_string = params['position'] + '-' + params['company-name'] + '-' + date.strftime('%s')
@@ -381,11 +378,12 @@ subdomain /\Awww\d*\z/ do
 
     add_job(account_slug, job)
 
-    redirect "/admin/#{params['account']}/jobs"
+    redirect "/admin/#{account_slug}/jobs"
   end
 
   # Form to edit existing job
   get '/admin/:account/jobs/:job/edit' do
+    @account = current_account(params['account'])
     account_slug = params['account']
     job_slug = params['job']
     @job = current_job(account_slug, job_slug)
@@ -394,6 +392,7 @@ subdomain /\Awww\d*\z/ do
 
   # Update existing job
   patch '/admin/:account/jobs/:job/update' do
+    @account = current_account(params['account'])
     # Find job
     account_slug = params['account']
     job_slug = params['job']
@@ -437,6 +436,7 @@ subdomain /\Awww\d*\z/ do
 
   # Delete existing job
   delete '/admin/:account/jobs/:job/delete' do
+    @account = current_account(params['account'])
     account_slug = params['account']
     job_slug = params['job']
 
@@ -451,11 +451,13 @@ subdomain /\Awww\d*\z/ do
 
   # Populate with default settings
   get '/admin/:account/settings' do
+    @account = current_account(params['account'])
     erb :"admin/settings", :layout => :"admin/home"
   end
 
   # Update account settings
   patch '/admin/:account/settings/update' do
+    @account = current_account(params['account'])
     account_slug = params['account']
 
     # Find account and update values
@@ -479,6 +481,7 @@ subdomain /\Awww\d*\z/ do
 
   # Update account logo
   patch '/admin/:account/settings/logo' do
+    @account = current_account(params['account'])
     account_slug = params['account']
 
     if params['logo'] && params['logo']['filename']
@@ -510,6 +513,7 @@ subdomain /\Awww\d*\z/ do
   end
 
   get '/admin/:account/payment' do
+    @account = current_account(params['account'])
     stripe_id = @account.stripe_id
 
     if stripe_id
@@ -527,6 +531,7 @@ subdomain /\Awww\d*\z/ do
 
   # Update account settings
   patch '/admin/:account/payment/update' do
+    @account = current_account(params['account'])
     account_slug = params['account']
 
     # Find account and update values
@@ -543,6 +548,7 @@ subdomain /\Awww\d*\z/ do
 
   # Populate with default settings
   post '/admin/:account/payment/stripe' do
+    @account = current_account(params['account'])
     account_slug = params['account']
     origin = request_headers['origin']
 
@@ -566,6 +572,7 @@ subdomain /\Awww\d*\z/ do
   end
 
   get '/admin/:account/payment/stripe/refresh' do
+    @account = current_account(params['account'])
     account_slug = params['account']
     redirect "/admin/#{account_slug}/payment" if session[:account_id].nil?
 
@@ -584,11 +591,13 @@ subdomain /\Awww\d*\z/ do
 
   # Get domain settings
   get '/admin/:account/domain' do
+    @account = current_account(params['account'])
     erb :"admin/domain", :layout => :"admin/home"
   end
 
   # Update domain settings
   patch '/admin/:account/domain/update' do
+    @account = current_account(params['account'])
     account_slug = params['account']
 
     # Find account and update values

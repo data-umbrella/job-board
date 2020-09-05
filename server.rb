@@ -1,7 +1,6 @@
 require 'sinatra'
 require 'sinatra/content_for'
 require 'sinatra/namespace'
-require 'sinatra/subdomain'
 require 'json'
 require 'bcrypt'
 require 'securerandom'
@@ -177,37 +176,6 @@ domain_store.transaction(true) do
       www_domain.domain = "www." + domain.domain
       host_names.append(www_domain)
     end
-  end
-end
-
-subdomain do
-  before do
-    @subdomain = subdomain
-    @account = current_account(subdomain)
-  end
-
-  # View all jobs
-  get '/' do
-    all_jobs = current_jobs(@subdomain)
-    @jobs = []
-
-    expiry_days = @account.job_expiry.to_i
-
-    if expiry_days == 0
-      @jobs = all_jobs
-    else
-      all_jobs.each do |job|
-        next if job.paid == false
-        job_date = Time.parse(job.date)
-        today = Time.now
-        diff = ((today - job_date) / 86400).round
-        @jobs.append(job) if diff < expiry_days
-      end
-    end
-
-    @jobs = @jobs.reverse()
-
-    erb :"board/jobs", :layout => :"board/layout"
   end
 end
 

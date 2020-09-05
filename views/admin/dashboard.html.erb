@@ -12,7 +12,7 @@
   <% if get_environment == "development" %>
   <a href="http://<%= @account.slug %>.lvh.me:4242/" target="_blank">
   <% else %>
-  <a href="http://<%= @slug %>.tryferret.com/" target="_blank">
+  <a href="http://<%= @account.slug %>.tryferret.com/" target="_blank">
   <% end %>
     <div class="flex items-center rounded shadow mb-8 bg-white">
       <div class="px-10 py-10">

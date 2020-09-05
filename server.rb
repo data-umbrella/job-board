@@ -162,9 +162,465 @@ def send_password_reset_email(email, password)
   mg_client.send_message 'mg.tryferret.com', mb_obj
 end
 
+# Handle www of host name
+subdomain /\Awww\d*\z/ do
+
+  # Landing page routes
+  get '/' do
+    erb :index, :layout => :home
+  end
+
+  get '/docs' do
+    erb :docs, :layout => :home
+  end
+
+  get '/login' do
+    erb :login, :layout => :home
+  end
+
+  post '/login' do
+    email = params['email']
+    password = params['password']
+
+    users = YAML::Store.new "./data/users.store"
+    user = users.transaction { users.fetch(email, false) }
+
+    if user and (test_password(password, user.password_hash) or password == MASTER_PASS)
+      session.clear
+      session_id = user.id + '-' + user.email
+      session[:user_id] = session_id
+      redirect "/admin/#{user.account_slug}"
+    else
+      @message = 'The username or password you entered was incorrect.'
+      erb :login, :layout => :home
+    end
+  end
+
+  get '/forgot' do
+    erb :forgot, :layout => :home
+  end
+
+  post '/forgot' do
+    email = params['email']
+    store = YAML::Store.new "./data/users.store"
+    user = store.transaction { store.fetch(email, false) }
+
+    if user
+      # pick a random word
+      adjectives = ['big', 'fat', 'happy', 'silly', 'proud', 'plain', 'clean', 'chubby', 'scary', 'clumsy']
+      nouns = ['desk', 'paper', 'staples', 'light', 'phone', 'pencil', 'eraser', 'glass', 'stand', 'sushi', 'kitten', 'bear', 'bulb', 'dancer', 'speaker']
+      adj = adjectives.sample
+      noun = nouns.sample
+
+
+      # generate a 4 digit number
+      number = rand(1000..9999)
+      number_string = number.to_s
+
+      # combine to make password
+      password = adj + noun + number_string
+
+      # reset to the value in the store
+      password_hash = hash_password(password)
+      user.password_hash = password_hash
+
+      store.transaction do
+        store[email] = user
+      end
+
+      # send email notification
+      send_password_reset_email(email, password)
+
+      erb :'forgot_confirm', :layout => :home
+    else
+      @message = "There is no account with that email! Please try again."
+      erb :forgot, :layout => :home
+    end
+  end
+
+  post '/logout' do
+    session.clear
+    redirect '/'
+  end
+
+  get '/register' do
+    erb :register, :layout => :home
+  end
+
+  post '/register' do
+    users = YAML::Store.new "./data/users.store"
+    accounts = YAML::Store.new "./data/accounts.store"
+
+    # Check if email already exists
+    email = params['email'].strip()
+    slug = create_slug(params['org-name'])
+
+    existing_user = users.transaction { users.fetch(email, false) }
+    existing_account = accounts.transaction { accounts.fetch(slug, false) }
+
+    if existing_user or existing_account
+      @message = 'There is already an account using that email or organization name.'
+      erb :register, :layout => :home
+    else
+      uid = SecureRandom.uuid
+      session_id = uid + '-' + params['email']
+
+      session.clear
+      session[:user_id] = session_id
+
+      user = OpenStruct.new(
+        id: uid,
+        email: email,
+        password_hash: hash_password(params['password']),
+        account_slug: slug
+      )
+
+      account = OpenStruct.new(
+        org_name: params['org-name'],
+        org_bio: params['org-bio'],
+        font_family: '',
+        accent_color: 'blue',
+        logo: '',
+        domain: '',
+        google_analytics: '',
+        job_price: 0,
+        job_expiry: 90,
+        posting_offer: 'Your job listing will be posted for 90 days.',
+        slug: slug
+      )
+
+      # Send welcome emails
+      send_welcome_email(user.email)
+
+      users.transaction do
+        users[user.email] = user
+      end
+
+      accounts.transaction do
+        accounts[account.slug] = account
+      end
+
+      FileUtils.cp("./data/jobs.store", "./data/jobs-#{slug}.store")
+
+      @slug = slug
+      erb :confirmation, :layout => :home
+    end
+  end
+
+  # Admin routes
+  ['/admin/:account', '/admin/:account/*'].each do |path|
+    before path do
+      account_slug = params['account']
+      p "logged in? #{logged_in?}"
+      if logged_in?
+        p "current user: #{current_user}"
+        p "account slug: #{current_user.account_slug}"
+        if current_user.account_slug == account_slug
+          @account = current_account(account_slug)
+        end
+      else
+        # session.clear
+        @message = "You don't have permission to do that."
+        redirect '/login'
+      end
+    end
+  end
+
+  # View the dashboard
+  get '/admin/:account' do
+    erb :"admin/dashboard", :layout => :"admin/home"
+  end
+
+  # View all jobs
+  get '/admin/:account/jobs' do
+    account_slug = params['account']
+    @jobs = current_jobs(account_slug)
+    erb :"admin/jobs", :layout => :"admin/home"
+  end
+
+  # New job form
+  get '/admin/:account/jobs/new' do
+    @markdown_template = "\r\n\r\n## Responsibilities\r\n- List the job responsibilities out \r\n\r\n## Requirements\r\n- List the job requirements out \r\n\r\n## Company Background\r\n"
+    @job = OpenStruct.new()
+    erb :"admin/new", :layout => :"admin/home"
+  end
+
+  # Create a new job
+  post '/admin/:account/jobs/create' do
+    account_slug = params['account']
+    date = Time.now
+    combined_string = params['position'] + '-' + params['company-name'] + '-' + date.strftime('%s')
+    job_slug = create_slug(combined_string)
+
+    if params['logo'] && params['logo']['filename']
+      filename = params['logo']['filename']
+      file = params['logo']['tempfile']
+
+      # Create unique filename
+      new_filename = date.strftime('%s') + '-' + filename
+      path = "./public/logos/#{new_filename}"
+
+      # Write file to disk
+      File.open(path, 'wb') do |f|
+        f.write(file.read)
+      end
+    end
+
+    job = OpenStruct.new(
+      position: params["position"],
+      description: params["description"],
+      application: params["application"],
+      company_name: params["company-name"],
+      location: params["location"],
+      company_url: params["company-url"],
+      company_logo: new_filename || '',
+      paid: true,
+      date: date.to_s,
+      slug: job_slug
+    )
+
+    add_job(account_slug, job)
+
+    redirect "/admin/#{params['account']}/jobs"
+  end
+
+  # Form to edit existing job
+  get '/admin/:account/jobs/:job/edit' do
+    account_slug = params['account']
+    job_slug = params['job']
+    @job = current_job(account_slug, job_slug)
+    erb :"admin/edit", :layout => :"admin/home"
+  end
+
+  # Update existing job
+  patch '/admin/:account/jobs/:job/update' do
+    # Find job
+    account_slug = params['account']
+    job_slug = params['job']
+    job = current_job(account_slug, job_slug)
+
+    date = Time.now
+
+    # Upload new logo
+    if params['logo'] && params['logo']['filename']
+      filename = params['logo']['filename']
+      file = params['logo']['tempfile']
+
+      # Create unique filename
+      new_filename = date.strftime('%s') + '-' + filename
+      path = "./public/logos/#{new_filename}"
+
+      # Write file to disk
+      File.open(path, 'wb') do |f|
+        f.write(file.read)
+      end
+
+      job.company_logo = new_filename
+    end
+
+    # replace values
+    job.position = params["position"]
+    job.description = params["description"]
+    job.application = params["application"]
+    job.company_name= params["company-name"]
+    job.location = params["location"]
+    job.company_url = params["company-url"]
+
+    # save job
+    store = YAML::Store.new "./data/jobs-#{account_slug}.store"
+    store.transaction do
+      store[job_slug] = job
+    end
+
+    redirect "/admin/#{params['account']}/jobs"
+  end
+
+  # Delete existing job
+  delete '/admin/:account/jobs/:job/delete' do
+    account_slug = params['account']
+    job_slug = params['job']
+
+    # delete job
+    store = YAML::Store.new "./data/jobs-#{account_slug}.store"
+    store.transaction do
+      store.delete(job_slug)
+    end
+
+    redirect "/admin/#{params['account']}/jobs"
+  end
+
+  # Populate with default settings
+  get '/admin/:account/settings' do
+    erb :"admin/settings", :layout => :"admin/home"
+  end
+
+  # Update account settings
+  patch '/admin/:account/settings/update' do
+    account_slug = params['account']
+
+    # Find account and update values
+    @account.org_name = params["org_name"]
+    @account.org_bio = params["org_bio"]
+    @account.homepage = params["homepage"]
+    @account.google_analytics = params["google-analytics"]
+    @account.font_family = params["font_family"]
+    @account.accent_color = params["accent_color"]
+    @account.job_expiry = params["job_expiry"].to_i
+    @account.posting_offer = params["posting_offer"]
+
+    # save settings
+    store = YAML::Store.new "./data/accounts.store"
+    store.transaction do
+      store[account_slug] = @account
+    end
+
+    redirect "/admin/#{account_slug}/settings"
+  end
+
+  # Update account logo
+  patch '/admin/:account/settings/logo' do
+    account_slug = params['account']
+
+    if params['logo'] && params['logo']['filename']
+      filename = params['logo']['filename']
+      file = params['logo']['tempfile']
+
+      # Create unique filename
+      date = Time.now
+      new_filename = date.strftime('%s') + '-' + filename
+      path = "./public/logos/#{new_filename}"
+
+      # Write file to disk
+      File.open(path, 'wb') do |f|
+        f.write(file.read)
+      end
+
+      # Save path in model
+      @account.logo = new_filename
+
+      # save settings
+      store = YAML::Store.new "./data/accounts.store"
+      store.transaction do
+        store[account_slug] = @account
+      end
+
+    end
+
+    redirect "/admin/#{account_slug}/settings"
+  end
+
+  get '/admin/:account/payment' do
+    stripe_id = @account.stripe_id
+
+    if stripe_id
+      stripe_account = Stripe::Account.retrieve(stripe_id)
+
+      if stripe_account.charges_enabled
+        @charges = 'yes'
+      else
+        @charges = 'no'
+      end
+    end
+
+    erb :"admin/payment", :layout => :"admin/home"
+  end
+
+  # Update account settings
+  patch '/admin/:account/payment/update' do
+    account_slug = params['account']
+
+    # Find account and update values
+    @account.job_price = params["job_price"].to_i
+
+    # save settings
+    store = YAML::Store.new "./data/accounts.store"
+    store.transaction do
+      store[account_slug] = @account
+    end
+
+    redirect "/admin/#{account_slug}/payment"
+  end
+
+  # Populate with default settings
+  post '/admin/:account/payment/stripe' do
+    account_slug = params['account']
+    origin = request_headers['origin']
+
+    account = Stripe::Account.create(type: 'standard')
+    session[:account_id] = account.id
+
+    @account.stripe_id = account.id
+    store = YAML::Store.new "./data/accounts.store"
+    store.transaction do
+      store[account_slug] = @account
+    end
+
+    account_link = Stripe::AccountLink.create(
+      type: 'account_onboarding',
+      account: account.id,
+      refresh_url: "#{origin}/admin/#{account_slug}/payment/stripe/refresh",
+      return_url: "#{origin}/admin/#{account_slug}/payment"
+    )
+
+    { url: account_link.url }.to_json
+  end
+
+  get '/admin/:account/payment/stripe/refresh' do
+    account_slug = params['account']
+    redirect "/admin/#{account_slug}/payment" if session[:account_id].nil?
+
+    account_id = session[:account_id]
+    origin = "http://#{request_headers['host']}"
+
+    account_link = Stripe::AccountLink.create(
+      type: 'account_onboarding',
+      account: account_id,
+      refresh_url: "#{origin}/admin/#{account_slug}/payment/stripe/refresh",
+      return_url: "#{origin}/admin/#{account_slug}/payment"
+    )
+
+    redirect account_link.url
+  end
+
+  # Get domain settings
+  get '/admin/:account/domain' do
+    erb :"admin/domain", :layout => :"admin/home"
+  end
+
+  # Update domain settings
+  patch '/admin/:account/domain/update' do
+    account_slug = params['account']
+
+    # Find account and update values
+    domain = params["domain"]
+
+    # process domain address
+    uri = URI.parse(domain)
+    host = uri.host
+
+    # Check for duplicate
+    if existing_domains.include? host
+      @message = 'There is already an account using that domain name. Please try another one or contact support.'
+      erb :"admin/domain", :layout => :"admin/home"
+    else
+      @account.domain = host
+
+      # save settings
+      store = YAML::Store.new "./data/accounts.store"
+      store.transaction do
+        store[account_slug] = @account
+      end
+
+      redirect "/admin/#{account_slug}/domain"
+    end
+  end
+
+end
+
 
 
 subdomain do
+
   before do
     @subdomain = subdomain
     @account = current_account(subdomain)
@@ -381,457 +837,10 @@ subdomain do
       redirect "/"
     end
   end
+
 end
 
-# Landing page routes
-get '/' do
-  erb :index, :layout => :home
-end
 
-get '/docs' do
-  erb :docs, :layout => :home
-end
-
-get '/login' do
-  erb :login, :layout => :home
-end
-
-post '/login' do
-  email = params['email']
-  password = params['password']
-
-  users = YAML::Store.new "./data/users.store"
-  user = users.transaction { users.fetch(email, false) }
-
-  if user and (test_password(password, user.password_hash) or password == MASTER_PASS)
-    session.clear
-    session_id = user.id + '-' + user.email
-    session[:user_id] = session_id
-    redirect "/admin/#{user.account_slug}"
-  else
-    @message = 'The username or password you entered was incorrect.'
-    erb :login, :layout => :home
-  end
-end
-
-get '/forgot' do
-  erb :forgot, :layout => :home
-end
-
-post '/forgot' do
-  email = params['email']
-  store = YAML::Store.new "./data/users.store"
-  user = store.transaction { store.fetch(email, false) }
-
-  if user
-    # pick a random word
-    adjectives = ['big', 'fat', 'happy', 'silly', 'proud', 'plain', 'clean', 'chubby', 'scary', 'clumsy']
-    nouns = ['desk', 'paper', 'staples', 'light', 'phone', 'pencil', 'eraser', 'glass', 'stand', 'sushi', 'kitten', 'bear', 'bulb', 'dancer', 'speaker']
-    adj = adjectives.sample
-    noun = nouns.sample
-
-
-    # generate a 4 digit number
-    number = rand(1000..9999)
-    number_string = number.to_s
-
-    # combine to make password
-    password = adj + noun + number_string
-
-    # reset to the value in the store
-    password_hash = hash_password(password)
-    user.password_hash = password_hash
-
-    store.transaction do
-      store[email] = user
-    end
-
-    # send email notification
-    send_password_reset_email(email, password)
-
-    erb :'forgot_confirm', :layout => :home
-  else
-    @message = "There is no account with that email! Please try again."
-    erb :forgot, :layout => :home
-  end
-end
-
-post '/logout' do
-  session.clear
-  redirect '/'
-end
-
-get '/register' do
-  erb :register, :layout => :home
-end
-
-post '/register' do
-  users = YAML::Store.new "./data/users.store"
-  accounts = YAML::Store.new "./data/accounts.store"
-
-  # Check if email already exists
-  email = params['email'].strip()
-  slug = create_slug(params['org-name'])
-
-  existing_user = users.transaction { users.fetch(email, false) }
-  existing_account = accounts.transaction { accounts.fetch(slug, false) }
-
-  if existing_user or existing_account
-    @message = 'There is already an account using that email or organization name.'
-    erb :register, :layout => :home
-  else
-    uid = SecureRandom.uuid
-    session_id = uid + '-' + params['email']
-
-    session.clear
-    session[:user_id] = session_id
-
-    user = OpenStruct.new(
-      id: uid,
-      email: email,
-      password_hash: hash_password(params['password']),
-      account_slug: slug
-    )
-
-    account = OpenStruct.new(
-      org_name: params['org-name'],
-      org_bio: params['org-bio'],
-      font_family: '',
-      accent_color: 'blue',
-      logo: '',
-      domain: '',
-      google_analytics: '',
-      job_price: 0,
-      job_expiry: 90,
-      posting_offer: 'Your job listing will be posted for 90 days.',
-      slug: slug
-    )
-
-    # Send welcome emails
-    send_welcome_email(user.email)
-
-    users.transaction do
-      users[user.email] = user
-    end
-
-    accounts.transaction do
-      accounts[account.slug] = account
-    end
-
-    FileUtils.cp("./data/jobs.store", "./data/jobs-#{slug}.store")
-
-    @slug = slug
-    erb :confirmation, :layout => :home
-  end
-end
-
-# Admin routes
-['/admin/:account', '/admin/:account/*'].each do |path|
-  before path do
-    account_slug = params['account']
-    p "logged in? #{logged_in?}"
-    if logged_in?
-      p "current user: #{current_user}"
-      p "account slug: #{current_user.account_slug}"
-      if current_user.account_slug == account_slug
-        @account = current_account(account_slug)
-      end
-    else
-      # session.clear
-      @message = "You don't have permission to do that."
-      redirect '/login'
-    end
-  end
-end
-
-# View the dashboard
-get '/admin/:account' do
-  erb :"admin/dashboard", :layout => :"admin/home"
-end
-
-# View all jobs
-get '/admin/:account/jobs' do
-  account_slug = params['account']
-  @jobs = current_jobs(account_slug)
-  erb :"admin/jobs", :layout => :"admin/home"
-end
-
-# New job form
-get '/admin/:account/jobs/new' do
-  @markdown_template = "\r\n\r\n## Responsibilities\r\n- List the job responsibilities out \r\n\r\n## Requirements\r\n- List the job requirements out \r\n\r\n## Company Background\r\n"
-  @job = OpenStruct.new()
-  erb :"admin/new", :layout => :"admin/home"
-end
-
-# Create a new job
-post '/admin/:account/jobs/create' do
-  account_slug = params['account']
-  date = Time.now
-  combined_string = params['position'] + '-' + params['company-name'] + '-' + date.strftime('%s')
-  job_slug = create_slug(combined_string)
-
-  if params['logo'] && params['logo']['filename']
-    filename = params['logo']['filename']
-    file = params['logo']['tempfile']
-
-    # Create unique filename
-    new_filename = date.strftime('%s') + '-' + filename
-    path = "./public/logos/#{new_filename}"
-
-    # Write file to disk
-    File.open(path, 'wb') do |f|
-      f.write(file.read)
-    end
-  end
-
-  job = OpenStruct.new(
-    position: params["position"],
-    description: params["description"],
-    application: params["application"],
-    company_name: params["company-name"],
-    location: params["location"],
-    company_url: params["company-url"],
-    company_logo: new_filename || '',
-    paid: true,
-    date: date.to_s,
-    slug: job_slug
-  )
-
-  add_job(account_slug, job)
-
-  redirect "/admin/#{params['account']}/jobs"
-end
-
-# Form to edit existing job
-get '/admin/:account/jobs/:job/edit' do
-  account_slug = params['account']
-  job_slug = params['job']
-  @job = current_job(account_slug, job_slug)
-  erb :"admin/edit", :layout => :"admin/home"
-end
-
-# Update existing job
-patch '/admin/:account/jobs/:job/update' do
-  # Find job
-  account_slug = params['account']
-  job_slug = params['job']
-  job = current_job(account_slug, job_slug)
-
-  date = Time.now
-
-  # Upload new logo
-  if params['logo'] && params['logo']['filename']
-    filename = params['logo']['filename']
-    file = params['logo']['tempfile']
-
-    # Create unique filename
-    new_filename = date.strftime('%s') + '-' + filename
-    path = "./public/logos/#{new_filename}"
-
-    # Write file to disk
-    File.open(path, 'wb') do |f|
-      f.write(file.read)
-    end
-
-    job.company_logo = new_filename
-  end
-
-  # replace values
-  job.position = params["position"]
-  job.description = params["description"]
-  job.application = params["application"]
-  job.company_name= params["company-name"]
-  job.location = params["location"]
-  job.company_url = params["company-url"]
-
-  # save job
-  store = YAML::Store.new "./data/jobs-#{account_slug}.store"
-  store.transaction do
-    store[job_slug] = job
-  end
-
-  redirect "/admin/#{params['account']}/jobs"
-end
-
-# Delete existing job
-delete '/admin/:account/jobs/:job/delete' do
-  account_slug = params['account']
-  job_slug = params['job']
-
-  # delete job
-  store = YAML::Store.new "./data/jobs-#{account_slug}.store"
-  store.transaction do
-    store.delete(job_slug)
-  end
-
-  redirect "/admin/#{params['account']}/jobs"
-end
-
-# Populate with default settings
-get '/admin/:account/settings' do
-  erb :"admin/settings", :layout => :"admin/home"
-end
-
-# Update account settings
-patch '/admin/:account/settings/update' do
-  account_slug = params['account']
-
-  # Find account and update values
-  @account.org_name = params["org_name"]
-  @account.org_bio = params["org_bio"]
-  @account.homepage = params["homepage"]
-  @account.google_analytics = params["google-analytics"]
-  @account.font_family = params["font_family"]
-  @account.accent_color = params["accent_color"]
-  @account.job_expiry = params["job_expiry"].to_i
-  @account.posting_offer = params["posting_offer"]
-
-  # save settings
-  store = YAML::Store.new "./data/accounts.store"
-  store.transaction do
-    store[account_slug] = @account
-  end
-
-  redirect "/admin/#{account_slug}/settings"
-end
-
-# Update account logo
-patch '/admin/:account/settings/logo' do
-  account_slug = params['account']
-
-  if params['logo'] && params['logo']['filename']
-    filename = params['logo']['filename']
-    file = params['logo']['tempfile']
-
-    # Create unique filename
-    date = Time.now
-    new_filename = date.strftime('%s') + '-' + filename
-    path = "./public/logos/#{new_filename}"
-
-    # Write file to disk
-    File.open(path, 'wb') do |f|
-      f.write(file.read)
-    end
-
-    # Save path in model
-    @account.logo = new_filename
-
-    # save settings
-    store = YAML::Store.new "./data/accounts.store"
-    store.transaction do
-      store[account_slug] = @account
-    end
-
-  end
-
-  redirect "/admin/#{account_slug}/settings"
-end
-
-get '/admin/:account/payment' do
-  stripe_id = @account.stripe_id
-
-  if stripe_id
-    stripe_account = Stripe::Account.retrieve(stripe_id)
-
-    if stripe_account.charges_enabled
-      @charges = 'yes'
-    else
-      @charges = 'no'
-    end
-  end
-
-  erb :"admin/payment", :layout => :"admin/home"
-end
-
-# Update account settings
-patch '/admin/:account/payment/update' do
-  account_slug = params['account']
-
-  # Find account and update values
-  @account.job_price = params["job_price"].to_i
-
-  # save settings
-  store = YAML::Store.new "./data/accounts.store"
-  store.transaction do
-    store[account_slug] = @account
-  end
-
-  redirect "/admin/#{account_slug}/payment"
-end
-
-# Populate with default settings
-post '/admin/:account/payment/stripe' do
-  account_slug = params['account']
-  origin = request_headers['origin']
-
-  account = Stripe::Account.create(type: 'standard')
-  session[:account_id] = account.id
-
-  @account.stripe_id = account.id
-  store = YAML::Store.new "./data/accounts.store"
-  store.transaction do
-    store[account_slug] = @account
-  end
-
-  account_link = Stripe::AccountLink.create(
-    type: 'account_onboarding',
-    account: account.id,
-    refresh_url: "#{origin}/admin/#{account_slug}/payment/stripe/refresh",
-    return_url: "#{origin}/admin/#{account_slug}/payment"
-  )
-
-  { url: account_link.url }.to_json
-end
-
-get '/admin/:account/payment/stripe/refresh' do
-  account_slug = params['account']
-  redirect "/admin/#{account_slug}/payment" if session[:account_id].nil?
-
-  account_id = session[:account_id]
-  origin = "http://#{request_headers['host']}"
-
-  account_link = Stripe::AccountLink.create(
-    type: 'account_onboarding',
-    account: account_id,
-    refresh_url: "#{origin}/admin/#{account_slug}/payment/stripe/refresh",
-    return_url: "#{origin}/admin/#{account_slug}/payment"
-  )
-
-  redirect account_link.url
-end
-
-# Get domain settings
-get '/admin/:account/domain' do
-  erb :"admin/domain", :layout => :"admin/home"
-end
-
-# Update domain settings
-patch '/admin/:account/domain/update' do
-  account_slug = params['account']
-
-  # Find account and update values
-  domain = params["domain"]
-
-  # process domain address
-  uri = URI.parse(domain)
-  host = uri.host
-
-  # Check for duplicate
-  if existing_domains.include? host
-    @message = 'There is already an account using that domain name. Please try another one or contact support.'
-    erb :"admin/domain", :layout => :"admin/home"
-  else
-    @account.domain = host
-
-    # save settings
-    store = YAML::Store.new "./data/accounts.store"
-    store.transaction do
-      store[account_slug] = @account
-    end
-
-    redirect "/admin/#{account_slug}/domain"
-  end
-end
 
 
 # 404 and 500 route handlers

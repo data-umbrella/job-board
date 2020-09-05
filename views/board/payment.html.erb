@@ -21,7 +21,7 @@
   var stripe = Stripe('pk_test_1ChBmXHBfn20Bb6GuV8YDhiI');
   <% else %>
   var stripe = Stripe('pk_live_GHHtR1TEWGDpc2P51Q6VlwW3');
-  <%= else %>
+  <% end %>
   var checkoutButton = document.getElementById('checkout-button');
 
   checkoutButton.addEventListener('click', function() {

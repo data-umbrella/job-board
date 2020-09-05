@@ -183,7 +183,7 @@ def send_job_confirmation_email(email, job_price, job_slug, job_id, domain_route
   end
 
   mb_obj.subject "Thanks for submitting a job!"
-  mb_obj.body_html "#{price_message}<p>If you want to edit your job posting, <a href='#{domain_route}/jobs/#{job_slug}/#{job_id}/edit' target='_blank'>here is a private link to do so</a>. Do not share it with anyone else outside of your company!</p><p>You can <a href='#{domain_route}/jobs/#{job_slug}' target='_blank'> view your public job posting here</a>.</p><p>Thank you!</p>"
+  mb_obj.body_html "#{price_message}<p>If you want to edit your job posting: #{domain_route}/jobs/#{job_slug}/#{job_id}/edit</a>. Do not share it with anyone else outside of your company!</p><p>You can view your public listing here: #{domain_route}/jobs/#{job_slug}.</p><p>Thank you!</p>"
 
   mg_client.send_message 'mg.tryferret.com', mb_obj
 end

@@ -163,6 +163,226 @@ def send_password_reset_email(email, password)
 end
 
 
+
+subdomain do
+  before do
+    @subdomain = subdomain
+    @account = current_account(subdomain)
+  end
+
+  # View all jobs
+  get '/' do
+    all_jobs = current_jobs(@subdomain)
+    @jobs = []
+
+    expiry_days = @account.job_expiry.to_i
+
+    if expiry_days == 0
+      @jobs = all_jobs
+    else
+      all_jobs.each do |job|
+        next if job.paid == false
+        job_date = Time.parse(job.date)
+        today = Time.now
+        diff = ((today - job_date) / 86400).round
+        @jobs.append(job) if diff < expiry_days
+      end
+    end
+
+    @jobs = @jobs.reverse()
+
+    erb :"board/jobs", :layout => :"board/layout"
+  end
+
+  # New job form
+  get '/jobs/new' do
+    @markdown_template = "\r\n\r\n## Responsibilities\r\n- List the job responsibilities out \r\n\r\n## Requirements\r\n- List the job requirements out \r\n\r\n## Company Background\r\n"
+    @job = OpenStruct.new()
+    erb :"board/new", :layout => :"board/layout"
+  end
+
+  # Create a new job
+  post '/jobs/create' do
+    store = YAML::Store.new "./data/jobs-#{@subdomain}.store"
+
+    # Check if job already exists
+    date = Time.now
+    combined_string = params['position'] + '-' + params['company-name'] + '-' + date.strftime('%s')
+    @job_slug = create_slug(combined_string)
+
+    existing_job = store.transaction { store.fetch(@job_slug, false) }
+
+    if existing_job
+      erb :"board/duplicate_job", :layout => :"board/layout"
+    else
+      if @account.job_price.to_i > 0
+        paid = false
+      else
+        paid = true
+      end
+
+      @jid = SecureRandom.uuid
+
+      job = OpenStruct.new(
+        position: params["position"],
+        description: params["description"],
+        application: params["application"],
+        company_name: params["company-name"],
+        location: params["location"],
+        company_url: params["company-url"],
+        contact: params["contact"],
+        owner: params["owner"],
+        edit_id: @jid,
+        date: date.to_s,
+        paid: paid,
+        slug: @job_slug
+      )
+
+      add_job(@subdomain, job)
+
+      if @account.job_price.to_i > 0
+        redirect "/jobs/#{@job_slug}/pay"
+      else
+        redirect "/jobs/#{@job_slug}/confirm"
+      end
+
+    end
+  end
+
+  # Page with form to search jobs
+  get '/search' do
+    erb :"board/search", :layout => :"board/layout"
+  end
+
+  # Search jobs post route
+  post '/search' do
+    # Need to convert multiple words to substring
+    search_term = params['query']
+
+    job_slug = params['job']
+    @all_jobs = current_jobs(@subdomain)
+    @jobs = []
+
+    @all_jobs.each do |job|
+      if job.position.include? search_term or job.description.include? search_term or job.location.include? search_term or job.company_name.include? search_term
+        @jobs.append(job)
+      end
+    end
+
+    erb :"board/search", :layout => :"board/layout"
+  end
+
+  # View a single job
+  get '/jobs/:job' do
+    job_slug = params['job']
+    @job = current_job(@subdomain, job_slug)
+
+    erb :"board/job", :layout => :"board/layout"
+  end
+
+  get '/jobs/:job/pay' do
+    @job_slug = params['job']
+
+    erb :"board/payment", :layout => :"board/layout"
+  end
+
+  # Pay for a job posting
+  post '/jobs/:job/pay' do
+    job_slug = params['job']
+    origin = request_headers['origin']
+    stripe_amount = @account.job_price.to_i * 100
+    stripe_id = @account.stripe_id
+    platform_fee = (stripe_amount * 0.079).round + 30
+
+    session = Stripe::Checkout::Session.create(
+      payment_method_types: ['card'],
+      line_items: [{
+        name: 'Job posting',
+        amount: stripe_amount,
+        currency: 'usd',
+        quantity: 1
+      }],
+      payment_intent_data: {
+        application_fee_amount: platform_fee,
+        on_behalf_of: stripe_id,
+        transfer_data: {
+          destination: stripe_id,
+        },
+      },
+      success_url: "#{origin}/jobs/#{job_slug}/confirm",
+      cancel_url: "#{origin}/jobs/#{job_slug}/problem",
+    )
+
+    { id: session.id }.to_json
+  end
+
+  # Give user edit job link and confirmation details
+  get '/jobs/:job/confirm' do
+    @job_slug = params['job']
+    job = current_job(@subdomain, @job_slug)
+    @jid = job.edit_id
+
+    # Mark job as paid
+    job.paid = true
+
+    store = YAML::Store.new "./data/jobs-#{@subdomain}.store"
+    store.transaction do
+      store[@job_slug] = job
+    end
+
+    erb :"board/confirmation", :layout => :"board/layout"
+  end
+
+  # Problem with CC page
+  get '/jobs/:job/problem' do
+    @account_slug = @account.slug
+    @job_slug = params['job']
+    erb :"board/problem", :layout => :"board/layout"
+  end
+
+  # Unique link to edit an existing job
+  get '/jobs/:job/:edit_id/edit' do
+    job_slug = params['job']
+    @job = current_job(@subdomain, job_slug)
+
+    if @job.edit_id == params['edit_id']
+      erb :"board/edit", :layout => :"board/layout"
+    else
+      redirect "/"
+    end
+  end
+
+  # Update existing job
+  patch '/jobs/:job/:edit_id/update' do
+
+    # Find job
+    job_slug = params['job']
+    job = current_job(@subdomain, job_slug)
+
+    if job.edit_id == params['edit_id']
+      # replace values
+      job.position = params["position"]
+      job.description = params["description"]
+      job.application = params["application"]
+      job.company_name = params["company-name"]
+      job.location = params["location"]
+      job.company_url = params["company-url"]
+      job.contact = params["contact"]
+      job.owner = params["owner"]
+
+      # save job
+      store = YAML::Store.new "./data/jobs-#{@subdomain}.store"
+      store.transaction do
+        store[job_slug] = job
+      end
+
+      redirect "/jobs/#{job_slug}"
+    else
+      redirect "/"
+    end
+  end
+end
+
 # Landing page routes
 get '/' do
   erb :index, :layout => :home
@@ -612,226 +832,6 @@ patch '/admin/:account/domain/update' do
     redirect "/admin/#{account_slug}/domain"
   end
 end
-
-subdomain do
-  before do
-    @subdomain = subdomain
-    @account = current_account(subdomain)
-  end
-
-  # View all jobs
-  get '/' do
-    all_jobs = current_jobs(@subdomain)
-    @jobs = []
-
-    expiry_days = @account.job_expiry.to_i
-
-    if expiry_days == 0
-      @jobs = all_jobs
-    else
-      all_jobs.each do |job|
-        next if job.paid == false
-        job_date = Time.parse(job.date)
-        today = Time.now
-        diff = ((today - job_date) / 86400).round
-        @jobs.append(job) if diff < expiry_days
-      end
-    end
-
-    @jobs = @jobs.reverse()
-
-    erb :"board/jobs", :layout => :"board/layout"
-  end
-
-  # New job form
-  get '/jobs/new' do
-    @markdown_template = "\r\n\r\n## Responsibilities\r\n- List the job responsibilities out \r\n\r\n## Requirements\r\n- List the job requirements out \r\n\r\n## Company Background\r\n"
-    @job = OpenStruct.new()
-    erb :"board/new", :layout => :"board/layout"
-  end
-
-  # Create a new job
-  post '/jobs/create' do
-    store = YAML::Store.new "./data/jobs-#{@subdomain}.store"
-
-    # Check if job already exists
-    date = Time.now
-    combined_string = params['position'] + '-' + params['company-name'] + '-' + date.strftime('%s')
-    @job_slug = create_slug(combined_string)
-
-    existing_job = store.transaction { store.fetch(@job_slug, false) }
-
-    if existing_job
-      erb :"board/duplicate_job", :layout => :"board/layout"
-    else
-      if @account.job_price.to_i > 0
-        paid = false
-      else
-        paid = true
-      end
-
-      @jid = SecureRandom.uuid
-
-      job = OpenStruct.new(
-        position: params["position"],
-        description: params["description"],
-        application: params["application"],
-        company_name: params["company-name"],
-        location: params["location"],
-        company_url: params["company-url"],
-        contact: params["contact"],
-        owner: params["owner"],
-        edit_id: @jid,
-        date: date.to_s,
-        paid: paid,
-        slug: @job_slug
-      )
-
-      add_job(@subdomain, job)
-
-      if @account.job_price.to_i > 0
-        redirect "/jobs/#{@job_slug}/pay"
-      else
-        redirect "/jobs/#{@job_slug}/confirm"
-      end
-
-    end
-  end
-
-  # Page with form to search jobs
-  get '/search' do
-    erb :"board/search", :layout => :"board/layout"
-  end
-
-  # Search jobs post route
-  post '/search' do
-    # Need to convert multiple words to substring
-    search_term = params['query']
-
-    job_slug = params['job']
-    @all_jobs = current_jobs(@subdomain)
-    @jobs = []
-
-    @all_jobs.each do |job|
-      if job.position.include? search_term or job.description.include? search_term or job.location.include? search_term or job.company_name.include? search_term
-        @jobs.append(job)
-      end
-    end
-
-    erb :"board/search", :layout => :"board/layout"
-  end
-
-  # View a single job
-  get '/jobs/:job' do
-    job_slug = params['job']
-    @job = current_job(@subdomain, job_slug)
-
-    erb :"board/job", :layout => :"board/layout"
-  end
-
-  get '/jobs/:job/pay' do
-    @job_slug = params['job']
-
-    erb :"board/payment", :layout => :"board/layout"
-  end
-
-  # Pay for a job posting
-  post '/jobs/:job/pay' do
-    job_slug = params['job']
-    origin = request_headers['origin']
-    stripe_amount = @account.job_price.to_i * 100
-    stripe_id = @account.stripe_id
-    platform_fee = (stripe_amount * 0.079).round + 30
-
-    session = Stripe::Checkout::Session.create(
-      payment_method_types: ['card'],
-      line_items: [{
-        name: 'Job posting',
-        amount: stripe_amount,
-        currency: 'usd',
-        quantity: 1
-      }],
-      payment_intent_data: {
-        application_fee_amount: platform_fee,
-        on_behalf_of: stripe_id,
-        transfer_data: {
-          destination: stripe_id,
-        },
-      },
-      success_url: "#{origin}/jobs/#{job_slug}/confirm",
-      cancel_url: "#{origin}/jobs/#{job_slug}/problem",
-    )
-
-    { id: session.id }.to_json
-  end
-
-  # Give user edit job link and confirmation details
-  get '/jobs/:job/confirm' do
-    @job_slug = params['job']
-    job = current_job(@subdomain, @job_slug)
-    @jid = job.edit_id
-
-    # Mark job as paid
-    job.paid = true
-
-    store = YAML::Store.new "./data/jobs-#{@subdomain}.store"
-    store.transaction do
-      store[@job_slug] = job
-    end
-
-    erb :"board/confirmation", :layout => :"board/layout"
-  end
-
-  # Problem with CC page
-  get '/jobs/:job/problem' do
-    @account_slug = @account.slug
-    @job_slug = params['job']
-    erb :"board/problem", :layout => :"board/layout"
-  end
-
-  # Unique link to edit an existing job
-  get '/jobs/:job/:edit_id/edit' do
-    job_slug = params['job']
-    @job = current_job(@subdomain, job_slug)
-
-    if @job.edit_id == params['edit_id']
-      erb :"board/edit", :layout => :"board/layout"
-    else
-      redirect "/"
-    end
-  end
-
-  # Update existing job
-  patch '/jobs/:job/:edit_id/update' do
-
-    # Find job
-    job_slug = params['job']
-    job = current_job(@subdomain, job_slug)
-
-    if job.edit_id == params['edit_id']
-      # replace values
-      job.position = params["position"]
-      job.description = params["description"]
-      job.application = params["application"]
-      job.company_name = params["company-name"]
-      job.location = params["location"]
-      job.company_url = params["company-url"]
-      job.contact = params["contact"]
-      job.owner = params["owner"]
-
-      # save job
-      store = YAML::Store.new "./data/jobs-#{@subdomain}.store"
-      store.transaction do
-        store[job_slug] = job
-      end
-
-      redirect "/jobs/#{job_slug}"
-    else
-      redirect "/"
-    end
-  end
-end
-
 
 
 # 404 and 500 route handlers

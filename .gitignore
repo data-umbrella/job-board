@@ -1,5 +1,6 @@
 test/
 data/
+public/logos/
 
 .DS_Store
 .env

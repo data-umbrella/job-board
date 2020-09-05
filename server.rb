@@ -165,11 +165,11 @@ def send_password_reset_email(email, password)
   mg_client.send_message 'mg.tryferret.com', mb_obj
 end
 
-def send_job_confirmation_email(email, job_price, job_slug, job_id, domain_route)
+def send_job_confirmation_email(email, account_name, job_price, job_slug, job_id, domain_route)
   mg_client = Mailgun::Client.new ENV['MAILGUN_API_KEY']
   mb_obj = Mailgun::MessageBuilder.new()
 
-  mb_obj.from("support@tryferret.com", {"first" => "Ferret", "last" => "Team"})
+  mb_obj.from("support@tryferret.com", {"first" => account_name})
   if settings.development?
     mb_obj.add_recipient :to, 'me@tyshaikh.com'
   else
@@ -183,7 +183,7 @@ def send_job_confirmation_email(email, job_price, job_slug, job_id, domain_route
   end
 
   mb_obj.subject "Thanks for submitting a job!"
-  mb_obj.body_html "#{price_message}<p>If you want to edit your job posting: #{domain_route}/jobs/#{job_slug}/#{job_id}/edit</a>. Do not share it with anyone else outside of your company!</p><p>You can view your public listing here: #{domain_route}/jobs/#{job_slug}.</p><p>Thank you!</p>"
+  mb_obj.body_html "#{price_message}<p>You can view your public listing here: #{domain_route}/jobs/#{job_slug}.</p><p>If you want to edit your job posting: #{domain_route}/jobs/#{job_slug}/#{job_id}/edit</a>. Do not share it with anyone else outside of your company!</p><p>Thank you!</p>"
 
   mg_client.send_message 'mg.tryferret.com', mb_obj
 end
@@ -300,7 +300,7 @@ def confirm_job_post(slug)
   domain_route = "#{host}#{@other_host_route}"
 
   # Send confirmation email
-  send_job_confirmation_email(job.contact, @account.job_price, @job_slug, @jid, domain_route)
+  send_job_confirmation_email(job.contact, @account.org_name, @account.job_price, @job_slug, @jid, domain_route)
 
   # Mark job as paid
   job.paid = true

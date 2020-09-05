@@ -44,7 +44,12 @@
   <body class="">
     <nav class="flex items-center justify-between flex-wrap bg-white p-6 w-3/4 mx-auto text-xl lg:text-base">
       <div class="flex items-center flex-shrink-0 text-gray-600 mr-6">
-        <a href="/">
+        <% if @other_host %>
+          <a href="/">
+        <% else %>
+          <a href="/board/<%= @account.slug %>">
+        <% end %>
+
         <!-- Logo or name  -->
         <% if (@account.logo) and (!@account.logo.empty?) %>
           <img src="/logos/<%= @account.logo %>" alt="" style="max-width: 200px; max-height: 100px">
@@ -55,11 +60,19 @@
         <% if (@account.homepage) and (!@account.homepage.empty?) %>
           <a href="<%= @account.homepage %>" target="_blank" class="inline-block px-4 py-2 leading-none font-medium hover:text-gray-500 mt-0">About Us</a>
         <% end %>
+
+
         </a>
       </div>
       <div class="block lg:flex lg:items-center lg:w-auto justify-end">
         <div>
-          <a href="/search" class="inline-block px-4 py-2 leading-none border rounded text-gray border-gray hover:border-transparent hover:text-gray-600 hover:bg-white mt-0">Search Jobs</a>
+
+          <% if @other_host %>
+            <a href="/search" class="inline-block px-4 py-2 leading-none border rounded text-gray border-gray hover:border-transparent hover:text-gray-600 hover:bg-white mt-0">Search Jobs</a>
+          <% else %>
+            <a href="/board/<%= @account.slug %>/search" class="inline-block px-4 py-2 leading-none border rounded text-gray border-gray hover:border-transparent hover:text-gray-600 hover:bg-white mt-0">Search Jobs</a>
+          <% end %>
+
         </div>
       </div>
     </nav>

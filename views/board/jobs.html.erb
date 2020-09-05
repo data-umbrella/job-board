@@ -12,7 +12,12 @@
     <div class="text-3xl lg:text-2xl text-gray-600 mb-6 max-w-3xl m-auto">
       <%= @account.org_bio %>
     </div>
-    <a href="jobs/new">
+
+      <% if @other_host %>
+        <a href="jobs/new">
+      <% else %>
+        <a href="<%= @account.slug %>/jobs/new">
+      <% end %>
       <button class="bg-blue-500 hover:bg-blue-700 text-2xl lg:text-xl text-white font-bold py-2 px-4 rounded">
         Post a job
       </button>
@@ -28,9 +33,13 @@
     </p>
   <% elsif @jobs %>
     <% @jobs.each_with_index do |job, index| %>
-      <a href="jobs/<%= job.slug %>">
-        <%= erb :'shared/job_card', locals: { job: job } %>
-      </a>
+      <% if @other_host %>
+        <a href="jobs/<%= job.slug %>">
+      <% else %>
+        <a href="<%= params['account'] %>/jobs/<%= job.slug %>">
+      <% end %>
+          <%= erb :'shared/job_card', locals: { job: job } %>
+        </a>
     <% end %>
   <% end %>
 </section>

@@ -1,7 +1,10 @@
+
 <div class="rounded shadow my-8 bg-white w-2/3 p-10 mx-auto">
+
   <div class="font-bold text-2xl mb-4">
     Thanks for submitting a job!
   </div>
+
   <% if @account.job_price.to_i > 0 %>
   <div class="markdown-text mb-2 text-xl lg:text-base">
     <p>
@@ -10,21 +13,48 @@
   </div>
   <% end %>
 
-  <div class="markdown-text mb-8 text-xl lg:text-base">
-    <p>
-      In case you want to edit your job posting, <a href="/jobs/<%= @job_slug %>/<%= @jid %>/edit" target="_blank">here is a private link to do so</a>. Please save this link and do not share it with anyone else outside of your company!
-    </p>
-  </div>
-  <div class="flex items-center justify-between">
-    <a href="/jobs/<%= @job_slug %>" target="_blank">
-      <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-        View your job posting
-      </button>
-    </a>
-    <a href="/" target="_blank">
-      <button class="bg-transparent hover:bg-blue-500 text-blue-700 hover:text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline border border-blue-500 hover:border-transparent">
-        Go to the home page
-      </button>
-    </a>
-  </div>
+  <% if @other_host %>
+    <div class="markdown-text mb-2 text-xl lg:text-base">
+      <p>
+        In case you want to edit your job posting, <a href="/jobs/<%= @job_slug %>/<%= @jid %>/edit" target="_blank">here is a private link to do so</a>. Please save this link and do not share it with anyone else outside of your company!
+      </p>
+    </div>
+
+    <div class="markdown-text mb-2 text-xl lg:text-base">
+      <p>
+        You can view <a href="/jobs/<%= @job_slug %>" target="_blank">your public job posting here</a>.
+      </p>
+    </div>
+
+    <div class="markdown-text mb-2 text-xl lg:text-base">
+      <p>
+        Or go back to <a href="/" target="_blank">the job board home page</a>.
+      </p>
+    </div>
+  <% else %>
+
+    <div class="markdown-text mb-8 text-xl lg:text-base">
+      <p>
+        In case you want to edit your job posting, <a href="/board/<%= @account_slug %>/jobs/<%= @job_slug %>/<%= @jid %>/edit" target="_blank">here is a private link to do so</a>. Please save this link and do not share it with anyone else outside of your company!
+      </p>
+    </div>
+
+    <div class="flex items-center justify-between">
+
+      <a href="/board/<%= @account_slug %>/jobs/<%= @job_slug %>" target="_blank">
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+          View your job posting
+        </button>
+      </a>
+
+      <a href="/board/<%= @account_slug %>" target="_blank">
+        <button class="bg-transparent hover:bg-blue-500 text-blue-700 hover:text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline border border-blue-500 hover:border-transparent">
+          Go to the home page
+        </button>
+      </a>
+
+    </div>
+
+  <% end %>
+
 </div>

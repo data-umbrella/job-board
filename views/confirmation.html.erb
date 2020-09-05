@@ -4,17 +4,25 @@
   </div>
   <div class="markdown-text mb-2">
     <p>
-      You can start adding jobs and customizing your job board via <a href="admin/<%= @slug %>" target="_blank">the admin dashboard</a>.
+      Setting up a new job board is quick and easy.
+    </p>
+    <p>
+      To start adding jobs and customizing the board settings, go to your dashboard.
+    </p>
+    <p>
+      To see what visitors will see, hop over to your public job board.
     </p>
   </div>
-  <div class="markdown-text mb-2">
-    <p>
-      You can watch video tutorials that explain all the features <a href="/docs" target="_blank">on our documentation hub</a>.
-    </p>
-  </div>
-  <div class="markdown-text mb-2">
-    <p>
-      You can access your public job board <a href="board/<%= @slug %>" target="_blank">right here</a>.
-    </p>
+  <div class="flex items-center justify-between">
+    <a href="admin/<%= @slug %>" target="_blank">
+      <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+        Access your dashboard
+      </button>
+    </a>
+    <a href="board/<%= @slug %>" target="_blank">
+      <button class="bg-transparent hover:bg-blue-500 text-blue-700 hover:text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline border border-blue-500 hover:border-transparent">
+        View your job board
+      </button>
+    </a>
   </div>
 </div>

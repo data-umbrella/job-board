@@ -192,26 +192,7 @@ host_names.each do |host|
     # View all jobs
     get '/' do
       account_slug = @account.slug
-      all_jobs = current_jobs(account_slug)
-      @jobs = []
-
-      account = current_account(account_slug)
-      expiry_days = account.job_expiry.to_i
-
-      if expiry_days == 0
-        @jobs = all_jobs
-      else
-        all_jobs.each do |job|
-          next if job.paid == false
-          job_date = Time.parse(job.date)
-          today = Time.now
-          diff = ((today - job_date) / 86400).round
-          @jobs.append(job) if diff < expiry_days
-        end
-      end
-
-      @jobs = @jobs.reverse()
-
+      @jobs = get_all_jobs(account_slug)
       erb :"board/jobs", :layout => :"board/layout"
     end
 
@@ -578,29 +559,32 @@ end
   end
 end
 
-# View all jobs
-get '/board/:account' do
-  account_slug = params['account']
-  all_jobs = current_jobs(account_slug)
-  @jobs = []
+def get_all_jobs(slug)
+  all_jobs = current_jobs(slug)
+  jobs = []
 
-  account = current_account(account_slug)
+  account = current_account(slug)
   expiry_days = account.job_expiry.to_i
 
   if expiry_days == 0
-    @jobs = all_jobs
+    jobs = all_jobs
   else
     all_jobs.each do |job|
       next if job.paid == false
       job_date = Time.parse(job.date)
       today = Time.now
       diff = ((today - job_date) / 86400).round
-      @jobs.append(job) if diff < expiry_days
+      jobs.append(job) if diff < expiry_days
     end
   end
 
-  @jobs = @jobs.reverse()
+  return jobs.reverse()
+end
 
+# View all jobs
+get '/board/:account' do
+  account_slug = params['account']
+  @jobs = get_all_jobs(account_slug)
   erb :"board/jobs", :layout => :"board/layout"
 end
 

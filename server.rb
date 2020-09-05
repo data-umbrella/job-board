@@ -129,6 +129,10 @@ def add_job(account_slug, job)
   end
 end
 
+####################
+### MAILER FUNCTIONS
+####################
+
 def send_welcome_email(email)
   mg_client = Mailgun::Client.new ENV['MAILGUN_API_KEY']
   mb_obj = Mailgun::MessageBuilder.new()
@@ -161,7 +165,32 @@ def send_password_reset_email(email, password)
   mg_client.send_message 'mg.tryferret.com', mb_obj
 end
 
+def send_job_confirmation_email(email, job_price, job_slug, job_id, domain_route)
+  mg_client = Mailgun::Client.new ENV['MAILGUN_API_KEY']
+  mb_obj = Mailgun::MessageBuilder.new()
+
+  mb_obj.from("support@tryferret.com", {"first" => "Ferret", "last" => "Team"})
+  if settings.development?
+    mb_obj.add_recipient :to, 'me@tyshaikh.com'
+  else
+    mb_obj.add_recipient :to, email
+  end
+
+  if job_price.to_i > 0
+    price_message = "<p>The job you posted cost $#{job_price}.<p>"
+  else
+    price_message = ""
+  end
+
+  mb_obj.subject "Thanks for submitting a job!"
+  mb_obj.body_html "#{price_message}<p>If you want to edit your job posting, <a href='#{domain_route}/jobs/#{job_slug}/#{job_id}/edit' target='_blank'>here is a private link to do so</a>. Do not share it with anyone else outside of your company!</p><p>You can <a href='#{domain_route}/jobs/#{job_slug}' target='_blank'> view your public job posting here</a>.</p><p>Thank you!</p>"
+
+  mg_client.send_message 'mg.tryferret.com', mb_obj
+end
+
+##########################
 ### PUBLIC BOARD FUNCTIONS
+##########################
 
 def get_job_edit_page(slug)
   job_slug = params['job']
@@ -266,6 +295,13 @@ def confirm_job_post(slug)
   job = current_job(slug, @job_slug)
   @jid = job.edit_id
 
+  # Get origin url
+  host = request.host
+  domain_route = "#{host}#{@other_host_route}"
+
+  # Send confirmation email
+  send_job_confirmation_email(job.contact, @account.job_price, @job_slug, @jid, domain_route)
+
   # Mark job as paid
   job.paid = true
 
@@ -293,6 +329,7 @@ end
 def pay_stripe_invoice(slug)
   job_slug = params['job']
   origin = request_headers['origin']
+  p "origin", origin
   stripe_amount = @account.job_price.to_i * 100
   stripe_id = @account.stripe_id
   platform_fee = (stripe_amount * 0.079).round + 30
@@ -312,8 +349,8 @@ def pay_stripe_invoice(slug)
         destination: stripe_id,
       },
     },
-    success_url: "#{origin}/board/#{slug}/jobs/#{job_slug}/confirm",
-    cancel_url: "#{origin}/board/#{slug}/jobs/#{job_slug}/problem",
+    success_url: "#{origin}#{@other_host_route}/jobs/#{job_slug}/confirm",
+    cancel_url: "#{origin}#{@other_host_route}/jobs/#{job_slug}/problem",
   )
 
   { id: session.id }.to_json
@@ -359,9 +396,9 @@ def update_existing_job(slug)
       store[job_slug] = job
     end
 
-    redirect "/board/#{slug}/jobs/#{job_slug}"
+    redirect "#{@other_host_route}/jobs/#{job_slug}"
   else
-    redirect "/board/#{slug}"
+    redirect "#{@other_host_route}"
   end
 
 end

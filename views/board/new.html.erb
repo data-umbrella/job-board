@@ -31,13 +31,14 @@
   </form>
 </section>
 
+<!-- Link inputs with preview -->
 <script>
   // Add date
   const dateEl = document.querySelector('#preview-date')
   const date = moment().format('MMM D');
   dateEl.innerText = date
 
-  // Add position
+  // Add text inputs
   const textInputs = Array.from(document.querySelectorAll('input'));
   const textBoxes = Array.from(document.querySelectorAll('textarea'));
   const inputs = textInputs.concat(textBoxes);
@@ -52,6 +53,7 @@
 
 </script>
 
+<!-- Refresh markdown preview -->
 <script>
 
   let descBox = new SimpleMDE({
@@ -70,6 +72,7 @@
 </script>
 
 
+<!-- Prevent large files from being uploaded -->
 <script>
   const uploadField = document.getElementById("logo-upload");
 
@@ -80,4 +83,23 @@
     };
   };
 
+</script>
+
+<!-- Save form data in local storage -->
+<script>
+  const savedInputs = Array.from(document.querySelectorAll('input'));
+  savedInputs.forEach(input => persistInput(input))
+
+  function persistInput(input) {
+    var key = "input-" + input.id;
+    var storedValue = localStorage.getItem(key);
+
+    if (storedValue) {
+      input.value = storedValue;
+    }
+
+    input.addEventListener('input', function () {
+      localStorage.setItem(key, input.value);
+    });
+  }
 </script>

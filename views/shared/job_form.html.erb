@@ -24,7 +24,7 @@
         <label class="block text-gray-700 lg:text-sm font-bold mb-2">
           Link to Application
         </label>
-        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" type="url" name="application" value="<%= @job.application %>" required>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="application" type="url" name="application" value="<%= @job.application %>" required>
         <p class="text-gray-600 text-sm lg:text-xs italic">Please share the application URL.</p>
       </div>
 
@@ -62,7 +62,7 @@
       <label class="block text-gray-700 lg:text-sm font-bold mb-2">
         Company Website
       </label>
-      <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="original-website" type="url" name="company-url" value="<%= @job.company_url %>">
+      <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="website" type="url" name="company-url" value="<%= @job.company_url %>">
       <p class="text-gray-600 text-sm lg:text-xs italic">You can link to your homepage, about page or careers page. This field is optional.</p>
     </div>
 
@@ -86,7 +86,7 @@
       <label class="block text-gray-700 lg:text-sm font-bold mb-2">
         Your Name
       </label>
-      <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="contact" type="text" name="owner" value="<%= @job.owner %>" required>
+      <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="owner" type="text" name="owner" value="<%= @job.owner %>" required>
       <p class="text-gray-600 text-sm lg:text-xs italic">Stays private, used for record keeping.</p>
     </div>
     <div class="mb-4">
@@ -139,5 +139,6 @@
     <div class="mb-4 markdown-text" id="preview-description">
       Your job description goes here.
     </div>
+
   </div>
 </div>

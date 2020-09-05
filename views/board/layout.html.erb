@@ -44,11 +44,7 @@
   <body class="">
     <nav class="flex items-center justify-between flex-wrap bg-white p-6 w-3/4 mx-auto text-xl lg:text-base">
       <div class="flex items-center flex-shrink-0 text-gray-600 mr-6">
-        <% if @other_host %>
-          <a href="/">
-        <% else %>
-          <a href="/board/<%= @account.slug %>">
-        <% end %>
+        <a href="<%= @other_host ? "/" : @other_host_route %>
 
         <!-- Logo or name  -->
         <% if (@account.logo) and (!@account.logo.empty?) %>
@@ -66,13 +62,7 @@
       </div>
       <div class="block lg:flex lg:items-center lg:w-auto justify-end">
         <div>
-
-          <% if @other_host %>
-            <a href="/search" class="inline-block px-4 py-2 leading-none border rounded text-gray border-gray hover:border-transparent hover:text-gray-600 hover:bg-white mt-0">Search Jobs</a>
-          <% else %>
-            <a href="/board/<%= @account.slug %>/search" class="inline-block px-4 py-2 leading-none border rounded text-gray border-gray hover:border-transparent hover:text-gray-600 hover:bg-white mt-0">Search Jobs</a>
-          <% end %>
-
+          <a href="<%= @other_host_route %>/search" class="inline-block px-4 py-2 leading-none border rounded text-gray border-gray hover:border-transparent hover:text-gray-600 hover:bg-white mt-0">Search Jobs</a>
         </div>
       </div>
     </nav>

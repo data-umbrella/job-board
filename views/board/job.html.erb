@@ -14,11 +14,7 @@
 <section class="mt-4">
   <div>
     <p class="text-red-500 font-semibold">
-      <% if @other_host %>
-      <a href="/">
-      <% else %>
-      <a href="/board/<%= @account.slug %>">
-      <% end %>
+      <a href="<%= @other_host ? "/" : @other_host_route %>">
         &larr; Back to all jobs
       </a>
     </p>

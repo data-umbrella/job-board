@@ -2,7 +2,17 @@
 <html lang="en" dir="ltr">
   <head>
 
-    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <!-- Parent GA Code -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-117123575-7"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-117123575-7');
+    </script>
+
+    <!-- User GA Code -->
     <% if (@account.google_analytics) and (!@account.google_analytics.empty?) %>
     <script async src="https://www.googletagmanager.com/gtag/js?id=<%= @account.google_analytics %>"></script>
     <script>

@@ -57,7 +57,7 @@
       <div class="block lg:flex lg:items-center lg:w-auto justify-end">
         <!-- Logo or name  -->
         <a
-          href="<%= (@account.homepage) and (!@account.homepage.empty?) ?  @account.homepage : '/' %>"
+          href="<%= (@account.homepage) and (!@account.homepage.empty?) ?  @account.homepage : @other_host_route %>"
           target="<%= (@account.homepage) and (!@account.homepage.empty?) ? '_blank' : '_self' %>"
           class="inline-block px-4 py-2 leading-none font-medium hover:text-gray-500 mt-0">
           <% if (@account.logo) and (!@account.logo.empty?) %>

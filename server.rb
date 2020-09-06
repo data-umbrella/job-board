@@ -144,7 +144,7 @@ def send_welcome_email(email)
     mb_obj.add_recipient :to, email
   end
   mb_obj.subject "Welcome to Ferret!"
-  mb_obj.body_html "<p>Thanks for creating a job board with us!</p> <p>We have video tutorials and documentation to help you get started, you can view them here: http://www.tryferret.com/docs</p> <p>If you have any questions or feedback, please reach out: support@tryferret.com</p>"
+  mb_obj.body_html "<p>Thanks for creating a job board with us!</p><p>We have video tutorials and documentation to help you get started, <a href='http://www.tryferret.com/docs' target='_blank'>you can view them here<a/>.</p> <p>If you have any questions or feedback, please reach out: support@tryferret.com</p>"
 
   mg_client.send_message 'mg.tryferret.com', mb_obj
 end
@@ -160,7 +160,7 @@ def send_password_reset_email(email, password)
     mb_obj.add_recipient :to, email
   end
   mb_obj.subject "Password reset instructions!"
-  mb_obj.body_html "<p>You recently tried to reset your password.</p> <p>We have auto-generated one for your convenience: <strong>#{password}<strong></p> <p>If you have any questions or feedback, please reach out: support@tryferret.com</p>"
+  mb_obj.body_html "<p>You recently tried to reset your password.</p> <p>We have auto-generated one for your convenience: <strong>#{password}<strong></p> <p>If you did not request a new password, please reach out: support@tryferret.com</p>"
 
   mg_client.send_message 'mg.tryferret.com', mb_obj
 end
@@ -183,7 +183,7 @@ def send_job_confirmation_email(email, account_name, job_price, job_slug, job_id
   end
 
   mb_obj.subject "Thanks for submitting a job!"
-  mb_obj.body_html "#{price_message}<p>You can view your public listing here: #{domain_route}/jobs/#{job_slug}.</p><p>If you want to edit your job posting: #{domain_route}/jobs/#{job_slug}/#{job_id}/edit</a>. Do not share it with anyone else outside of your company!</p><p>Thank you!</p>"
+  mb_obj.body_html "#{price_message}<p><a href='http://#{domain_route}/jobs/#{job_slug}' target='_blank'>Click here to view your public listing<a/>.</p> <p>If you want to edit your job posting, <a href='http://#{domain_route}/jobs/#{job_slug}/#{job_id}/edit' target='_blank'>use this link<a/>. Do not share this link with anyone else outside of your company!</p><p>Thank you and we hope you come back again!</p>"
 
   mg_client.send_message 'mg.tryferret.com', mb_obj
 end

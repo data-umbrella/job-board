@@ -7,4 +7,5 @@ tmp/
 .env
 config.ru
 README.md
+JOB-BOARD.md
 puma.rb

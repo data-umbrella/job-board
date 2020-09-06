@@ -13,7 +13,7 @@
 
     <div class="mb-4">
       <label class="block text-gray-700 text-sm font-bold mb-2">
-        Account Name
+        Name of job board or organization
       </label>
       <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" name="org_name" type="text" value="<%= @account.org_name %>" required>
       <p class="text-gray-600 text-xs italic">The name of your organization or business.</p>
@@ -21,17 +21,15 @@
 
     <div class="mb-4">
       <label class="block text-gray-700 text-sm font-bold mb-2">
-        Summary
+        Brief description about your board
       </label>
       <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" name="org_bio" type="text" rows="10"><%= @account.org_bio %></textarea>
       <p class="text-gray-600 text-xs italic">Provide a few sentences to summarize what your organization does and what jobs people can find here.</p>
     </div>
 
-
-
     <div class="mb-4">
       <label class="block text-gray-700 text-sm font-bold mb-2">
-        Posting Offer
+        What do companies get when posting a job
       </label>
       <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" name="posting_offer" type="text" rows="10"><%= @account.posting_offer %></textarea>
       <p class="text-gray-600 text-xs italic">Explain what paying for a job posting gets someone, for example, "Your job listing will be posted for 90 days, shared to our 2k+ Twitter followers and 700+ newsletter subscribers."</p>
@@ -39,60 +37,76 @@
 
     <div class="mb-4">
       <label class="block text-gray-700 text-sm font-bold mb-2">
-        Font Choice
+        Change the default font choice
       </label>
-      <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" name="font_family">
-        <% @fonts = ["", "Fira Sans", "Montserrat", "Poppins", "Raleway", "Rubik"] %>
-        <% @fonts.each do |font| %>
-          <% if @account.font_family == font %>
-            <option value="<%= font %>" selected><%= font == "" ? "Default" : font %></option>
-          <% else %>
-            <option value="<%= font %>"><%= font == "" ? "Default" : font %></option>
+      <div class="relative w-32">
+        <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" name="font_family">
+          <% @fonts = ["", "Fira Sans", "Montserrat", "Poppins", "Raleway", "Rubik"] %>
+          <% @fonts.each do |font| %>
+            <% if @account.font_family == font %>
+              <option value="<%= font %>" selected><%= font == "" ? "Default" : font %></option>
+            <% else %>
+              <option value="<%= font %>"><%= font == "" ? "Default" : font %></option>
+            <% end %>
           <% end %>
-        <% end %>
-      </select>
+        </select>
+        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700" style="bottom: 8px; right: 5px">
+          <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+        </div>
+      </div>
       <p class="text-gray-600 text-xs italic">You can choose a different font.</p>
     </div>
 
     <div class="mb-4">
       <label class="block text-gray-700 text-sm font-bold mb-2">
-        Accent Color
+        Change the background color
       </label>
-      <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" name="accent_color">
-        <% @colors = ["Gray", "Red", "Orange", "Yellow", "Green", "Teal", "Blue", "Indigo", "Purple", "Pink"] %>
-        <% @colors.each do |color| %>
-          <% color_val = color.downcase %>
-          <% if @account.accent_color == color_val %>
-            <option value="<%= color_val %>" selected><%= color %></option>
-          <% else %>
-            <option value="<%= color_val %>"><%= color %></option>
+      <div class="relative w-32">
+        <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" name="bg_color">
+          <% @colors = ["White", "Gray", "Red", "Orange", "Yellow", "Green", "Teal", "Blue", "Indigo", "Purple", "Pink"] %>
+          <% @colors.each do |color| %>
+            <% color_val = color.downcase %>
+            <% if @account.bg_color == color_val %>
+              <option value="<%= color_val %>" selected><%= color %></option>
+            <% else %>
+              <option value="<%= color_val %>"><%= color %></option>
+            <% end %>
           <% end %>
-        <% end %>
-      </select>
-      <p class="text-gray-600 text-xs italic">You can choose a different color for buttons and links.</p>
-    </div>
+        </select>
+        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700" style="bottom: 8px; right: 5px">
+          <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+        </div>
+      </div>
 
-    <div class="mb-4">
-      <label class="block text-gray-700 text-sm font-bold mb-2">
-        Background Color
-      </label>
-      <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" name="bg_color">
-        <% @colors = ["White", "Gray", "Red", "Orange", "Yellow", "Green", "Teal", "Blue", "Indigo", "Purple", "Pink"] %>
-        <% @colors.each do |color| %>
-          <% color_val = color.downcase %>
-          <% if @account.bg_color == color_val %>
-            <option value="<%= color_val %>" selected><%= color %></option>
-          <% else %>
-            <option value="<%= color_val %>"><%= color %></option>
-          <% end %>
-        <% end %>
-      </select>
       <p class="text-gray-600 text-xs italic">You can choose a different background color. Just remember to pair the accent and background colors together.</p>
     </div>
 
     <div class="mb-4">
       <label class="block text-gray-700 text-sm font-bold mb-2">
-        Job Expiration Days
+        Change the accent color
+      </label>
+      <div class="relative w-32">
+        <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" name="accent_color">
+          <% @colors = ["Gray", "Red", "Orange", "Yellow", "Green", "Teal", "Blue", "Indigo", "Purple", "Pink"] %>
+          <% @colors.each do |color| %>
+            <% color_val = color.downcase %>
+            <% if @account.accent_color == color_val %>
+              <option value="<%= color_val %>" selected><%= color %></option>
+            <% else %>
+              <option value="<%= color_val %>"><%= color %></option>
+            <% end %>
+          <% end %>
+        </select>
+        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700" style="bottom: 8px; right: 5px">
+          <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+        </div>
+      </div>
+      <p class="text-gray-600 text-xs italic">You can choose a different color for buttons and links.</p>
+    </div>
+
+    <div class="mb-4">
+      <label class="block text-gray-700 text-sm font-bold mb-2">
+        Jobs expire after X days
       </label>
       <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" name="job_expiry" type="number" value="<%= @account.job_expiry %>">
       <p class="text-gray-600 text-xs italic">After X days the jobs will no longer be listed. Set to 0 for no expiration.</p>
@@ -100,10 +114,10 @@
 
     <div class="mb-4">
       <label class="block text-gray-700 text-sm font-bold mb-2">
-        Homepage Link
+        Link to your homepage
       </label>
       <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" name="homepage" type="url" value="<%= @account.homepage %>">
-      <p class="text-gray-600 text-xs italic">This will add a link on the top navigation menu to your main website or homepage. This is optional</p>
+      <p class="text-gray-600 text-xs italic">This will add a link on the top navigation menu to your main website or homepage. This is optional.</p>
     </div>
 
     <div class="mb-4">

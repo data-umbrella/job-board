@@ -41,29 +41,34 @@
     <title>Job Board - <%= @account.org_name %></title>
 
   </head>
-  <body class="">
-    <nav class="flex items-center justify-between flex-wrap bg-white p-6 w-3/4 mx-auto text-xl lg:text-base">
-      <div class="flex items-center flex-shrink-0 text-gray-600 mr-6">
-        <a href="<%= @other_host ? "/" : @other_host_route %>">
-
-        <!-- Logo or name  -->
-        <% if (@account.logo) and (!@account.logo.empty?) %>
-          <img src="/logos/<%= @account.logo %>" alt="" style="max-width: 200px; max-height: 100px">
-        <% else %>
-          <span class="font-semibold text-xl tracking-tight"><%= @account.org_name %></span>
-        <% end %>
-
-        <% if (@account.homepage) and (!@account.homepage.empty?) %>
-          <a href="<%= @account.homepage %>" target="_blank" class="inline-block px-4 py-2 leading-none font-medium hover:text-gray-500 mt-0">About Us</a>
-        <% end %>
-
-
+  <body class="bg-<%= @account.bg_color ? "#{@account.bg_color}-100" : 'white' %>">
+    <nav class="flex items-center justify-between flex-wrap p-6 w-3/4 mx-auto text-xl lg:text-base">
+      <div class="flex items-center flex-shrink-0 ">
+        <a href="<%= @other_host ? "/" : @other_host_route %>" class="mr-6 text-gray-600">
+          <span class="font-semibold text-xl tracking-tight">Job Board</span>
         </a>
+        <div>
+          <a href="<%= @other_host_route %>/search" class="inline-block px-4 py-2 leading-none text-gray hover:text-gray-600 mt-0 mr-2">Search jobs</a>
+        </div>
+        <div>
+          <a href="<%= @other_host ? "jobs/new" : "#{@other_host_route}/jobs/new" %>" class="inline-block px-4 py-2 leading-none text-gray hover:text-gray-600 mt-0">Post a job</a>
+        </div>
       </div>
       <div class="block lg:flex lg:items-center lg:w-auto justify-end">
-        <div>
-          <a href="<%= @other_host_route %>/search" class="inline-block px-4 py-2 leading-none border rounded text-gray border-gray hover:border-transparent hover:text-gray-600 hover:bg-white mt-0">Search Jobs</a>
-        </div>
+        <!-- Logo or name  -->
+        <a
+          href="<%= (@account.homepage) and (!@account.homepage.empty?) ? @other_host_route : @account.homepage %>"
+          target="<%= (@account.homepage) and (!@account.homepage.empty?) ? '_self' : '_blank' %>"
+          class="inline-block px-4 py-2 leading-none font-medium hover:text-gray-500 mt-0">
+          <% if (@account.logo) and (!@account.logo.empty?) %>
+          <img
+            src="/logos/<%= @account.logo %>"
+            alt="Logo"
+            style="max-width: 200px; max-height: 100px">
+          <% else %>
+          <span class=""><%= @account.org_name %></span>
+          <% end %>
+        </a>
       </div>
     </nav>
 

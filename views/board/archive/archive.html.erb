@@ -14,3 +14,6 @@
 
 
 <%= URI.parse(@account.homepage).host.gsub('www.', "") %>
+
+
+<a href="<%= @other_host ? "jobs/new" : "#{@other_host_route}/jobs/new" %>" class="inline-block px-4 py-2 leading-none border rounded text-gray border-gray hover:border-transparent hover:text-gray-600 hover:bg-white mt-0">Post a job</a>

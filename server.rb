@@ -627,6 +627,7 @@ post '/register' do
       org_bio: params['org-bio'],
       font_family: '',
       accent_color: 'blue',
+      bg_color: 'white',
       logo: '',
       domain: '',
       google_analytics: '',
@@ -898,6 +899,7 @@ patch '/admin/:account/settings/update' do
   @account.google_analytics = params["google-analytics"]
   @account.font_family = params["font_family"]
   @account.accent_color = params["accent_color"]
+  @account.bg_color = params['bg_color']
   @account.job_expiry = params["job_expiry"].to_i
   @account.posting_offer = params["posting_offer"]
 
@@ -937,6 +939,21 @@ patch '/admin/:account/settings/logo' do
       store[account_slug] = @account
     end
 
+  end
+
+  redirect "/admin/#{account_slug}/settings"
+end
+
+# Remove account logo
+delete '/admin/:account/settings/logo' do
+  account_slug = params['account']
+
+  @account.logo = ''
+
+  # save settings
+  store = YAML::Store.new "./data/accounts.store"
+  store.transaction do
+    store[account_slug] = @account
   end
 
   redirect "/admin/#{account_slug}/settings"

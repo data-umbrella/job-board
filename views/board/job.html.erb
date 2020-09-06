@@ -25,7 +25,7 @@
   <%= erb :'shared/job_card', locals: { job: @job } %>
 </section>
 
-<section class="text-3xl lg:text-base">
+<section class="text-3xl lg:text-base rounded border border-gray-300 bg-white py-2 px-8">
   <div class="mb-4">
     <p class="markdown-text"><%= @job.description %></p>
   </div>

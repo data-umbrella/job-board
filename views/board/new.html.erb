@@ -20,7 +20,7 @@
 </section>
 
 <!-- Job Listings -->
-<section class="my-12 w-full lg:w-4/5 mx-auto text-xl lg:text-base">
+<section class="my-12 mx-auto text-xl lg:text-base">
   <form method="POST" action="create" enctype="multipart/form-data">
     <%= erb :'shared/job_form', locals: { job: @job } %>
     <div class="flex items-center justify-between">
@@ -31,61 +31,16 @@
   </form>
 </section>
 
-<!-- Link inputs with preview -->
 <script>
-  // Add date
-  const dateEl = document.querySelector('#preview-date')
-  const date = moment().format('MMM D');
-  dateEl.innerText = date
-
-  // Add text inputs
-  const textInputs = Array.from(document.querySelectorAll('input'));
-  const textBoxes = Array.from(document.querySelectorAll('textarea'));
-  const inputs = textInputs.concat(textBoxes);
-  inputs.forEach(input => input.addEventListener('input', updateValue));
-
-  function updateValue(e) {
-    const id = e.target.id
-    const previewId = id.replace('original', 'preview')
-    const el = document.querySelector(`#${previewId}`)
-    el.innerHTML = e.target.value;
-  }
-
+  const accentColor = "<%= @account.accent_color %>"
+  console.log(accentColor)
 </script>
 
-<!-- Refresh markdown preview -->
-<script>
-
-  let descBox = new SimpleMDE({
-    element: document.getElementById("original-description"),
-    hideIcons: ["quote", "image",],
-    status: false,
-  });
-
-  let previewTimer = setInterval(updateMarkdown, 1000)
-
-  function updateMarkdown() {
-    const descOutput = document.querySelector('#preview-description')
-    descOutput.innerHTML = descBox.markdown(descBox.value())
-  }
-
-</script>
-
-<!-- Prevent large files from being uploaded -->
-<script>
-  const uploadField = document.getElementById("logo-upload");
-
-  uploadField.onchange = function() {
-    if(this.files[0].size > 1097152) {
-       alert("File is too big!");
-       this.value = "";
-    };
-  };
-
-</script>
+<!-- Update scripts -->
+<script src="/userJobForm.js" charset="utf-8"></script>
 
 <!-- Save form data in local storage -->
-<script>
+<!-- <script>
   const savedInputs = Array.from(document.querySelectorAll('input'));
   savedInputs.forEach(input => persistInput(input))
 
@@ -101,4 +56,4 @@
       localStorage.setItem(key, input.value);
     });
   }
-</script>
+</script> -->

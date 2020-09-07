@@ -18,6 +18,28 @@
         <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="original-description" type="text" rows="20" name="description"><%= @job.description || @markdown_template %></textarea>
         <p class="text-gray-600 text-sm lg:text-xs italic mt-2">This field uses Markdown. Click the question mark to learn how to format your text.</p>
       </div>
+
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2">
+          Job Type
+        </label>
+        <div class="relative w-40">
+          <select class="appearance-none border-2 border-gray-300 rounded w-full py-2 px-4 mb-3 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="type" name="type">
+            <% @types = ["", "Full Time", "Part Time", "Contract", "Internship", "Temporary"] %>
+            <% @types.each do |type| %>
+              <% if @job.type == type %>
+                <option value="<%= type %>" selected><%= type %></option>
+              <% else %>
+                <option value="<%= type %>"><%= type %></option>
+              <% end %>
+            <% end %>
+          </select>
+          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700" style="bottom: 8px; right: 5px">
+            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+          </div>
+        </div>
+      </div>
+
       <div class="mb-4">
         <label class="block text-gray-700 lg:text-sm font-bold mb-2">
           Link to Application

@@ -20,6 +20,29 @@
         <textarea class="appearance-none border-2 border-gray-300 rounded w-full py-2 px-4 mb-3 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="original-description" type="text" rows="20" name="description"><%= @job.description || @markdown_template %></textarea>
         <p class="text-gray-600 text-sm lg:text-xs italic mt-2">This field uses Markdown. Click the question mark to learn how to format your text.</p>
       </div>
+
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2">
+          Job Type
+        </label>
+        <div class="relative w-40">
+          <select class="appearance-none border-2 border-gray-300 rounded w-full py-2 px-4 mb-3 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="original-type" name="type">
+            <% @types = ["", "Full Time", "Part Time", "Contract", "Internship", "Temporary"] %>
+            <% @types.each do |type| %>
+              <% if @job.type == type %>
+                <option value="<%= type %>" selected><%= type %></option>
+              <% else %>
+                <option value="<%= type %>"><%= type %></option>
+              <% end %>
+            <% end %>
+          </select>
+          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700" style="bottom: 8px; right: 5px">
+            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+          </div>
+        </div>
+        <p class="text-gray-600 text-sm lg:text-xs italic mt-2">What type of job will this be. This field is optional.</p>
+      </div>
+
       <div class="mb-4">
         <label class="block text-gray-700 lg:text-sm font-bold mb-2">
           Link to Application
@@ -55,8 +78,8 @@
       <label class="block text-gray-700 lg:text-sm font-bold mb-2">
         Office Location
       </label>
-      <input class="appearance-none border-2 border-gray-300 rounded w-full py-2 px-4 mb-3 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="original-location" type="text" name="location" value="<%= @job.location %>">
-      <p class="text-gray-600 text-sm lg:text-xs italic">Please specify the city, state or country. If remote, simply put "Remote". This field is optional.</p>
+      <input class="appearance-none border-2 border-gray-300 rounded w-full py-2 px-4 mb-3 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="original-location" type="text" name="location" value="<%= @job.location %>" required>
+      <p class="text-gray-600 text-sm lg:text-xs italic">Please specify the city, state or country. If remote, simply put "Remote".</p>
     </div>
     <div class="mb-4">
       <label class="block text-gray-700 lg:text-sm font-bold mb-2">
@@ -71,7 +94,7 @@
         Company Logo
       </label>
       <input class="appearance-none border-2 border-gray-300 rounded w-full py-2 px-4 mb-3 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" name="logo" type="file" accept="image/jpg, image/jpeg, image/png, image/gif, image/tiff, image/tif, image/svg" id="logo-upload">
-      <p class="text-gray-600 text-xs italic">Please make sure the file is less than 1 MB and is either a JPG or PNG file. A logo is optional.</p>
+      <p class="text-gray-600 text-xs italic">Please make sure the file is less than 1 MB (<a href="https://www.loom.com/share/468afe6b773849fd93615b0b15b28f42" target="_blank" class="underline">resizing tutorial</a>) and is either a JPG or PNG file. A logo is optional.</p>
     </div>
 
   </div>
@@ -118,26 +141,39 @@
 
   <!-- Card Preview -->
   <div class="bg-white border rounded px-8 pt-6 pb-8 mb-4">
-    <div class="flex items-center rounded border mb-8 w-4/5 mx-auto">
-      <div class="w-3/4 px-10 py-4">
-        <p class="mb-2" id="preview-company">
+    <div class="flex items-center rounded border border-gray-300 mb-3 hover:shadow bg-white">
+      <div class="w-20 ml-4" id="preview-logo">
+        <div class="border text-center text-2xl text-gray-500 py-3 rounded">
+          <p>
+            LG
+          </p>
+        </div>
+      </div>
+      <div class="w-3/4 lg:w-4/6 px-6 py-4">
+        <p class="mb-2 text-xl lg:text-base" id="preview-company">
           Company
         </p>
-        <div class="font-bold text-xl mb-2" id="preview-position">
-          Position
+        <div class="font-bold text-2xl lg:text-xl mb-2" id="preview-position">
+          Postion
         </div>
-        <p class="text-gray-600 text-base" id="preview-location">
-          Location
+        <p class="text-gray-600 text-xl lg:text-base">
+          <span id="preview-location">Location </span> <span id="preview-type">/ Type</span>
         </p>
       </div>
       <div class="flex-1">
-        <p id="preview-date"></p>
+        <p class="text-xl lg:text-base" id="preview-date">
+          Posted Date
+        </p>
       </div>
     </div>
 
-      <!-- Job Details -->
     <div class="mb-4 markdown-text" id="preview-description">
       Your job description goes here.
+    </div>
+
+    <div class="mt-4 mb-4">
+      <div id="preview-application" class="inline-block"></div>
+      <div id="preview-company-link" class="inline-block"></div>
     </div>
 
   </div>

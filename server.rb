@@ -263,6 +263,7 @@ def create_new_job(slug, account)
       position: params["position"],
       description: params["description"],
       application: params["application"],
+      type: params["type"],
       company_name: params["company-name"],
       location: params["location"],
       company_url: params["company-url"],
@@ -385,6 +386,7 @@ def update_existing_job(slug)
     job.description = params["description"]
     job.application = params["application"]
     job.company_name = params["company-name"]
+    job.type = params["type"]
     job.location = params["location"]
     job.company_url = params["company-url"]
     job.contact = params["contact"]
@@ -804,6 +806,7 @@ post '/admin/:account/jobs/create' do
     position: params["position"],
     description: params["description"],
     application: params["application"],
+    type: params["type"],
     company_name: params["company-name"],
     location: params["location"],
     company_url: params["company-url"],
@@ -856,6 +859,7 @@ patch '/admin/:account/jobs/:job/update' do
   job.position = params["position"]
   job.description = params["description"]
   job.application = params["application"]
+  job.type = params["type"]
   job.company_name= params["company-name"]
   job.location = params["location"]
   job.company_url = params["company-url"]

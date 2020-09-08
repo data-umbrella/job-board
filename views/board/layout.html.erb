@@ -13,14 +13,14 @@
     </script>
 
     <!-- User GA Code -->
-    <% if (@account.google_analytics) and (!@account.google_analytics.empty?) %>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=<%= @account.google_analytics %>"></script>
+    <% if (@settings.google_analytics) and (!@settings.google_analytics.empty?) %>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=<%= @settings.google_analytics %>"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
 
-      gtag('config', '<%= @account.google_analytics %>');
+      gtag('config', '<%= @settings.google_analytics %>');
     </script>
     <% end %>
 
@@ -35,10 +35,10 @@
     <link rel="shortcut icon" href="/favicon.png">
 
     <!-- Choose custom font -->
-    <% if (@account.font_family) and (!@account.font_family.empty?) %>
+    <% if (@settings.font_family) and (!@settings.font_family.empty?) %>
       <style>
         body {
-          font-family: "<%= @account.font_family %>", sans-serif;
+          font-family: "<%= @settings.font_family %>", sans-serif;
         }
       </style>
     <% end %>
@@ -48,38 +48,45 @@
 
     <%= yield_content :head %>
 
-    <title>Job Board - <%= @account.org_name %></title>
+    <title>Job Board - <%= @settings.org_name %></title>
 
   </head>
-  <body class="bg-<%= @account.bg_color ? "#{@account.bg_color}-100" : 'white' %>">
+  <body class="<%= (@settings.bg_color == 'white' || @settings.bg_color.nil?) ? 'bg-white' : "bg-#{@settings.bg_color}-100" %>">
 
-    <nav class="flex items-center justify-between flex-wrap p-6 w-3/4 mx-auto text-xl lg:text-base">
+    <nav class="flex items-center justify-between flex-wrap p-6 mt-6 w-full lg:w-3/4 mx-auto text-xl lg:text-base">
       <div class="flex items-center flex-shrink-0 ">
-        <a href="<%= @other_host ? "/" : @other_host_route %>" class="mr-6 text-gray-600">
-          <span class="font-semibold text-xl tracking-tight">Job Board</span>
-        </a>
-        <div>
-          <a href="<%= @other_host_route %>/search" class="inline-block px-4 py-2 leading-none text-gray hover:text-gray-600 mt-0 mr-2">Search jobs</a>
-        </div>
-        <div>
-          <a href="<%= @other_host ? "/jobs/new" : "#{@other_host_route}/jobs/new" %>" class="inline-block px-4 py-2 leading-none text-gray hover:text-gray-600 mt-0">Post a job</a>
-        </div>
+        <p class="mr-6 text-gray-600">
+          <a href="<%= @other_host ? "/" : @other_host_route %>" class="">
+            <span class="font-semibold text-xl tracking-tight">Job Board</span>
+          </a>
+        </p>
+        <p class="inline-block px-4 py-2 leading-none text-gray hover:text-gray-600 mt-0">
+          <a href="<%= @other_host ? "/jobs/new" : "#{@other_host_route}/jobs/new" %>" class="">Post a job</a>
+        </p>
+        <p class="inline-block px-4 py-2 leading-none text-gray hover:text-gray-600 mt-0 mr-2">
+          <a href="<%= @other_host_route %>/search" class="">Search jobs</a>
+        </p>
+        <p class="inline-block px-4 py-2 leading-none text-gray hover:text-gray-600 mt-0 cursor-pointer">
+          <a id="dark-mode-toggle">Dark mode</a>
+        </p>
       </div>
       <div class="block lg:flex lg:items-center lg:w-auto justify-end">
         <!-- Logo or name  -->
-        <a
-          href="<%= (@account.homepage) and (!@account.homepage.empty?) ?  @account.homepage : @other_host_route %>"
-          target="<%= (@account.homepage) and (!@account.homepage.empty?) ? '_blank' : '_self' %>"
-          class="inline-block px-4 py-2 leading-none font-medium hover:text-gray-500 mt-0">
-          <% if (@account.logo) and (!@account.logo.empty?) %>
-          <img
-            src="/logos/<%= @account.logo %>"
-            alt="Logo"
-            style="max-width: 200px; max-height: 100px">
-          <% else %>
-          <span class=""><%= @account.org_name %></span>
-          <% end %>
-        </a>
+        <p class="inline-block px-4 py-2 leading-none font-medium text-black hover:text-gray-500 mt-0">
+          <a
+            href="<%= (@settings.homepage) and (!@settings.homepage.empty?) ?  @settings.homepage : @other_host_route %>"
+            target="<%= (@settings.homepage) and (!@settings.homepage.empty?) ? '_blank' : '_self' %>">
+            <% if (@settings.logo) and (!@settings.logo.empty?) %>
+            <img
+              src="/logos/<%= @settings.logo %>"
+              alt="Logo"
+              style="max-width: 200px; max-height: 100px">
+            <% else %>
+            <span class=""><%= @settings.org_name %></span>
+            <% end %>
+          </a>
+        </p>
+
       </div>
     </nav>
 
@@ -88,8 +95,8 @@
     </div>
 
     <!-- Choose accent color -->
-    <% if (@account.accent_color) and (!@account.accent_color.empty?) %>
-      <% @color = @account.accent_color %>
+    <% if (@settings.accent_color) and (!@settings.accent_color.empty?) %>
+      <% @color = @settings.accent_color %>
       <script>
         const color = "<%= @color %>";
 
@@ -128,6 +135,69 @@
 
       </script>
     <% end %>
+
+    <!-- Toggle dark mode -->
+    <script>
+      darkMode = window.localStorage.getItem('darkMode') || 'false';
+
+      if (darkMode == 'true') {
+        enableDarkMode()
+      }
+
+      document.getElementById('dark-mode-toggle').addEventListener('click', function() {
+        if (darkMode == 'false') {
+          window.localStorage.setItem('darkMode', 'true');
+          location.reload();
+        }
+        if (darkMode == 'true') {
+          window.localStorage.setItem('darkMode', 'false');
+          location.reload();
+        }
+      })
+
+      function enableDarkMode() {
+
+        const whiteBoxes = Array.from(document.querySelectorAll('body.bg-white, div.bg-white'))
+        whiteBoxes.forEach(function(box) {
+          box.classList.remove("bg-white")
+          box.classList.add("bg-black")
+        })
+
+        const grayBox = document.querySelector('body.bg-gray-100')
+        if (grayBox) {
+          grayBox.classList.remove("bg-gray-100")
+          grayBox.classList.add("bg-black")
+        }
+
+        const whiteText = Array.from(document.querySelectorAll('p.text-black'))
+        whiteText.forEach(function(text) {
+          text.classList.remove("text-black")
+          text.classList.add("text-white")
+        })
+
+        const grayText = Array.from(document.querySelectorAll('p.text-gray'))
+        grayText.forEach(function(text) {
+          text.classList.remove("text-gray")
+          text.classList.add("text-gray-500")
+        })
+
+        const grayLinks = Array.from(document.querySelectorAll('p.text-gray-600'))
+        grayLinks.forEach(function(link) {
+          link.classList.remove("text-gray-600")
+          link.classList.add("text-gray-300")
+          link.classList.remove("hover:text-gray-600")
+          link.classList.add("hover:text-gray-300")
+        })
+
+        const labels = Array.from(document.querySelectorAll('label.text-gray-700'))
+        labels.forEach(function(label) {
+          label.classList.remove("text-gray-700")
+          label.classList.add("text-gray-200")
+        })
+
+      }
+
+    </script>
 
   </body>
 </html>

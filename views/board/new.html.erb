@@ -6,16 +6,20 @@
 <!-- Hero section -->
 <section class="mt-12">
   <div class="text-center w-2/3 mx-auto">
-    <div class="text-3xl font-bold mb-2">
-      <% if @account.job_price.to_i > 0 %>
-        Post a job for $<%= @account.job_price %>
-      <% else %>
-        Post a job for free
-      <% end %>
+    <div class="mb-2">
+      <p class="text-3xl font-bold text-black">
+        <% if @settings.job_price.to_i > 0 %>
+          Post a job for $<%= @settings.job_price %>
+        <% else %>
+          Post a job for free
+        <% end %>
+      </p>
     </div>
-    <p>
-      <%= @account.posting_offer %>
-    </p>
+    <div>
+      <p class="text-gray-600">
+        <%= @settings.posting_offer %>
+      </p>
+    </div>
   </div>
 </section>
 
@@ -32,7 +36,7 @@
 </section>
 
 <script>
-  const accentColor = "<%= @account.accent_color %>"
+  const accentColor = "<%= @settings.accent_color %>"
   console.log(accentColor)
 </script>
 

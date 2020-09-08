@@ -99,13 +99,18 @@ def require_user
 end
 
 def current_account(slug)
-  accounts = YAML::Store.new "./data/accounts.store"
-  account = accounts.transaction { accounts[slug] }
+  store = YAML::Store.new "./data/accounts.store"
+  item = store.transaction { store[slug] }
+end
+
+def current_settings(slug)
+  store = YAML::Store.new "./data/#{slug}/settings.store"
+  item = store.transaction { store[slug] }
 end
 
 def current_jobs(slug)
   jobs = []
-  store = YAML::Store.new "./data/jobs-#{slug}.store"
+  store = YAML::Store.new "./data/#{slug}/jobs.store"
 
   store.transaction(true) do
     store.roots.each do |data_root_name|
@@ -117,17 +122,38 @@ def current_jobs(slug)
 end
 
 def current_job(account_slug, job_slug)
-  store = YAML::Store.new "./data/jobs-#{account_slug}.store"
+  store = YAML::Store.new "./data/#{account_slug}/jobs.store"
   job = store.transaction { store[job_slug] }
 end
 
 def add_job(account_slug, job)
-  store = YAML::Store.new "./data/jobs-#{account_slug}.store"
+  store = YAML::Store.new "./data/#{account_slug}/jobs.store"
 
   store.transaction do
     store[job.slug] = job
   end
 end
+
+def get_all_categories(slug)
+  items = []
+  store = YAML::Store.new "./data/#{slug}/categories.store"
+
+  store.transaction(true) do
+    store.roots.each do |data_root_name|
+      items.append(store[data_root_name])
+    end
+  end
+
+  return items
+end
+
+def get_category(account_slug, category_slug)
+  store = YAML::Store.new "./data/#{account_slug}/categories.store"
+  item = store.transaction { store[category_slug] }
+
+  return item
+end
+
 
 ####################
 ### MAILER FUNCTIONS
@@ -195,6 +221,7 @@ end
 def get_job_edit_page(slug)
   job_slug = params['job']
   @job = current_job(slug, job_slug)
+  @categories = get_all_categories(slug)
 
   if @job.edit_id == params['edit_id']
     erb :"board/edit", :layout => :"board/layout"
@@ -264,6 +291,7 @@ def create_new_job(slug, account)
       description: params["description"],
       application: params["application"],
       type: params["type"],
+      category: params["category"],
       company_name: params["company-name"],
       location: params["location"],
       company_url: params["company-url"],
@@ -301,7 +329,7 @@ def confirm_job_post(slug)
   domain_route = "#{host}#{@other_host_route}"
 
   # Send confirmation email
-  send_job_confirmation_email(job.contact, @account.org_name, @account.job_price, @job_slug, @jid, domain_route)
+  send_job_confirmation_email(job.contact, @settings.org_name, @settings.job_price, @job_slug, @jid, domain_route)
 
   # Mark job as paid
   job.paid = true
@@ -331,8 +359,8 @@ def pay_stripe_invoice(slug)
   job_slug = params['job']
   origin = request_headers['origin']
   p "origin", origin
-  stripe_amount = @account.job_price.to_i * 100
-  stripe_id = @account.stripe_id
+  stripe_amount = @settings.job_price.to_i * 100
+  stripe_id = @settings.stripe_id
   platform_fee = (stripe_amount * 0.079).round + 30
 
   session = Stripe::Checkout::Session.create(
@@ -387,6 +415,7 @@ def update_existing_job(slug)
     job.application = params["application"]
     job.company_name = params["company-name"]
     job.type = params["type"]
+    job.category = params["category"]
     job.location = params["location"]
     job.company_url = params["company-url"]
     job.contact = params["contact"]
@@ -404,6 +433,22 @@ def update_existing_job(slug)
   end
 
 end
+
+def get_category_jobs(account_slug, category_slug)
+  items = get_all_jobs(account_slug)
+
+  jobs = []
+  items.each do |item|
+    if item.category == category_slug
+      jobs.append(item)
+    end
+  end
+
+  return jobs
+end
+
+
+
 
 # Extract out all linked domains
 host_names = []
@@ -432,11 +477,13 @@ host_names.each do |host|
       @other_host = true
       @other_host_route = ''
       @account = current_account(host.slug)
+      @settings = current_settings(host.slug)
     end
 
     # View all jobs
     get '/' do
       account_slug = @account.slug
+      @categories = get_all_categories(account_slug)
       @jobs = get_all_jobs(account_slug)
       erb :"board/jobs", :layout => :"board/layout"
     end
@@ -445,6 +492,7 @@ host_names.each do |host|
     get '/jobs/new' do
       @markdown_template = "\r\n\r\n## Responsibilities\r\n- List the job responsibilities out \r\n\r\n## Requirements\r\n- List the job requirements out \r\n\r\n## Company Background\r\n"
       @job = OpenStruct.new()
+      @categories = get_all_categories(account_slug)
       erb :"board/new", :layout => :"board/layout"
     end
 
@@ -464,6 +512,15 @@ host_names.each do |host|
       account_slug = @account.slug
       @jobs = get_search_results(account_slug)
       erb :"board/search", :layout => :"board/layout"
+    end
+
+    # View a single category
+    get '/categories/:category' do
+      account_slug = @account.slug
+      category_slug = params['category']
+      @category = get_category(account_slug, category_slug)
+      @jobs = get_category_jobs(account_slug, category_slug)
+      erb :"board/category", :layout => :"board/layout"
     end
 
     # View a single job
@@ -556,7 +613,7 @@ post '/forgot' do
 
   if user
     # pick a random word
-    adjectives = ['big', 'fat', 'happy', 'silly', 'proud', 'plain', 'clean', 'chubby', 'scary', 'clumsy']
+    adjectives = ['happy', 'silly', 'proud', 'plain', 'clean', 'tiny', 'scary', 'clumsy', 'grumpy', 'brave', 'huge', 'jolly', 'calm', 'silly', 'fancy']
     nouns = ['desk', 'paper', 'staples', 'light', 'phone', 'pencil', 'eraser', 'glass', 'stand', 'sushi', 'kitten', 'bear', 'bulb', 'dancer', 'speaker']
     adj = adjectives.sample
     noun = nouns.sample
@@ -608,7 +665,7 @@ post '/register' do
   existing_account = accounts.transaction { accounts.fetch(slug, false) }
 
   if existing_user or existing_account
-    @message = 'There is already an account using that email or organization name.'
+    @message = 'There is already an account using that email or name.'
     erb :register, :layout => :home
   else
     uid = SecureRandom.uuid
@@ -625,6 +682,11 @@ post '/register' do
     )
 
     account = OpenStruct.new(
+      slug: slug,
+      owner: email
+    )
+
+    settings = OpenStruct.new(
       org_name: params['org-name'],
       org_bio: params['org-bio'],
       font_family: '',
@@ -636,21 +698,36 @@ post '/register' do
       job_price: 0,
       job_expiry: 90,
       posting_offer: 'Your job listing will be posted for 90 days.',
-      slug: slug
+      slug: slug,
+      categories: []
     )
 
     # Send welcome emails
     send_welcome_email(user.email)
 
+    # Save user
     users.transaction do
       users[user.email] = user
     end
 
+    # Save account
     accounts.transaction do
       accounts[account.slug] = account
     end
 
-    FileUtils.cp("./data/jobs.store", "./data/jobs-#{slug}.store")
+    # Create folders and files
+    Dir.mkdir("./data/#{slug}")
+    FileUtils.cp("./data/jobs.store", "./data/#{slug}/jobs.store")
+    File.write("./data/#{slug}/categories.store", "")
+    File.write("./data/#{slug}/settings.store", "")
+    File.write("./data/#{slug}/newsletter.store", "")
+
+
+    settings_store = YAML::Store.new "./data/#{slug}/settings.store"
+
+    settings_store.transaction do
+      settings_store[settings.slug] = settings
+    end
 
     @slug = slug
     erb :confirmation, :layout => :home
@@ -662,6 +739,7 @@ end
   before path do
     account_slug = params['account']
     @account = current_account(account_slug)
+    @settings = current_settings(account_slug)
     @other_host = nil
     @other_host_route = "/board/#{account_slug}"
   end
@@ -671,12 +749,15 @@ end
 get '/board/:account' do
   account_slug = params['account']
   @jobs = get_all_jobs(account_slug)
+  @categories = get_all_categories(account_slug)
   erb :"board/jobs", :layout => :"board/layout"
 end
 
 # New job form
 get '/board/:account/jobs/new' do
+  account_slug = params['account']
   @markdown_template = "\r\n\r\n## Responsibilities\r\n- List the job responsibilities out \r\n\r\n## Requirements\r\n- List the job requirements out \r\n\r\n## Company Background\r\n"
+  @categories = get_all_categories(account_slug)
   @job = OpenStruct.new()
   erb :"board/new", :layout => :"board/layout"
 end
@@ -697,6 +778,15 @@ post '/board/:account/search' do
   account_slug = params['account']
   @jobs = get_search_results(account_slug)
   erb :"board/search", :layout => :"board/layout"
+end
+
+# View a single category
+get '/board/:account/categories/:category' do
+  account_slug = params['account']
+  category_slug = params['category']
+  @category = get_category(account_slug, category_slug)
+  @jobs = get_category_jobs(account_slug, category_slug)
+  erb :"board/category", :layout => :"board/layout"
 end
 
 # View a single job
@@ -753,6 +843,7 @@ end
     if logged_in?
       if current_user.account_slug == account_slug
         @account = current_account(account_slug)
+        @settings = current_settings(account_slug)
       end
     else
       # session.clear
@@ -776,7 +867,9 @@ end
 
 # New job form
 get '/admin/:account/jobs/new' do
+  account_slug = params['account']
   @markdown_template = "\r\n\r\n## Responsibilities\r\n- List the job responsibilities out \r\n\r\n## Requirements\r\n- List the job requirements out \r\n\r\n## Company Background\r\n"
+  @categories = get_all_categories(account_slug)
   @job = OpenStruct.new()
   erb :"admin/new", :layout => :"admin/home"
 end
@@ -807,6 +900,7 @@ post '/admin/:account/jobs/create' do
     description: params["description"],
     application: params["application"],
     type: params["type"],
+    category: params["category"],
     company_name: params["company-name"],
     location: params["location"],
     company_url: params["company-url"],
@@ -825,6 +919,7 @@ end
 get '/admin/:account/jobs/:job/edit' do
   account_slug = params['account']
   job_slug = params['job']
+  @categories = get_all_categories(account_slug)
   @job = current_job(account_slug, job_slug)
   erb :"admin/edit", :layout => :"admin/home"
 end
@@ -860,12 +955,13 @@ patch '/admin/:account/jobs/:job/update' do
   job.description = params["description"]
   job.application = params["application"]
   job.type = params["type"]
+  job.category = params["category"]
   job.company_name= params["company-name"]
   job.location = params["location"]
   job.company_url = params["company-url"]
 
   # save job
-  store = YAML::Store.new "./data/jobs-#{account_slug}.store"
+  store = YAML::Store.new "./data/#{account_slug}/jobs.store"
   store.transaction do
     store[job_slug] = job
   end
@@ -879,12 +975,136 @@ delete '/admin/:account/jobs/:job/delete' do
   job_slug = params['job']
 
   # delete job
-  store = YAML::Store.new "./data/jobs-#{account_slug}.store"
+  store = YAML::Store.new "./data/#{account_slug}/jobs.store"
   store.transaction do
     store.delete(job_slug)
   end
 
   redirect "/admin/#{params['account']}/jobs"
+end
+
+# View all categories
+get '/admin/:account/categories' do
+  account_slug = params['account']
+  @categories = get_all_categories(account_slug)
+  erb :"admin/categories", :layout => :"admin/home"
+end
+
+# New category form
+get '/admin/:account/categories/new' do
+  @category = OpenStruct.new()
+  erb :"admin/new_category", :layout => :"admin/home"
+end
+
+# Add a new category
+post '/admin/:account/categories/create' do
+  account_slug = params['account']
+  category_slug = create_slug(params['name'])
+
+  category = OpenStruct.new(
+    name: params['name'],
+    slug: category_slug
+  )
+
+  # save category
+  store = YAML::Store.new "./data/#{account_slug}/categories.store"
+  store.transaction do
+    store[category_slug] = category
+  end
+
+  redirect "/admin/#{account_slug}/categories"
+end
+
+# Edit a category form
+get '/admin/:account/categories/:category/edit' do
+  account_slug = params['account']
+  category_slug = params['category']
+  @category = get_category(account_slug, category_slug)
+  erb :"admin/edit_category", :layout => :"admin/home"
+end
+
+# Update existing category
+patch '/admin/:account/categories/:category/update' do
+  account_slug = params['account']
+  old_slug = params['category']
+
+  new_category = params['name']
+  new_slug = create_slug(params['name'])
+
+  store = YAML::Store.new "./data/#{account_slug}/categories.store"
+  store.transaction do
+    store.delete(old_slug)
+  end
+
+  category = OpenStruct.new(
+    name: new_category,
+    slug: new_slug
+  )
+
+  store.transaction do
+    store[new_slug] = category
+  end
+
+  jobs_queue = []
+  jobs = YAML::Store.new "./data/#{account_slug}/jobs.store"
+  jobs.transaction(true) do  # begin read-only transaction, no changes allowed
+    jobs.roots.each do |data_root_name|
+      job = jobs[data_root_name]
+
+      if job.category == old_slug
+        jobs_queue.append(job)
+      end
+    end
+  end
+
+  jobs_queue.each do |job|
+    # update category slug
+    job.category = new_slug
+
+    # save updated job
+    job_slug = job.slug
+    jobs.transaction do
+      jobs[job_slug] = job
+    end
+  end
+
+  redirect "/admin/#{account_slug}/categories"
+end
+
+# Delete a category
+delete '/admin/:account/categories/:category/delete' do
+  account_slug = params['account']
+  category_slug = params['category']
+
+  store = YAML::Store.new "./data/#{account_slug}/categories.store"
+  store.transaction do
+    store.delete(category_slug)
+  end
+
+  jobs_queue = []
+  jobs = YAML::Store.new "./data/#{account_slug}/jobs.store"
+  jobs.transaction(true) do  # begin read-only transaction, no changes allowed
+    jobs.roots.each do |data_root_name|
+      job = jobs[data_root_name]
+
+      if job.category == category_slug
+        jobs_queue.append(job)
+      end
+    end
+  end
+
+  jobs_queue.each do |job|
+    # update category slug
+    job.category = ''
+
+    # save updated job
+    job_slug = job.slug
+    jobs.transaction do
+      jobs[job_slug] = job
+    end
+  end
+
+  redirect "/admin/#{account_slug}/categories"
 end
 
 # Populate with default settings
@@ -897,20 +1117,20 @@ patch '/admin/:account/settings/update' do
   account_slug = params['account']
 
   # Find account and update values
-  @account.org_name = params["org_name"]
-  @account.org_bio = params["org_bio"]
-  @account.homepage = params["homepage"]
-  @account.google_analytics = params["google-analytics"]
-  @account.font_family = params["font_family"]
-  @account.accent_color = params["accent_color"]
-  @account.bg_color = params['bg_color']
-  @account.job_expiry = params["job_expiry"].to_i
-  @account.posting_offer = params["posting_offer"]
+  @settings.org_name = params["org_name"]
+  @settings.org_bio = params["org_bio"]
+  @settings.homepage = params["homepage"]
+  @settings.google_analytics = params["google-analytics"]
+  @settings.font_family = params["font_family"]
+  @settings.accent_color = params["accent_color"]
+  @settings.bg_color = params['bg_color']
+  @settings.job_expiry = params["job_expiry"].to_i
+  @settings.posting_offer = params["posting_offer"]
 
   # save settings
-  store = YAML::Store.new "./data/accounts.store"
+  store = YAML::Store.new "./data/#{account_slug}/settings.store"
   store.transaction do
-    store[account_slug] = @account
+    store[account_slug] = @settings
   end
 
   redirect "/admin/#{account_slug}/settings"
@@ -935,12 +1155,12 @@ patch '/admin/:account/settings/logo' do
     end
 
     # Save path in model
-    @account.logo = new_filename
+    @settings.logo = new_filename
 
     # save settings
-    store = YAML::Store.new "./data/accounts.store"
+    store = YAML::Store.new "./data/#{account_slug}/settings.store"
     store.transaction do
-      store[account_slug] = @account
+      store[account_slug] = @settings
     end
 
   end
@@ -952,19 +1172,19 @@ end
 delete '/admin/:account/settings/logo' do
   account_slug = params['account']
 
-  @account.logo = ''
+  @settings.logo = ''
 
   # save settings
-  store = YAML::Store.new "./data/accounts.store"
+  store = YAML::Store.new "./data/#{account_slug}/settings.store"
   store.transaction do
-    store[account_slug] = @account
+    store[account_slug] = @settings
   end
 
   redirect "/admin/#{account_slug}/settings"
 end
 
 get '/admin/:account/payment' do
-  stripe_id = @account.stripe_id
+  stripe_id = @settings.stripe_id
 
   if stripe_id
     stripe_account = Stripe::Account.retrieve(stripe_id)
@@ -984,12 +1204,12 @@ patch '/admin/:account/payment/update' do
   account_slug = params['account']
 
   # Find account and update values
-  @account.job_price = params["job_price"].to_i
+  @settings.job_price = params["job_price"].to_i
 
   # save settings
-  store = YAML::Store.new "./data/accounts.store"
+  store = YAML::Store.new "./data/#{account_slug}/settings.store"
   store.transaction do
-    store[account_slug] = @account
+    store[account_slug] = @settings
   end
 
   redirect "/admin/#{account_slug}/payment"
@@ -1003,10 +1223,10 @@ post '/admin/:account/payment/stripe' do
   account = Stripe::Account.create(type: 'standard')
   session[:account_id] = account.id
 
-  @account.stripe_id = account.id
-  store = YAML::Store.new "./data/accounts.store"
+  @settings.stripe_id = account.id
+  store = YAML::Store.new "./data/#{account_slug}/settings.store"
   store.transaction do
-    store[account_slug] = @account
+    store[account_slug] = @settings
   end
 
   account_link = Stripe::AccountLink.create(
@@ -1057,12 +1277,12 @@ patch '/admin/:account/domain/update' do
     @message = 'There is already an account using that domain name. Please try another one or contact support.'
     erb :"admin/domain", :layout => :"admin/home"
   else
-    @account.domain = host
+    @settings.domain = host
 
     # save settings
-    store = YAML::Store.new "./data/accounts.store"
+    store = YAML::Store.new "./data/#{account_slug}/settings.store"
     store.transaction do
-      store[account_slug] = @account
+      store[account_slug] = @settings
     end
 
     redirect "/admin/#{account_slug}/domain"

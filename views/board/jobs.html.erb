@@ -1,27 +1,51 @@
-<% content_for :head do %>
-  <link rel="stylesheet" href="/simplemde.min.css">
-  <script src="/simplemde.min.js"></script>
-<% end %>
-
 <!-- Board title and summary -->
-<section class="mt-4">
+<section class="mt-4 mb-24">
   <div class="text-center">
-    <div class="text-6xl font-bold mb-2">
-      <%= @account.org_name %>
+    <div class="">
+      <p class="text-6xl font-bold text-black">
+        <%= @settings.org_name %>
+      </p>
     </div>
-    <div class="text-3xl lg:text-2xl text-gray-600 mb-6 max-w-3xl m-auto">
-      <%= @account.org_bio %>
+    <div class="mb-6 max-w-3xl m-auto">
+      <p class="text-4xl lg:text-3xl text-gray-600">
+        <%= @settings.org_bio %>
+      </p>
     </div>
-    <a href="<%= @other_host ? "jobs/new" : "#{@other_host_route}/jobs/new" %>">
-      <button class="bg-blue-500 hover:bg-blue-700 text-2xl lg:text-xl text-white font-bold py-2 px-4 rounded">
-        Post a job
-      </button>
-    </a>
+    <p class="underline">
+      <a href="<%= @other_host ? "jobs/new" : "#{@other_host_route}/jobs/new" %>">
+        Hiring? Post a Job →
+      </a>
+    </p>
+
   </div>
 </section>
 
+<% if (@categories) and (!@categories.empty?) %>
+<section class="my-8 text-center">
+  <div class="flex flex-wrap justify-center">
+    <div class="mr-4">
+      <a href="<%= @other_host ? "/" : @other_host_route %>">
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="button">
+          All
+        </button>
+      </a>
+    </div>
+    <% @categories.each do |category| %>
+    <div class="mr-4">
+      <a href="<%= @other_host_route %>/categories/<%= category.slug %>">
+        <button class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded" type="button">
+          <%= category.name %>
+        </button>
+      </a>
+    </div>
+    <% end %>
+  </div>
+
+</section>
+<% end %>
+
 <!-- List all jobs -->
-<section class="mt-24 ">
+<section class="mt-10">
   <% if @jobs.nil? or @jobs.empty? %>
     <p class="text-xl text-center">
       There are no jobs here. Please add one!

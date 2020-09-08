@@ -1,19 +1,21 @@
 <div class="rounded border my-8 bg-white w-2/3 p-10 mx-auto">
 
-  <div class="font-bold text-2xl mb-4">
-    Thanks for submitting a job!
+  <div class="mb-4">
+    <p class="font-bold text-2xl text-black">
+      Thanks for submitting a job!
+    </p>
   </div>
 
-  <% if @account.job_price.to_i > 0 %>
+  <% if @settings.job_price.to_i > 0 %>
   <div class="markdown-text mb-2 text-xl lg:text-base">
-    <p>
+    <p class="text-black">
       An official receipt will be sent to the email you provided.
     </p>
   </div>
   <% end %>
 
   <div class="markdown-text mb-8 text-xl lg:text-base">
-    <p>
+    <p class="text-black">
       In case you want to edit your job posting, <a href="<%= @other_host_route %>/jobs/<%= @job_slug %>/<%= @jid %>/edit" target="_blank">here is a private link to do so</a>. Please save this link and do not share it with anyone else outside of your company!
     </p>
   </div>

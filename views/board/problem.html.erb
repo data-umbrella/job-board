@@ -1,12 +1,14 @@
 <div class="rounded border my-8 bg-white w-2/3 p-10 mx-auto">
-  <div class="font-bold text-2xl mb-2">
-    There was a problem with your payment
+  <div class="mb-2">
+    <p class="font-bold text-2xl text-black">
+      There was a problem with your payment
+    </p>
   </div>
   <div class="text-xl lg:text-base">
-    <p class="mb-2">
+    <p class="mb-2 text-black">
       Please try again and double-check the information you entered: <a href="<%= @other_host_route %>/jobs/<%= @job_slug %>/pay">payment link</a>.
     </p>
-    <p class="mb-2">
+    <p class="mb-2 text-black">
       Also, please check with your credit card company as they may have flagged the charge.
     </p>
   </div>

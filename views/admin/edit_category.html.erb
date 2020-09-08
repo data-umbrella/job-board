@@ -1,0 +1,19 @@
+<div class="rounded shadow my-8 bg-white w-2/3 p-10 mx-auto">
+  <div class="font-bold text-2xl mb-2 ">
+    Edit Category
+  </div>
+  <section class="my-8">
+    <form method="POST" action="update" enctype="multipart/form-data">
+      <input name="_method" value="patch" type="hidden">
+      <%= erb :'shared/category_form', locals: { category: @category } %>
+      <div class="flex items-center justify-between">
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+          Update category
+        </button>
+        <a href="/admin/<%= @account.slug %>/categories" class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">
+          Go back
+        </a>
+      </div>
+    </form>
+  </section>
+</div>

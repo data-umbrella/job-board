@@ -1,0 +1,38 @@
+<!-- Board title and summary -->
+<section class="mt-4 mb-24">
+  <div class="text-center">
+    <div class="mb-2">
+      <p class="text-6xl font-bold text-black">
+        <%= @category.name %>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- List all jobs -->
+<section class="mt-10">
+  <% if @jobs.nil? or @jobs.empty? %>
+    <p class="text-xl text-center">
+      There are no jobs in this category.
+    </p>
+  <% elsif @jobs %>
+    <% @jobs.each_with_index do |job, index| %>
+      <% if @other_host %>
+        <a href="/jobs/<%= job.slug %>">
+      <% else %>
+        <a href="/board/<%= params['account'] %>/jobs/<%= job.slug %>">
+      <% end %>
+          <%= erb :'shared/job_card', locals: { job: job } %>
+        </a>
+    <% end %>
+  <% end %>
+</section>
+
+<!-- Footer link back to ferret -->
+<section>
+  <div class="text-center mt-64 mb-8 text-gray-600">
+    <p>
+      This job board was <a href="http://www.tryferret.com" target="_blank" class="text-blue-500">created using Ferret</a>
+    </p>
+  </div>
+</section>

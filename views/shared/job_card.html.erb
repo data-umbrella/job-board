@@ -11,18 +11,24 @@
     <% end %>
   </div>
   <div class="w-3/4 lg:w-4/6 px-6 py-4">
-    <p class="mb-2 text-xl lg:text-base">
-      <%= job.company_name %>
-    </p>
-    <div class="font-bold text-2xl lg:text-xl mb-2">
-      <%= job.position %>
+    <div class="mb-2">
+      <p class="text-xl lg:text-base text-black">
+        <%= job.company_name %>
+      </p>
     </div>
-    <p class="text-gray-600 text-xl lg:text-base">
-      <%= job.location %> <%= job.type ? "/ #{job.type}" : "" %>
-    </p>
+    <div class=" mb-2">
+      <p class="font-bold text-black text-2xl lg:text-xl">
+        <%= job.position %>
+      </p>
+    </div>
+    <div>
+      <p class="text-gray-600 text-xl lg:text-base">
+        <%= job.location %> <%= job.type ? "/ #{job.type}" : "" %>
+      </p>
+    </div>
   </div>
   <div class="flex-1">
-    <p class="text-xl lg:text-base">
+    <p class="text-xl lg:text-base text-black">
       <% if job.date %>
         <%= Time.parse(job.date).strftime('%B %e') %>
       <% end %>

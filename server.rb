@@ -144,7 +144,9 @@ def get_all_categories(slug)
     end
   end
 
-  return items
+  sorted_items = items.sort_by { |el| el.name }
+
+  return sorted_items
 end
 
 def get_category(account_slug, category_slug)
@@ -682,6 +684,7 @@ post '/register' do
     )
 
     account = OpenStruct.new(
+      org_name: params['org-name'],
       slug: slug,
       owner: email
     )
@@ -766,6 +769,38 @@ end
 post '/board/:account/jobs/create' do
   slug = params['account']
   create_new_job(slug, @account)
+end
+
+# Page with newsletter form
+get '/board/:account/digest' do
+  account_slug = params['account']
+  erb :"board/digest", :layout => :"board/layout"
+end
+
+# Add to newsletter
+post '/board/:account/digest' do
+  account_slug = params['account']
+  email = params['email']
+
+  store = YAML::Store.new "./data/#{account_slug}/newsletter.store"
+  existing_subscriber = store.transaction { store.fetch(email, false) }
+
+  if existing_subscriber
+    @message = "You are already subscribed to this newsletter!"
+    erb :"board/digest", :layout => :"board/layout"
+  else
+    subscriber = OpenStruct.new(
+      email: email
+    )
+
+    store.transaction do
+      store[email] = subscriber
+    end
+
+    @confirmation = true
+
+    erb :"board/digest", :layout => :"board/layout"
+  end
 end
 
 # Page with form to search jobs

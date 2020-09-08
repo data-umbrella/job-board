@@ -85,3 +85,22 @@ uploadField.onchange = function(e) {
   }
 
 };
+
+
+////////
+// Featured job
+////////
+const featuredOption = document.querySelector('#featured-option')
+featuredOption.addEventListener('change', function() {
+  const text = featuredOption.options[featuredOption.selectedIndex].text
+  const previewCard = document.querySelector('#preview-card')
+  if (text == "Yes") {
+    previewCard.classList.remove("bg-white")
+    previewCard.classList.add("bg-yellow-100")
+    dateEl.innerHTML = "<p class='font-medium'>Featured</p>"
+  } else {
+    previewCard.classList.remove("bg-yellow-100")
+    previewCard.classList.add("bg-white")
+    dateEl.innerText = date
+  }
+})

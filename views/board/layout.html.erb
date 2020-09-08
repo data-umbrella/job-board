@@ -66,12 +66,19 @@
         <p class="inline-block px-4 py-2 leading-none text-gray hover:text-gray-600 mt-0 mr-2">
           <a href="<%= @other_host_route %>/search" class="">Search jobs</a>
         </p>
+
+        <% if (@settings.digest) and (@settings.digest != "No") %>
         <p class="inline-block px-4 py-2 leading-none text-gray hover:text-gray-600 mt-0 mr-2">
           <a href="<%= @other_host_route %>/digest" class="">Weekly Digest</a>
         </p>
+        <% end %>
+
+        <% if (@settings.dark_mode) and (@settings.dark_mode != "No") %>
         <p class="inline-block px-4 py-2 leading-none text-gray hover:text-gray-600 mt-0 cursor-pointer">
           <a id="dark-mode-toggle">Dark mode</a>
         </p>
+        <% end %>
+
       </div>
       <div class="block lg:flex lg:items-center lg:w-auto justify-end">
         <!-- Logo or name  -->
@@ -140,6 +147,7 @@
     <% end %>
 
     <!-- Toggle dark mode -->
+    <% if (@settings.dark_mode) and (@settings.dark_mode == "Yes") %>
     <script>
       darkMode = window.localStorage.getItem('darkMode') || 'false';
 
@@ -201,6 +209,7 @@
       }
 
     </script>
+    <% end %>
 
   </body>
 </html>

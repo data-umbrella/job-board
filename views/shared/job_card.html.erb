@@ -1,4 +1,8 @@
+<% if (job.featured) and (job.featured == "Yes") %>
+<div class="flex items-center rounded border border-gray-300 mb-3 hover:shadow bg-yellow-100">
+<% else %>
 <div class="flex items-center rounded border border-gray-300 mb-3 hover:shadow bg-white">
+<% end %>
   <div class="w-20 ml-4">
     <% if (job.company_logo) and (!job.company_logo.empty?) %>
     <img src="/logos/<%= job.company_logo %>" class="mx-auto" style="max-width: 80px; max-height: 100px">
@@ -23,14 +27,18 @@
     </div>
     <div>
       <p class="text-gray-600 text-xl lg:text-base">
-        <%= job.location %> <%= job.type ? "/ #{job.type}" : "" %>
+        <%= job.location %> <%= job.type.empty? ? "" : "/ #{job.type}" %>
       </p>
     </div>
   </div>
   <div class="flex-1">
     <p class="text-xl lg:text-base text-black">
-      <% if job.date %>
-        <%= Time.parse(job.date).strftime('%B %e') %>
+      <% if (job.featured) and (job.featured == "Yes") %>
+      <span class="font-medium">Featured</span>
+      <% else %>
+        <% if job.date %>
+          <%= Time.parse(job.date).strftime('%B %e') %>
+        <% end %>
       <% end %>
     </p>
   </div>

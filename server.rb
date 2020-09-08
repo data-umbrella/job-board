@@ -236,8 +236,7 @@ def get_all_jobs(slug)
   all_jobs = current_jobs(slug)
   jobs = []
 
-  account = current_account(slug)
-  expiry_days = account.job_expiry.to_i
+  expiry_days = @settings.job_expiry.to_i
 
   if expiry_days == 0
     jobs = all_jobs
@@ -251,10 +250,21 @@ def get_all_jobs(slug)
     end
   end
 
-  return jobs.reverse()
+  # Sort in time order
+  jobs.reverse!
+
+  # Move featured jobs to the top
+  jobs.each_with_index do |job, index|
+    if job.featured == "Yes"
+      jobs.delete_at(index)
+      jobs.prepend(job)
+    end
+  end
+
+  return jobs
 end
 
-def create_new_job(slug, account)
+def create_new_job(slug, settings)
   store = YAML::Store.new "./data/jobs-#{slug}.store"
 
   # Check if job already exists
@@ -267,7 +277,7 @@ def create_new_job(slug, account)
   if existing_job
     erb :"board/duplicate_job", :layout => :"board/layout"
   else
-    if account.job_price.to_i > 0
+    if (settings.job_price.to_i > 0) or (params['featured'] == 'Yes')
       paid = false
     else
       paid = true
@@ -300,6 +310,7 @@ def create_new_job(slug, account)
       company_logo: new_filename || '',
       contact: params["contact"],
       owner: params["owner"],
+      featured: params["featured"],
       edit_id: jid,
       date: date.to_s,
       paid: paid,
@@ -312,7 +323,7 @@ def create_new_job(slug, account)
     @job_slug = job_slug
     @account_slug = slug
 
-    if account.job_price.to_i > 0
+    if (settings.job_price.to_i > 0) or (params['featured'] == 'Yes')
       redirect "/board/#{slug}/jobs/#{job_slug}/pay"
     else
       redirect "/board/#{slug}/jobs/#{job_slug}/confirm"
@@ -330,8 +341,14 @@ def confirm_job_post(slug)
   host = request.host
   domain_route = "#{host}#{@other_host_route}"
 
+  if job.featured == "Yes"
+    total_price = @settings.job_price.to_i + @settings.featured_price.to_i
+  else
+    total_price = @settings.job_price.to_i
+  end
+
   # Send confirmation email
-  send_job_confirmation_email(job.contact, @settings.org_name, @settings.job_price, @job_slug, @jid, domain_route)
+  send_job_confirmation_email(job.contact, @settings.org_name, total_price, @job_slug, @jid, domain_route)
 
   # Mark job as paid
   job.paid = true
@@ -359,9 +376,17 @@ end
 
 def pay_stripe_invoice(slug)
   job_slug = params['job']
+  job = current_job(slug, job_slug)
   origin = request_headers['origin']
-  p "origin", origin
-  stripe_amount = @settings.job_price.to_i * 100
+
+  # Add featured cost
+  if job.featured == "Yes"
+    total_price = @settings.job_price.to_i + @settings.featured_price.to_i
+  else
+    total_price = @settings.job_price.to_i
+  end
+
+  stripe_amount = total_price * 100
   stripe_id = @settings.stripe_id
   platform_fee = (stripe_amount * 0.079).round + 30
 
@@ -501,7 +526,7 @@ host_names.each do |host|
     # Create a new job
     post '/jobs/create' do
       @account_slug = @account.slug
-      create_new_job(@account_slug, @account)
+      create_new_job(@account_slug, @settings)
     end
 
     # Page with form to search jobs
@@ -695,10 +720,14 @@ post '/register' do
       font_family: '',
       accent_color: 'blue',
       bg_color: 'white',
+      dark_mode: 'yes',
+      digest: 'yes',
       logo: '',
       domain: '',
       google_analytics: '',
       job_price: 0,
+      featured_option: 'No',
+      featured_price: 25,
       job_expiry: 90,
       posting_offer: 'Your job listing will be posted for 90 days.',
       slug: slug,
@@ -768,7 +797,7 @@ end
 # Create a new job
 post '/board/:account/jobs/create' do
   slug = params['account']
-  create_new_job(slug, @account)
+  create_new_job(slug, @settings)
 end
 
 # Page with newsletter form
@@ -1159,6 +1188,8 @@ patch '/admin/:account/settings/update' do
   @settings.font_family = params["font_family"]
   @settings.accent_color = params["accent_color"]
   @settings.bg_color = params['bg_color']
+  @settings.dark_mode = params['dark_mode']
+  @settings.digest = params['digest']
   @settings.job_expiry = params["job_expiry"].to_i
   @settings.posting_offer = params["posting_offer"]
 
@@ -1240,6 +1271,8 @@ patch '/admin/:account/payment/update' do
 
   # Find account and update values
   @settings.job_price = params["job_price"].to_i
+  @settings.featured_price = params["featured_price"].to_i
+  @settings.featured_option = params["featured_option"]
 
   # save settings
   store = YAML::Store.new "./data/#{account_slug}/settings.store"

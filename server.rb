@@ -211,7 +211,7 @@ def send_job_confirmation_email(email, account_name, job_price, job_slug, job_id
   end
 
   mb_obj.subject "Thanks for submitting a job!"
-  mb_obj.body_html "#{price_message}<p><a href='http://#{domain_route}/jobs/#{job_slug}' target='_blank'>Click here to view your public listing<a/>.</p> <p>If you want to edit your job posting, <a href='http://#{domain_route}/jobs/#{job_slug}/#{job_id}/edit' target='_blank'>use this link<a/>. Do not share this link with anyone else outside of your company!</p><p>Thank you and we hope you come back again!</p>"
+  mb_obj.body_html "<p>Thanks for submitting a job on #{account_name}.</p>#{price_message}<p><a href='http://#{domain_route}/jobs/#{job_slug}' target='_blank'>Click here to view your public listing<a/>.</p> <p>If you want to edit your job posting, <a href='http://#{domain_route}/jobs/#{job_slug}/#{job_id}/edit' target='_blank'>use this link<a/>. Do not share this link with anyone else outside of your company!</p><p>Thank you and we hope you come back again!</p>"
 
   mg_client.send_message 'mg.tryferret.com', mb_obj
 end
@@ -764,6 +764,14 @@ post '/register' do
     @slug = slug
     erb :confirmation, :layout => :home
   end
+end
+
+get '/api/:account' do
+  account_slug = params['account']
+  @settings = current_settings(account_slug)
+  jobs = get_all_jobs(account_slug)
+  jobs_obj = jobs.first(5).map { |j| j.to_h }
+  jobs_obj.to_json
 end
 
 # Job board routes

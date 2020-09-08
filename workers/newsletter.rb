@@ -22,8 +22,8 @@ paths.each do |path|
     end
   end
 
-  p "#{slug} has #{count} subscribers"
-  p "list #{email_list}"
+  # p "#{slug} has #{count} subscribers"
+  # p "list #{email_list}"
 
   next if count == 0
 
@@ -87,7 +87,7 @@ paths.each do |path|
   # Loop through all of your recipients
   email_list.each do |email|
     mb_obj.add_recipient(:to, email, {})
-    p "Email sent to #{email}"
+    # p "Email sent to #{email}"
   end
 
   mb_obj.finalize

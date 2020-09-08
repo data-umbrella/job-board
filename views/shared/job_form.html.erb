@@ -147,7 +147,7 @@
       <p class="text-gray-600 text-sm lg:text-xs italic">Stays private, used for record keeping.</p>
     </div>
 
-    <% if @settings.job_price.to_i > 0 %>
+    <% if (@settings.job_price.to_i > 0) and (@job.position.nil?) %>
     <div class="mb-4">
       <label class="block text-gray-700 lg:text-sm font-bold mb-2">
         Credit Card Details

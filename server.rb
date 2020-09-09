@@ -314,6 +314,7 @@ def create_new_job(slug, settings)
       edit_id: jid,
       date: date.to_s,
       paid: paid,
+      customer_paid: '',
       slug: job_slug
     )
 
@@ -352,6 +353,10 @@ def confirm_job_post(slug)
 
   # Mark job as paid
   job.paid = true
+
+  if total_price > 0
+    job.customer_paid = true
+  end
 
   store = YAML::Store.new "./data/jobs-#{slug}.store"
   store.transaction do
@@ -474,6 +479,29 @@ def get_category_jobs(account_slug, category_slug)
   return jobs
 end
 
+def add_subscriber(slug)
+  email = params['email']
+
+  store = YAML::Store.new "./data/#{account_slug}/newsletter.store"
+  existing_subscriber = store.transaction { store.fetch(email, false) }
+
+  if existing_subscriber
+    @message = "You are already subscribed to this newsletter!"
+    erb :"board/digest", :layout => :"board/layout"
+  else
+    subscriber = OpenStruct.new(
+      email: email
+    )
+
+    store.transaction do
+      store[email] = subscriber
+    end
+
+    @confirmation = true
+
+    erb :"board/digest", :layout => :"board/layout"
+  end
+end
 
 
 
@@ -531,45 +559,21 @@ host_names.each do |host|
 
     get '/embed' do
       account_slug = @account.slug
-      @settings = current_settings(account_slug)
-      jobs = get_all_jobs(account_slug)
-      @jobs = jobs.first(5)
+      @jobs = get_all_jobs(account_slug).first(5)
       headers({ 'X-Frame-Options' => '' })
       erb :"embed/preview", :layout => :"embed/layout"
     end
 
     # Page with newsletter form
     get '/digest' do
-      account_slug = @account.slug
       erb :"board/digest", :layout => :"board/layout"
     end
 
     # Add to newsletter
     post '/digest' do
       account_slug = @account.slug
-      email = params['email']
-
-      store = YAML::Store.new "./data/#{account_slug}/newsletter.store"
-      existing_subscriber = store.transaction { store.fetch(email, false) }
-
-      if existing_subscriber
-        @message = "You are already subscribed to this newsletter!"
-        erb :"board/digest", :layout => :"board/layout"
-      else
-        subscriber = OpenStruct.new(
-          email: email
-        )
-
-        store.transaction do
-          store[email] = subscriber
-        end
-
-        @confirmation = true
-
-        erb :"board/digest", :layout => :"board/layout"
-      end
+      add_subscriber(account_slug)
     end
-
 
     # Page with form to search jobs
     get '/search' do
@@ -845,43 +849,20 @@ end
 
 get '/board/:account/embed' do
   account_slug = params['account']
-  @settings = current_settings(account_slug)
-  jobs = get_all_jobs(account_slug)
-  @jobs = jobs.first(5)
+  @jobs = get_all_jobs(account_slug).first(5)
   headers({ 'X-Frame-Options' => '' })
   erb :"embed/preview", :layout => :"embed/layout"
 end
 
 # Page with newsletter form
 get '/board/:account/digest' do
-  account_slug = params['account']
   erb :"board/digest", :layout => :"board/layout"
 end
 
 # Add to newsletter
 post '/board/:account/digest' do
   account_slug = params['account']
-  email = params['email']
-
-  store = YAML::Store.new "./data/#{account_slug}/newsletter.store"
-  existing_subscriber = store.transaction { store.fetch(email, false) }
-
-  if existing_subscriber
-    @message = "You are already subscribed to this newsletter!"
-    erb :"board/digest", :layout => :"board/layout"
-  else
-    subscriber = OpenStruct.new(
-      email: email
-    )
-
-    store.transaction do
-      store[email] = subscriber
-    end
-
-    @confirmation = true
-
-    erb :"board/digest", :layout => :"board/layout"
-  end
+  add_subscriber(account_slug)
 end
 
 # Page with form to search jobs

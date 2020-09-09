@@ -58,12 +58,16 @@
               <% end %>
             </td>
             <td class="border px-4 py-2 underline">
+              <% if (job.customer_paid) and (job.customer_paid == true) %>
+
+              <% else %>
               <form method="POST" action="jobs/<%= job.slug %>/delete" onsubmit="return confirm('Are you sure you want to delete this job?');">
                 <div style="margin:0;padding:0">
                   <input name="_method" value="delete" type="hidden" />
                   <button class="text-red-500 font-semibold underline" type="submit">Delete</button>
                 </div>
               </form>
+              <% end %>
             </td>
           </tr>
         <% end %>

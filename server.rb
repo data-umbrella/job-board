@@ -529,6 +529,48 @@ host_names.each do |host|
       create_new_job(@account_slug, @settings)
     end
 
+    get '/embed' do
+      account_slug = @account.slug
+      @settings = current_settings(account_slug)
+      jobs = get_all_jobs(account_slug)
+      @jobs = jobs.first(5)
+      headers({ 'X-Frame-Options' => '' })
+      erb :"embed/preview", :layout => :"embed/layout"
+    end
+
+    # Page with newsletter form
+    get '/digest' do
+      account_slug = @account.slug
+      erb :"board/digest", :layout => :"board/layout"
+    end
+
+    # Add to newsletter
+    post '/digest' do
+      account_slug = @account.slug
+      email = params['email']
+
+      store = YAML::Store.new "./data/#{account_slug}/newsletter.store"
+      existing_subscriber = store.transaction { store.fetch(email, false) }
+
+      if existing_subscriber
+        @message = "You are already subscribed to this newsletter!"
+        erb :"board/digest", :layout => :"board/layout"
+      else
+        subscriber = OpenStruct.new(
+          email: email
+        )
+
+        store.transaction do
+          store[email] = subscriber
+        end
+
+        @confirmation = true
+
+        erb :"board/digest", :layout => :"board/layout"
+      end
+    end
+
+
     # Page with form to search jobs
     get '/search' do
       erb :"board/search", :layout => :"board/layout"
@@ -766,15 +808,6 @@ post '/register' do
   end
 end
 
-get '/api/:account' do
-  account_slug = params['account']
-  @settings = current_settings(account_slug)
-  jobs = get_all_jobs(account_slug)
-  jobs_obj = jobs.first(5).map { |j| j.to_h }
-
-  response['Access-Control-Allow-Origin'] = '*'
-  jobs_obj.to_json
-end
 
 # Job board routes
 ['/board/:account', '/board/:account/*'].each do |path|
@@ -808,6 +841,15 @@ end
 post '/board/:account/jobs/create' do
   slug = params['account']
   create_new_job(slug, @settings)
+end
+
+get '/board/:account/embed' do
+  account_slug = params['account']
+  @settings = current_settings(account_slug)
+  jobs = get_all_jobs(account_slug)
+  @jobs = jobs.first(5)
+  headers({ 'X-Frame-Options' => '' })
+  erb :"embed/preview", :layout => :"embed/layout"
 end
 
 # Page with newsletter form

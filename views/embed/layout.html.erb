@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+
+    <!-- Parent GA Code -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-117123575-7"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-117123575-7');
+    </script>
+
+    <meta charset="utf-8">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/tailwind.min.css">
+    <link rel="stylesheet" href="/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Raleway:wght@300;400;500;600;700&family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="/favicon.png">
+
+    <!-- JavaScript -->
+    <script src="/moment.min.js"></script>
+
+    <title>Ferret</title>
+
+  </head>
+  <body class="bg-white">
+
+    <div class="w-full lg:container lg:mx-auto lg:w-3/4 px-10">
+      <%= yield %>
+    </div>
+
+    <!-- Footer link back to ferret -->
+    <section>
+      <div class="text-center mt-64 mb-8 text-gray-600">
+        <p>
+          This job board was <a href="http://www.tryferret.com" target="_blank" class="text-blue-500">created using Ferret</a>
+        </p>
+      </div>
+    </section>
+
+  </body>
+</html>

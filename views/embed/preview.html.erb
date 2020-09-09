@@ -1,0 +1,18 @@
+<!-- List all jobs -->
+<section class="mt-10">
+  <% if @jobs.nil? or @jobs.empty? %>
+    <p class="text-xl text-center">
+      There are no jobs here. Please add one!
+    </p>
+  <% elsif @jobs %>
+    <% @jobs.each_with_index do |job, index| %>
+      <% if @other_host %>
+        <a href="jobs/<%= job.slug %>" target="_parent">
+      <% else %>
+        <a href="jobs/<%= job.slug %>" target="_parent">
+      <% end %>
+          <%= erb :'shared/job_card', locals: { job: job } %>
+        </a>
+    <% end %>
+  <% end %>
+</section>

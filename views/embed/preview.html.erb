@@ -7,9 +7,9 @@
   <% elsif @jobs %>
     <% @jobs.each_with_index do |job, index| %>
       <% if @other_host %>
-        <a href="jobs/<%= job.slug %>" target="_parent">
+        <a href="jobs/<%= job.slug %>" target="_blank">
       <% else %>
-        <a href="jobs/<%= job.slug %>" target="_parent">
+        <a href="jobs/<%= job.slug %>" target="_blank">
       <% end %>
           <%= erb :'shared/job_card', locals: { job: job } %>
         </a>

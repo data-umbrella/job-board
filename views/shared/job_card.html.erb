@@ -27,7 +27,7 @@
     </div>
     <div>
       <p class="text-gray-600 text-xl lg:text-base">
-        <%= job.location %> <%= job.type.empty? ? "" : "/ #{job.type}" %>
+        <%= job.location %> <%= job.job_type.nil? ? "" : "/ #{job.job_type}" %>
       </p>
     </div>
   </div>

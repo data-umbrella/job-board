@@ -69,7 +69,7 @@
 
         <% if (@settings.digest) and (@settings.digest == "Yes") %>
         <p class="inline-block px-4 py-2 leading-none text-gray hover:text-gray-600 mt-0 mr-2">
-          <a href="<%= @other_host_route %>/digest" class="">Weekly Digest</a>
+          <a href="<%= @other_host_route %>/digest" class="">Weekly digest</a>
         </p>
         <% end %>
 
@@ -103,6 +103,15 @@
     <div class="w-full lg:container lg:mx-auto lg:w-3/4 px-10">
       <%= yield %>
     </div>
+
+    <!-- Footer link back to ferret -->
+    <section>
+      <div class="text-center mt-64 mb-8 text-gray-600">
+        <p>
+          This job board was <a href="http://www.tryferret.com" target="_blank" class="text-blue-500">created using Ferret</a>
+        </p>
+      </div>
+    </section>
 
     <!-- Choose accent color -->
     <% if (@settings.accent_color) and (!@settings.accent_color.empty?) %>

@@ -44,13 +44,13 @@
           Job Type <span class="text-gray-600, text-xs font-light">(optional)</span>
         </label>
         <div class="relative w-64">
-          <select class="appearance-none border-2 border-gray-300 rounded w-full py-2 px-4 mb-3 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="original-type" name="type">
-            <% @types = ["", "Full Time", "Part Time", "Contract", "Internship", "Temporary"] %>
-            <% @types.each do |type| %>
-              <% if @job.type == type %>
-                <option value="<%= type %>" selected><%= type %></option>
+          <select class="appearance-none border-2 border-gray-300 rounded w-full py-2 px-4 mb-3 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="original-type" name="job-type">
+            <% @job_types = ["", "Full Time", "Part Time", "Contract", "Internship", "Temporary"] %>
+            <% @job_types.each do |job_type| %>
+              <% if @job.job_type == job_type %>
+                <option value="<%= job_type %>" selected><%= job_type %></option>
               <% else %>
-                <option value="<%= type %>"><%= type %></option>
+                <option value="<%= job_type %>"><%= job_type %></option>
               <% end %>
             <% end %>
           </select>

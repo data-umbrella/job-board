@@ -8,17 +8,17 @@
   </div>
 </section>
 
-<div class="rounded shadow my-4 bg-white w-2/3 p-10 mx-auto">
+<div class="rounded shadow my-8 bg-white w-2/3 p-10 mx-auto">
   <div class="font-bold text-2xl mb-2">
     Board Settings
   </div>
   <div class="markdown-text mb-3">
     <p>
-      Customize your job board here. <a href="https://www.loom.com/share/b472d78ec91f4a55bd4954f00f9f6504" target="_blank">Watch this tutorial </a>to learn about all the fields</a>.
+      Customize text content and basic features here. <a href="https://www.loom.com/share/113736c85a5c4554b38b3063399398a5" target="_blank">Watch this tutorial </a>to learn about all the fields</a>.
     </p>
   </div>
 
-  <form class="my-6" method="POST" action="settings/update">
+  <form class="my-6" method="POST" action="settings/board-update">
     <input name="_method" value="patch" type="hidden">
 
     <div class="mb-4">
@@ -68,6 +68,51 @@
       <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" name="job_expiry" type="number" value="<%= @settings.job_expiry %>">
       <p class="text-gray-600 text-xs italic">After X days the jobs will no longer be listed. Set to 0 for no expiration.</p>
     </div>
+
+    <div class="mb-4">
+      <label class="block text-gray-700 text-sm font-bold mb-2">
+        Display weekly digest option
+      </label>
+      <div class="relative w-32">
+        <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" name="digest">
+          <% @options = ["", "Yes", "No"] %>
+          <% @options.each do |option| %>
+            <% if @settings.digest == option %>
+              <option value="<%= option %>" selected><%= option == "" ? "" : option %></option>
+            <% else %>
+              <option value="<%= option %>"><%= option == "" ? "" : option %></option>
+            <% end %>
+          <% end %>
+        </select>
+        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700" style="bottom: 8px; right: 5px">
+          <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+        </div>
+      </div>
+      <p class="text-gray-600 text-xs italic">Visitors will see a link to subscribe to a weekly update of new jobs. You should turn this off if you have your own newsletter that you plan to share jobs on.</p>
+    </div>
+
+    <div class="flex items-center justify-between">
+      <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+        Update your board
+      </button>
+    </div>
+  </form>
+
+</div>
+
+
+<div class="rounded shadow my-7 bg-white w-2/3 p-10 mx-auto">
+  <div class="font-bold text-2xl mb-2">
+    Theme Settings
+  </div>
+  <div class="markdown-text mb-3">
+    <p>
+      Customize the look and feel of your job board.
+    </p>
+  </div>
+
+  <form class="my-6" method="POST" action="settings/theme-update">
+    <input name="_method" value="patch" type="hidden">
 
     <div class="mb-4">
       <label class="block text-gray-700 text-sm font-bold mb-2">
@@ -161,31 +206,9 @@
       <p class="text-gray-600 text-xs italic">Visitors will see a link in the navigation to toggle dark mode on and off.</p>
     </div>
 
-    <div class="mb-4">
-      <label class="block text-gray-700 text-sm font-bold mb-2">
-        Display weekly digest option
-      </label>
-      <div class="relative w-32">
-        <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" name="digest">
-          <% @options = ["", "Yes", "No"] %>
-          <% @options.each do |option| %>
-            <% if @settings.digest == option %>
-              <option value="<%= option %>" selected><%= option == "" ? "" : option %></option>
-            <% else %>
-              <option value="<%= option %>"><%= option == "" ? "" : option %></option>
-            <% end %>
-          <% end %>
-        </select>
-        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700" style="bottom: 8px; right: 5px">
-          <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-        </div>
-      </div>
-      <p class="text-gray-600 text-xs italic">Visitors will see a link to subscribe to a weekly update of new jobs. You should turn this off if you have your own newsletter that you plan to share jobs on.</p>
-    </div>
-
     <div class="flex items-center justify-between">
       <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
-        Save your settings
+        Update your theme
       </button>
     </div>
   </form>

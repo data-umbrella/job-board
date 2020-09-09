@@ -720,8 +720,8 @@ post '/register' do
       font_family: '',
       accent_color: 'blue',
       bg_color: 'white',
-      dark_mode: 'yes',
-      digest: 'yes',
+      dark_mode: 'No',
+      digest: 'No',
       logo: '',
       domain: '',
       google_analytics: '',
@@ -771,6 +771,8 @@ get '/api/:account' do
   @settings = current_settings(account_slug)
   jobs = get_all_jobs(account_slug)
   jobs_obj = jobs.first(5).map { |j| j.to_h }
+
+  response['Access-Control-Allow-Origin'] = '*'
   jobs_obj.to_json
 end
 
@@ -1184,22 +1186,37 @@ get '/admin/:account/settings' do
   erb :"admin/settings", :layout => :"admin/home"
 end
 
-# Update account settings
-patch '/admin/:account/settings/update' do
+# Update board settings
+patch '/admin/:account/settings/board-update' do
   account_slug = params['account']
 
   # Find account and update values
   @settings.org_name = params["org_name"]
   @settings.org_bio = params["org_bio"]
+  @settings.posting_offer = params["posting_offer"]
   @settings.homepage = params["homepage"]
   @settings.google_analytics = params["google-analytics"]
+  @settings.digest = params['digest']
+  @settings.job_expiry = params["job_expiry"].to_i
+
+  # save settings
+  store = YAML::Store.new "./data/#{account_slug}/settings.store"
+  store.transaction do
+    store[account_slug] = @settings
+  end
+
+  redirect "/admin/#{account_slug}/settings"
+end
+
+# Update theme settings
+patch '/admin/:account/settings/theme-update' do
+  account_slug = params['account']
+
+  # Find account and update values
   @settings.font_family = params["font_family"]
   @settings.accent_color = params["accent_color"]
   @settings.bg_color = params['bg_color']
   @settings.dark_mode = params['dark_mode']
-  @settings.digest = params['digest']
-  @settings.job_expiry = params["job_expiry"].to_i
-  @settings.posting_offer = params["posting_offer"]
 
   # save settings
   store = YAML::Store.new "./data/#{account_slug}/settings.store"

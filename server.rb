@@ -590,6 +590,7 @@ host_names.each do |host|
 
     # New job form
     get '/jobs/new' do
+      account_slug = @account.slug
       @markdown_template = "\r\n\r\n## Responsibilities\r\n- List the job responsibilities out \r\n\r\n## Requirements\r\n- List the job requirements out \r\n\r\n## Company Background\r\n"
       @job = OpenStruct.new()
       @categories = get_all_categories(account_slug)

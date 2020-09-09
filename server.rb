@@ -216,6 +216,25 @@ def send_job_confirmation_email(email, account_name, job_price, job_slug, job_id
   mg_client.send_message 'mg.tryferret.com', mb_obj
 end
 
+def pending_job_notification(email)
+  mg_client = Mailgun::Client.new ENV['MAILGUN_API_KEY']
+  mb_obj = Mailgun::MessageBuilder.new()
+
+  mb_obj.from("support@tryferret.com", {"first" => "Ferret", "last" => "Team"})
+
+  if settings.development?
+    mb_obj.add_recipient :to, 'me@tyshaikh.com'
+  else
+    mb_obj.add_recipient :to, email
+  end
+
+  mb_obj.subject "New job posting pending approval!"
+  mb_obj.body_html "<p>A new job has been submitted.</p> <p>You have enabled job moderation, so you will need to manually approve it in your admin dashboard.</p>"
+
+  mg_client.send_message 'mg.tryferret.com', mb_obj
+end
+
+
 ##########################
 ### PUBLIC BOARD FUNCTIONS
 ##########################
@@ -225,7 +244,9 @@ def get_job_edit_page(slug)
   @job = current_job(slug, job_slug)
   @categories = get_all_categories(slug)
 
-  if @job.edit_id == params['edit_id']
+  if @job.paid == false or @job.approved == false
+    redirect "/board/#{slug}"
+  elsif @job.edit_id == params['edit_id']
     erb :"board/edit", :layout => :"board/layout"
   else
     redirect "/board/#{slug}"
@@ -253,8 +274,14 @@ def get_all_jobs(slug)
   # Sort in time order
   jobs.reverse!
 
-  # Move featured jobs to the top
   jobs.each_with_index do |job, index|
+
+    # Remove un-approved jobs
+    if job.approved == false
+      jobs.delete_at(index)
+    end
+
+    # Move featured to the top
     if job.featured == "Yes"
       jobs.delete_at(index)
       jobs.prepend(job)
@@ -265,7 +292,7 @@ def get_all_jobs(slug)
 end
 
 def create_new_job(slug, settings)
-  store = YAML::Store.new "./data/jobs-#{slug}.store"
+  store = YAML::Store.new "./data/#{slug}/jobs.store"
 
   # Check if job already exists
   date = Time.now
@@ -314,6 +341,7 @@ def create_new_job(slug, settings)
       edit_id: jid,
       date: date.to_s,
       paid: paid,
+      approved: true,
       customer_paid: '',
       slug: job_slug
     )
@@ -326,6 +354,8 @@ def create_new_job(slug, settings)
 
     if (settings.job_price.to_i > 0) or (params['featured'] == 'Yes')
       redirect "/board/#{slug}/jobs/#{job_slug}/pay"
+    elsif settings.moderation == "Yes"
+      redirect "/board/#{slug}/jobs/#{job_slug}/pending"
     else
       redirect "/board/#{slug}/jobs/#{job_slug}/confirm"
     end
@@ -358,7 +388,7 @@ def confirm_job_post(slug)
     job.customer_paid = true
   end
 
-  store = YAML::Store.new "./data/jobs-#{slug}.store"
+  store = YAML::Store.new "./data/#{slug}/jobs.store"
   store.transaction do
     store[@job_slug] = job
   end
@@ -367,7 +397,7 @@ end
 def get_search_results(slug)
   search_term = params['query'].downcase
   job_slug = params['job']
-  all_jobs = current_jobs(slug)
+  all_jobs = get_all_jobs(slug)
   jobs = []
 
   all_jobs.each do |job|
@@ -454,7 +484,7 @@ def update_existing_job(slug)
     job.owner = params["owner"]
 
     # save job
-    store = YAML::Store.new "./data/jobs-#{slug}.store"
+    store = YAML::Store.new "./data/#{slug}/jobs.store"
     store.transaction do
       store[job_slug] = job
     end
@@ -503,6 +533,21 @@ def add_subscriber(slug)
   end
 end
 
+def pending_job(slug)
+  job_slug = params['job']
+
+  # Set job approved boolean to false
+  job = current_job(slug, job_slug)
+  job.approved = false
+
+  store = YAML::Store.new "./data/#{slug}/jobs.store"
+  store.transaction do
+    store[job_slug] = job
+  end
+
+  # notify admin of pending post
+  pending_job_notification(@account.owner)
+end
 
 
 # Extract out all linked domains
@@ -621,6 +666,13 @@ host_names.each do |host|
       @account_slug = @account.slug
       confirm_job_post(@account_slug)
       erb :"board/confirmation", :layout => :"board/layout"
+    end
+
+    # Page to explain moderation process
+    get '/jobs/:job/pending' do
+      account_slug = @account.slug
+      pending_job(account_slug)
+      erb :"board/pending", :layout => :"board/layout"
     end
 
     # Problem with CC page
@@ -768,6 +820,7 @@ post '/register' do
       bg_color: 'white',
       dark_mode: 'No',
       digest: 'No',
+      moderation: 'No',
       logo: '',
       domain: '',
       google_analytics: '',
@@ -891,7 +944,13 @@ get '/board/:account/jobs/:job' do
   account_slug = params['account']
   job_slug = params['job']
   @job = current_job(account_slug, job_slug)
-  erb :"board/job", :layout => :"board/layout"
+
+  if @job.paid == false or @job.approved == false
+    redirect "/board/#{account_slug}"
+  else
+    erb :"board/job", :layout => :"board/layout"
+  end
+
 end
 
 get '/board/:account/jobs/:job/pay' do
@@ -904,6 +963,14 @@ end
 post '/board/:account/jobs/:job/pay' do
   account_slug = params['account']
   pay_stripe_invoice(account_slug)
+end
+
+# Page to explain moderation process
+get '/board/:account/jobs/:job/pending' do
+  account_slug = params['account']
+  pending_job(account_slug)
+
+  erb :"board/pending", :layout => :"board/layout"
 end
 
 # Give user edit job link and confirmation details
@@ -1002,6 +1069,7 @@ post '/admin/:account/jobs/create' do
     location: params["location"],
     company_url: params["company-url"],
     company_logo: new_filename || '',
+    approved: true,
     paid: true,
     date: date.to_s,
     slug: job_slug
@@ -1018,6 +1086,7 @@ get '/admin/:account/jobs/:job/edit' do
   job_slug = params['job']
   @categories = get_all_categories(account_slug)
   @job = current_job(account_slug, job_slug)
+
   erb :"admin/edit", :layout => :"admin/home"
 end
 
@@ -1062,6 +1131,26 @@ patch '/admin/:account/jobs/:job/update' do
   store.transaction do
     store[job_slug] = job
   end
+
+  redirect "/admin/#{params['account']}/jobs"
+end
+
+# Approve existing job
+patch '/admin/:account/jobs/:job/approve' do
+  account_slug = params['account']
+  job_slug = params['job']
+
+  # approve job
+  job = current_job(account_slug, job_slug)
+  job.approved = true
+
+  store = YAML::Store.new "./data/#{account_slug}/jobs.store"
+  store.transaction do
+    store[job_slug] = job
+  end
+
+  # confirm job
+  confirm_job_post(account_slug)
 
   redirect "/admin/#{params['account']}/jobs"
 end
@@ -1219,8 +1308,9 @@ patch '/admin/:account/settings/board-update' do
   @settings.posting_offer = params["posting_offer"]
   @settings.homepage = params["homepage"]
   @settings.google_analytics = params["google-analytics"]
-  @settings.digest = params['digest']
   @settings.job_expiry = params["job_expiry"].to_i
+  @settings.moderation = params["moderation"]
+  @settings.digest = params['digest']
 
   # save settings
   store = YAML::Store.new "./data/#{account_slug}/settings.store"

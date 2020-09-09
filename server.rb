@@ -406,7 +406,7 @@ def get_search_results(slug)
     end
   end
 
-  return jobs.reverse()
+  return jobs
 end
 
 def pay_stripe_invoice(slug)

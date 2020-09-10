@@ -267,37 +267,58 @@ def get_job_edit_page(slug)
 end
 
 def get_all_jobs(slug)
+  expiry_days = @settings.job_expiry.to_i
   all_jobs = current_jobs(slug)
   jobs = []
 
-  expiry_days = @settings.job_expiry.to_i
+  # Sort in time order
+  all_jobs.reverse!
 
-  if expiry_days == 0
-    jobs = all_jobs
-  else
-    all_jobs.each do |job|
-      next if job.paid == false
+  all_jobs.each_with_index do |job, index|
+
+    # Check if paid
+    if job.paid == false
+      next
+    end
+
+    # Check if approved
+    if job.approved == false
+      next
+    end
+
+    if expiry_days > 0
       job_date = Time.parse(job.date)
       today = Time.now
       diff = ((today - job_date) / 86400).round
-      jobs.append(job) if diff < expiry_days
-    end
-  end
 
-  # Sort in time order
-  jobs.reverse!
+      if diff < expiry_days
 
-  jobs.each_with_index do |job, index|
+        # Move featured to the top
+        if job.featured == "Yes"
+          jobs.prepend(job)
+          next
+        else
+          jobs.append(job)
+          next
+        end
 
-    # Remove un-approved jobs
-    if job.approved == false
-      jobs.delete_at(index)
-    end
+      else
+        next
+      end
 
-    # Move featured to the top
-    if job.featured == "Yes"
-      jobs.delete_at(index)
-      jobs.prepend(job)
+    elsif expiry_days == 0
+
+      # Move featured to the top
+      if job.featured == "Yes"
+        jobs.prepend(job)
+        next
+      else
+        jobs.append(job)
+        next
+      end
+
+    else
+      next
     end
   end
 

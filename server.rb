@@ -161,6 +161,19 @@ end
 ### MAILER FUNCTIONS
 ####################
 
+def support_request(name, email, question)
+  mg_client = Mailgun::Client.new ENV['MAILGUN_API_KEY']
+  mb_obj = Mailgun::MessageBuilder.new()
+
+  mb_obj.from("support@tryferret.com", {"first" => "Ferret", "last" => "Team"})
+  mb_obj.add_recipient :to, 'me@tyshaikh.com'
+
+  mb_obj.subject "Ferret Support Request"
+  mb_obj.body_html "<p>Name: #{name}</p> <p>Email: #{email}</p> <p>Question: #{question}</p>"
+
+  mg_client.send_message 'mg.tryferret.com', mb_obj
+end
+
 def send_welcome_email(email)
   mg_client = Mailgun::Client.new ENV['MAILGUN_API_KEY']
   mb_obj = Mailgun::MessageBuilder.new()
@@ -704,6 +717,16 @@ end
 
 get '/docs' do
   erb :docs, :layout => :home
+end
+
+get '/support' do
+  erb :support, :layout => :home
+end
+
+post '/support' do
+  support_request(params['name'], params['email'], params['question'])
+  @message = "Your support request has been sent!"
+  erb :support, :layout => :home
 end
 
 get '/login' do

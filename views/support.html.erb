@@ -1,0 +1,43 @@
+<div class="rounded border my-8 bg-white w-2/3 p-10 mx-auto">
+  <div class="font-bold text-2xl mb-2 ">
+    Questions & Support
+  </div>
+
+  <div class="my-8">
+    <% if @message %>
+      <%= erb :'shared/success', locals: { message: @message  } %>
+    <% end %>
+
+    <form method="POST" action="/support" enctype="multipart/form-data">
+
+      <div class="mb-4">
+        <label class="block text-gray-700 lg:text-sm font-bold mb-2">
+          Your Name
+        </label>
+        <input class="appearance-none border-2 border-gray-300 rounded w-full py-2 px-4 mb-3 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" type="text" name="name" required>
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-gray-700 lg:text-sm font-bold mb-2">
+          Your Email
+        </label>
+        <input class="appearance-none border-2 border-gray-300 rounded w-full py-2 px-4 mb-3 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" type="email" name="email" required>
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-gray-700 lg:text-sm font-bold mb-2">
+          Your Question/Comment/Feedback
+        </label>
+        <textarea class="appearance-none border-2 border-gray-300 rounded w-full py-2 px-4 mb-3 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" type="text" rows="10" name="question"></textarea>
+      </div>
+
+      <div class="flex items-center justify-between">
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+          Send your message
+        </button>
+      </div>
+    </form>
+
+  </div>
+
+</div>

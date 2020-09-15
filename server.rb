@@ -546,7 +546,7 @@ end
 def add_subscriber(slug)
   email = params['email']
 
-  store = YAML::Store.new "./data/#{account_slug}/newsletter.store"
+  store = YAML::Store.new "./data/#{slug}/newsletter.store"
   existing_subscriber = store.transaction { store.fetch(email, false) }
 
   if existing_subscriber

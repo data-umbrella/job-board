@@ -1,5 +1,5 @@
 <% content_for :social do %>
-  <meta property="og:title" content="<%= @job.position %>">
+  <meta property="og:title" content="<%= @job.position %>, <%= @job.company_name %>">
   <meta property="og:description" content="<%= truncate(@job.description, 200) %>">
   <meta property="og:image" content="https://www.tryferret.com/now-hiring.png">
   <!-- <meta property="og:url" content="http://www.google.com/"> -->

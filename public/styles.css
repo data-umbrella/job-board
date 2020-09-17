@@ -16,6 +16,9 @@
 .markdown-text p > a, .editor-preview-active-side p > a {
   color: blue;
 }
+.markdown-text p a, .editor-preview-active-side p a {
+  color: blue;
+}
 
 .markdown-text > *, .editor-preview-active-side > * {
   font-size: revert;

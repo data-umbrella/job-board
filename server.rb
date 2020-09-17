@@ -52,6 +52,20 @@ helpers do
 end
 
 # Helper functions
+
+def subscriber_count(slug)
+  count = 0
+
+  newsletter_store = YAML::Store.new "./data/#{slug}/newsletter.store"
+  newsletter_store.transaction(true) do
+    newsletter_store.roots.each do |data_root_name|
+      count += 1
+    end
+  end
+
+  return count
+end
+
 def create_slug(text)
   text.downcase.strip.gsub(' ', '-').gsub(/[^\w-]/, '')
 end
@@ -206,6 +220,23 @@ def send_password_reset_email(email, password)
   mg_client.send_message 'mg.tryferret.com', mb_obj
 end
 
+def admin_job_confirmation(account_owner, company_posting, job_slug, domain_route)
+  mg_client = Mailgun::Client.new ENV['MAILGUN_API_KEY']
+  mb_obj = Mailgun::MessageBuilder.new()
+
+  mb_obj.from("support@tryferret.com", {"first" => 'Ferret Team'})
+  if settings.development?
+    mb_obj.add_recipient :to, 'me@tyshaikh.com'
+  else
+    mb_obj.add_recipient :to, account_owner
+  end
+
+  mb_obj.subject "A new job has been posted"
+  mb_obj.body_html "<p>A new job has been submitted to your board.</p> <p>The company who posted it was: #{company_posting}.</p> <p><a href='http://#{domain_route}/jobs/#{job_slug}' target='_blank'>Click here to view the listing<a/>.</p>"
+
+  mg_client.send_message 'mg.tryferret.com', mb_obj
+end
+
 def send_job_confirmation_email(email, account_name, job_price, job_slug, job_id, domain_route)
   mg_client = Mailgun::Client.new ENV['MAILGUN_API_KEY']
   mb_obj = Mailgun::MessageBuilder.new()
@@ -243,6 +274,23 @@ def pending_job_notification(email)
 
   mb_obj.subject "New job posting pending approval!"
   mb_obj.body_html "<p>A new job has been submitted.</p> <p>You have enabled job moderation, so you will need to manually approve it in your admin dashboard.</p>"
+
+  mg_client.send_message 'mg.tryferret.com', mb_obj
+end
+
+def digest_confirmation(subscriber_email, account_name)
+  mg_client = Mailgun::Client.new ENV['MAILGUN_API_KEY']
+  mb_obj = Mailgun::MessageBuilder.new()
+
+  mb_obj.from("support@tryferret.com", {"first" => account_name})
+  if settings.development?
+    mb_obj.add_recipient :to, 'me@tyshaikh.com'
+  else
+    mb_obj.add_recipient :to, subscriber_email
+  end
+
+  mb_obj.subject "You have been added to the weekly digest"
+  mb_obj.body_html "<p>You have requested weekly updates about new jobs posted on #{account_name}.</p> <p>If you did not request this, please unsubscribe using the link below.</p>"
 
   mg_client.send_message 'mg.tryferret.com', mb_obj
 end
@@ -412,6 +460,9 @@ def confirm_job_post(slug)
     total_price = @settings.job_price.to_i
   end
 
+  # notify admin
+  admin_job_confirmation(@account.email, job.company_name, @job_slug, domain_route)
+
   # Send confirmation email
   send_job_confirmation_email(job.contact, @settings.org_name, total_price, @job_slug, @jid, domain_route)
 
@@ -543,7 +594,7 @@ def get_category_jobs(account_slug, category_slug)
   return jobs
 end
 
-def add_subscriber(slug)
+def add_subscriber(slug, board_name)
   email = params['email']
 
   store = YAML::Store.new "./data/#{slug}/newsletter.store"
@@ -562,6 +613,9 @@ def add_subscriber(slug)
     end
 
     @confirmation = true
+
+    # Send email confirmation
+    digest_confirmation(email, board_name)
 
     erb :"board/digest", :layout => :"board/layout"
   end
@@ -652,7 +706,7 @@ host_names.each do |host|
     # Add to newsletter
     post '/digest' do
       account_slug = @account.slug
-      add_subscriber(account_slug)
+      add_subscriber(account_slug, @settings.org_name)
     end
 
     # Page with form to search jobs
@@ -960,7 +1014,7 @@ end
 # Add to newsletter
 post '/board/:account/digest' do
   account_slug = params['account']
-  add_subscriber(account_slug)
+  add_subscriber(account_slug, @settings.org_name)
 end
 
 # Page with form to search jobs
@@ -1340,6 +1394,7 @@ end
 
 # Populate with default settings
 get '/admin/:account/settings' do
+  @subscriber_count = subscriber_count(params["account"])
   erb :"admin/settings", :layout => :"admin/home"
 end
 

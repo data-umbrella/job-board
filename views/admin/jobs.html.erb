@@ -35,9 +35,9 @@
           <th class="px-4 py-2">View Job</th>
           <th class="px-4 py-2">Edit Job</th>
           <th class="px-4 py-2">Customer Edit Link</th>
-          <% if @settings.moderation == "Yes" %>
-          <th class="px-4 py-2">Approve Job</th>
-          <% end %>
+          <%# if @settings.moderation == "Yes" %>
+          <th class="px-4 py-2">Show or Hide Job</th>
+          <%# end %>
           <th class="px-4 py-2">Delete Job</th>
         </tr>
       </thead>
@@ -59,23 +59,30 @@
             <td class="border px-4 py-2 underline">
               <% if job.edit_id %>
                 <a href="/board/<%= @account.slug %>/jobs/<%= job.slug %>/<%= job.edit_id %>/edit" target="_blank">
-                  Customer Edit Link
+                  Edit Link
                 </a>
               <% end %>
             </td>
 
-            <% if @settings.moderation == "Yes" %>
+            <%# if @settings.moderation == "Yes" %>
             <td class="border px-4 py-2 underline">
               <% if job.approved == false %>
-              <form method="POST" action="jobs/<%= job.slug %>/approve" onsubmit="return confirm('Are you sure you want to confirm this job?');">
+              <form method="POST" action="jobs/<%= job.slug %>/show" onsubmit="return confirm('Are you sure you want to show this job?');">
                 <div style="margin:0;padding:0">
                   <input name="_method" value="patch" type="hidden" />
-                  <button class="text-green-500 font-semibold underline" type="submit">Approve</button>
+                  <button class="text-green-500 font-semibold underline" type="submit">Show</button>
+                </div>
+              </form>
+              <% else %>
+              <form method="POST" action="jobs/<%= job.slug %>/hide" onsubmit="return confirm('Are you sure you want to hide this job?');">
+                <div style="margin:0;padding:0">
+                  <input name="_method" value="patch" type="hidden" />
+                  <button class="text-green-500 font-semibold underline" type="submit">Hide</button>
                 </div>
               </form>
               <% end %>
             </td>
-            <% end %>
+            <%# end %>
 
             <td class="border px-4 py-2 underline">
               <% if (job.customer_paid) and (job.customer_paid == true) %>

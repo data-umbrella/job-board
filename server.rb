@@ -1254,6 +1254,46 @@ patch '/admin/:account/jobs/:job/approve' do
   redirect "/admin/#{params['account']}/jobs"
 end
 
+# Show existing job
+patch '/admin/:account/jobs/:job/show' do
+  account_slug = params['account']
+  job_slug = params['job']
+
+  # approve job
+  job = current_job(account_slug, job_slug)
+  job.approved = true
+
+  store = YAML::Store.new "./data/#{account_slug}/jobs.store"
+  store.transaction do
+    store[job_slug] = job
+  end
+
+  # confirm job
+  confirm_job_post(account_slug)
+
+  redirect "/admin/#{params['account']}/jobs"
+end
+
+# Hide existing job
+patch '/admin/:account/jobs/:job/hide' do
+  account_slug = params['account']
+  job_slug = params['job']
+
+  # approve job
+  job = current_job(account_slug, job_slug)
+  job.approved = false
+
+  store = YAML::Store.new "./data/#{account_slug}/jobs.store"
+  store.transaction do
+    store[job_slug] = job
+  end
+
+  # confirm job
+  confirm_job_post(account_slug)
+
+  redirect "/admin/#{params['account']}/jobs"
+end
+
 # Delete existing job
 delete '/admin/:account/jobs/:job/delete' do
   account_slug = params['account']

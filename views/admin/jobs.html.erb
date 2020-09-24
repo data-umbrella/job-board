@@ -70,14 +70,14 @@
               <form method="POST" action="jobs/<%= job.slug %>/show" onsubmit="return confirm('Are you sure you want to show this job?');">
                 <div style="margin:0;padding:0">
                   <input name="_method" value="patch" type="hidden" />
-                  <button class="text-green-500 font-semibold underline" type="submit">Show</button>
+                  <button class="text-green-500 font-semibold underline" type="submit">Show this job</button>
                 </div>
               </form>
               <% else %>
               <form method="POST" action="jobs/<%= job.slug %>/hide" onsubmit="return confirm('Are you sure you want to hide this job?');">
                 <div style="margin:0;padding:0">
                   <input name="_method" value="patch" type="hidden" />
-                  <button class="text-green-500 font-semibold underline" type="submit">Hide</button>
+                  <button class="text-green-500 font-semibold underline" type="submit">Hide this job</button>
                 </div>
               </form>
               <% end %>

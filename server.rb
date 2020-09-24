@@ -1269,7 +1269,7 @@ patch '/admin/:account/jobs/:job/show' do
   end
 
   # confirm job
-  confirm_job_post(account_slug)
+  # confirm_job_post(account_slug)
 
   redirect "/admin/#{params['account']}/jobs"
 end
@@ -1289,7 +1289,7 @@ patch '/admin/:account/jobs/:job/hide' do
   end
 
   # confirm job
-  confirm_job_post(account_slug)
+  # confirm_job_post(account_slug)
 
   redirect "/admin/#{params['account']}/jobs"
 end

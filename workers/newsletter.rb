@@ -25,6 +25,7 @@ paths.each do |path|
   # p "#{slug} has #{count} subscribers"
   # p "list #{email_list}"
 
+  # Check if there are no email subscribers
   next if count == 0
 
   # Pull out all the jobs listed in the last 7 days
@@ -45,6 +46,9 @@ paths.each do |path|
       end
     end
   end
+
+  # Check if there are no new jobs
+  next if new_jobs.length == 0
 
   settings_store = YAML::Store.new "../data/#{slug}/settings.store"
   settings = settings_store.transaction { settings_store.fetch(slug, false) }

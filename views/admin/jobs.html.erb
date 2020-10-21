@@ -28,13 +28,10 @@
     <table class="table-auto">
       <thead>
         <tr>
-          <th class="px-4 py-2">Position</th>
-          <th class="px-4 py-2">Company</th>
+          <th class="px-4 py-2">Job</th>
+          <th class="px-4 py-2">View</th>
+          <th class="px-4 py-2">Edit</th>
           <th class="px-4 py-2">Customer</th>
-          <th class="px-4 py-2">Date Posted</th>
-          <th class="px-4 py-2">View Job</th>
-          <th class="px-4 py-2">Edit Job</th>
-          <th class="px-4 py-2">Customer Edit Link</th>
           <%# if @settings.moderation == "Yes" %>
           <th class="px-4 py-2">Show or Hide Job</th>
           <%# end %>
@@ -44,10 +41,13 @@
       <tbody>
         <% @jobs.each_with_index do |job, index| %>
           <tr>
-            <td class="border px-4 py-2"><%= job.position %></td>
-            <td class="border px-4 py-2"><%= job.company_name %></td>
-            <td class="border px-4 py-2"><%= job.owner %><br><%= job.contact %></td>
-            <td class="border px-4 py-2"><%= Time.parse(job.date).strftime('%B %d, %Y') %></td>
+            <td class="border px-4 py-2">
+              <span class="font-bold">Position</span>: <%= job.position %> <br>
+              <span class="font-bold">Company</span>: <%= job.company_name %> <br>
+              <span class="font-bold">Customer</span>: <%= job.owner %> <br>
+              <span class="font-bold">Email</span>: <%= job.contact %> <br>
+              <span class="font-bold">Posted</span>: <%= Time.parse(job.date).strftime('%b %d, %Y') %><br>
+            </td>
             <td class="border px-4 py-2 underline">
               <a href="/board/<%= @account.slug %>/jobs/<%= job.slug %>" target="_blank">View</a>
             </td>

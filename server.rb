@@ -494,7 +494,7 @@ def get_search_results(slug)
   return jobs
 end
 
-def pay_stripe_invoice(slug)
+def pay_stripe_invoice(slug, route)
   job_slug = params['job']
   job = current_job(slug, job_slug)
   origin = request_headers['origin']
@@ -525,8 +525,8 @@ def pay_stripe_invoice(slug)
         destination: stripe_id,
       },
     },
-    success_url: "#{origin}#{@other_host_route}/jobs/#{job_slug}/confirm",
-    cancel_url: "#{origin}#{@other_host_route}/jobs/#{job_slug}/problem",
+    success_url: "#{origin}#{route}/jobs/#{job_slug}/confirm",
+    cancel_url: "#{origin}#{route}/jobs/#{job_slug}/problem",
   )
 
   { id: session.id }.to_json
@@ -747,7 +747,7 @@ host_names.each do |host|
     # Pay for a job posting
     post '/jobs/:job/pay' do
       account_slug = @account.slug
-      pay_stripe_invoice(account_slug)
+      pay_stripe_invoice(account_slug, @other_host_route)
     end
 
     # Give user edit job link and confirmation details
@@ -1061,7 +1061,7 @@ end
 # Pay for a job posting
 post '/board/:account/jobs/:job/pay' do
   account_slug = params['account']
-  pay_stripe_invoice(account_slug)
+  pay_stripe_invoice(account_slug, @other_host_route)
 end
 
 # Page to explain moderation process

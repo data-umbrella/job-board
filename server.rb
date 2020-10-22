@@ -460,7 +460,7 @@ def confirm_job_post(slug)
   end
 
   # notify admin
-  admin_job_confirmation(@account.email, job.company_name, @job_slug, domain_route)
+  admin_job_confirmation(@account.owner, job.company_name, @job_slug, domain_route)
 
   # Send confirmation email
   send_job_confirmation_email(job.contact, @settings.org_name, total_price, @job_slug, @jid, domain_route)

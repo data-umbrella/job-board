@@ -300,17 +300,17 @@ end
 ### PUBLIC BOARD FUNCTIONS
 ##########################
 
-def get_job_edit_page(slug)
+def get_job_edit_page(slug, route)
   job_slug = params['job']
   @job = current_job(slug, job_slug)
   @categories = get_all_categories(slug)
 
   if @job.paid == false or @job.approved == false
-    redirect "/board/#{slug}"
+    redirect "#{route}"
   elsif @job.edit_id == params['edit_id']
     erb :"board/edit", :layout => :"board/layout"
   else
-    redirect "/board/#{slug}"
+    redirect "#{route}"
   end
 end
 
@@ -373,7 +373,7 @@ def get_all_jobs(slug)
   return jobs
 end
 
-def create_new_job(slug, settings)
+def create_new_job(slug, settings, route)
   store = YAML::Store.new "./data/#{slug}/jobs.store"
 
   # Check if job already exists
@@ -435,13 +435,12 @@ def create_new_job(slug, settings)
     @account_slug = slug
 
     if (settings.job_price.to_i > 0) or (params['featured'] == 'Yes')
-      redirect "/board/#{slug}/jobs/#{job_slug}/pay"
+      redirect "#{@other_host_route}/jobs/#{job_slug}/pay"
     elsif settings.moderation == "Yes"
-      redirect "/board/#{slug}/jobs/#{job_slug}/pending"
+      redirect "#{@other_host_route}/jobs/#{job_slug}/pending"
     else
-      redirect "/board/#{slug}/jobs/#{job_slug}/confirm"
+      redirect "#{@other_host_route}/jobs/#{job_slug}/confirm"
     end
-
   end
 end
 
@@ -688,7 +687,7 @@ host_names.each do |host|
     # Create a new job
     post '/jobs/create' do
       @account_slug = @account.slug
-      create_new_job(@account_slug, @settings)
+      create_new_job(@account_slug, @settings, @other_host_route)
     end
 
     get '/embed' do
@@ -774,7 +773,7 @@ host_names.each do |host|
     # Unique link to edit an existing job
     get '/jobs/:job/:edit_id/edit' do
       account_slug = @account.slug
-      get_job_edit_page(account_slug)
+      get_job_edit_page(account_slug, @other_host_route)
     end
 
     # Update existing job
@@ -996,7 +995,7 @@ end
 # Create a new job
 post '/board/:account/jobs/create' do
   slug = params['account']
-  create_new_job(slug, @settings)
+  create_new_job(slug, @settings, @other_host_route)
 end
 
 get '/board/:account/embed' do
@@ -1089,7 +1088,7 @@ end
 # Unique link to edit an existing job
 get '/board/:account/jobs/:job/:edit_id/edit' do
   account_slug = params['account']
-  get_job_edit_page(account_slug)
+  get_job_edit_page(account_slug, @other_host_route)
 end
 
 # Update existing job

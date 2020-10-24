@@ -27,13 +27,52 @@
   </section>
 </div>
 
-<script>
+<!-- <script>
   let descBox = new SimpleMDE({
     element: document.getElementById("original-description"),
     hideIcons: ["heading", "quote", "image", "side-by-side", "fullscreen"],
     status: false,
   });
+</script> -->
+
+<script>
+  // Setup toolbar options
+  var toolbarOptions = [
+    [{ 'header': [1, 2, 3, false] }],
+    ['bold', 'italic', 'underline'],        // toggled buttons
+
+    // [{ 'header': 1 }, { 'header': 2 }],               // custom button values
+    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+
+    ['clean']                                         // remove formatting button
+  ];
+
+  // Initialize editor
+  var quill = new Quill('#editor', {
+    modules: {
+      toolbar: toolbarOptions
+    },
+    theme: 'snow'
+  });
+
+  // Update hidden field
+  const hidden = document.querySelector('#hiddenArea');
+  let quillVal = quill.container.firstChild.innerHTML;
+  hidden.value = quillVal;
+
+  quill.on('text-change', function() {
+    let quillVal = quill.container.firstChild.innerHTML;
+    hidden.value = quillVal;
+  });
 </script>
+
+<style>
+  #editor {
+    height: 350px;
+  }
+</style>
+
+
 
 
 <script>

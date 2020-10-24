@@ -33,6 +33,7 @@
     <link rel="stylesheet" href="/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Raleway:wght@300;400;500;600;700&family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="shortcut icon" href="/favicon.png">
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 
     <!-- Choose custom font -->
     <% if (@settings.font_family) and (!@settings.font_family.empty?) %>
@@ -45,6 +46,7 @@
 
     <!-- JavaScript -->
     <script src="/moment.min.js"></script>
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 
     <%= yield_content :head %>
 
@@ -108,7 +110,7 @@
     <section>
       <div class="text-center mt-40 mb-8 text-gray-600">
         <p>
-          <a href="http://www.hyperplane.co" target="_blank" class="text-blue-500">Made by Hyperplane</a> 
+          <a href="http://www.hyperplane.co" target="_blank" class="text-blue-500">Made by Hyperplane</a>
         </p>
       </div>
     </section>

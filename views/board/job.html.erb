@@ -27,7 +27,7 @@
 
 <section class="mb-4">
   <div class="text-3xl lg:text-base rounded border border-gray-300 bg-white py-2 px-8">
-    <p class="markdown-text text-black"><%= @job.description %></p>
+    <div class="markdown-text text-black"><%= @job.description %></div>
   </div>
 </section>
 
@@ -48,7 +48,11 @@
 
 </section>
 
+
+
+<% if Time.new(2020, 10, 24) > Time.parse(@job.date) %>
 <script>
   const markdownText = Array.from(document.querySelectorAll('.markdown-text'));
   markdownText.forEach(text => text.innerHTML = marked(text.innerHTML))
 </script>
+<% end %>

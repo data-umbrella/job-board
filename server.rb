@@ -678,7 +678,9 @@ host_names.each do |host|
     # New job form
     get '/jobs/new' do
       account_slug = @account.slug
-      @markdown_template = "\r\n\r\n## Responsibilities\r\n- List the job responsibilities out \r\n\r\n## Requirements\r\n- List the job requirements out \r\n\r\n## Company Background\r\n"
+      @html_template = "<p><br></p><h2>Responsibilities </h2><ul><li>List the job responsibilities
+        out </li></ul><p><br></p><h2>Requirements</h2><ul><li>List the job requirements
+        out</li></ul><p><br></p><h2>Company Background</h2><p><br></p><p><br></p><p><br></p>"
       @job = OpenStruct.new()
       @categories = get_all_categories(account_slug)
       erb :"board/new", :layout => :"board/layout"
@@ -986,7 +988,9 @@ end
 # New job form
 get '/board/:account/jobs/new' do
   account_slug = params['account']
-  @markdown_template = "\r\n\r\n## Responsibilities\r\n- List the job responsibilities out \r\n\r\n## Requirements\r\n- List the job requirements out \r\n\r\n## Company Background\r\n"
+  @html_template = "<p><br></p><h2>Responsibilities </h2><ul><li>List the job responsibilities
+    out </li></ul><p><br></p><h2>Requirements</h2><ul><li>List the job requirements
+    out</li></ul><p><br></p><h2>Company Background</h2><p><br></p><p><br></p><p><br></p>"
   @categories = get_all_categories(account_slug)
   @job = OpenStruct.new()
   erb :"board/new", :layout => :"board/layout"
@@ -1130,7 +1134,9 @@ end
 # New job form
 get '/admin/:account/jobs/new' do
   account_slug = params['account']
-  @markdown_template = "\r\n\r\n## Responsibilities\r\n- List the job responsibilities out \r\n\r\n## Requirements\r\n- List the job requirements out \r\n\r\n## Company Background\r\n"
+  @html_template = "<p><br></p><h2>Responsibilities </h2><ul><li>List the job responsibilities
+    out </li></ul><p><br></p><h2>Requirements</h2><ul><li>List the job requirements
+    out</li></ul><p><br></p><h2>Company Background</h2><p><br></p><p><br></p><p><br></p>"
   @categories = get_all_categories(account_slug)
   @job = OpenStruct.new()
   erb :"admin/new", :layout => :"admin/home"

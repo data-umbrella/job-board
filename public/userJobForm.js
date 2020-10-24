@@ -50,18 +50,53 @@ companyLink.addEventListener('input', function(e) {
 ////////
 // Refresh markdown preview
 ////////
-let descBox = new SimpleMDE({
-  element: document.getElementById("original-description"),
-  hideIcons: ["quote", "image",],
-  status: false,
+// let descBox = new SimpleMDE({
+//   element: document.getElementById("original-description"),
+//   hideIcons: ["quote", "image",],
+//   status: false,
+// });
+//
+// let previewTimer = setInterval(updateMarkdown, 5000)
+//
+// function updateMarkdown() {
+//   const descOutput = document.querySelector('#preview-description')
+//   descOutput.innerHTML = descBox.markdown(descBox.value())
+// }
+
+////////
+// Quill WYSIWYG Editor Code
+////////
+
+// Setup toolbar options
+var toolbarOptions = [
+  [{ 'header': [1, 2, 3, false] }],
+  ['bold', 'italic', 'underline'],        // toggled buttons
+
+  // [{ 'header': 1 }, { 'header': 2 }],               // custom button values
+  [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+
+  ['clean']                                         // remove formatting button
+];
+
+// Initialize editor
+var quill = new Quill('#editor', {
+  modules: {
+    toolbar: toolbarOptions
+  },
+  theme: 'snow'
 });
 
-let previewTimer = setInterval(updateMarkdown, 5000)
+// Update hidden field
+const hidden = document.querySelector('#hiddenArea');
+const descOutput = document.querySelector('#preview-description')
+let quillVal = quill.container.firstChild.innerHTML;
+hidden.value = quillVal;
 
-function updateMarkdown() {
-  const descOutput = document.querySelector('#preview-description')
-  descOutput.innerHTML = descBox.markdown(descBox.value())
-}
+quill.on('text-change', function() {
+  let quillVal = quill.container.firstChild.innerHTML;
+  hidden.value = quillVal;
+  descOutput.innerHTML = quillVal;
+});
 
 ////////
 // Prevent large files from being uploaded && displays logo preview

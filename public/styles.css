@@ -28,3 +28,7 @@
 .markdown-text blockquote, .editor-preview-active-side blockquote {
   margin: revert;
 }
+
+.markdown-text > p, .markdown-text > ul li {
+  font-size: 1.1rem;
+}

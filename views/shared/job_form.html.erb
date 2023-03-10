@@ -32,60 +32,12 @@
         <p class="text-gray-600 text-sm lg:text-xs italic">Please share the application URL.</p>
       </div>
 
-      <!-- <div class="mb-4">
-        <label class="block text-gray-700 lg:text-sm font-bold mb-2">
-          How to apply?
-        </label>
-        <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="original-app" type="text" rows="6" name="application"></textarea>
-        <p class="text-gray-600 text-sm lg:text-xs italic">Please share any special instructions.</p>
-      </div> -->
 
-      <div class="mb-4 mr-4 w-5/12 inline-block">
-        <label class="block text-gray-700 text-sm font-bold mb-2">
-          Job Type <span class="text-gray-600, text-xs font-light">(optional)</span>
-        </label>
+      <div class="w-5/12 inline-block">
         <div class="relative w-64">
-          <select class="appearance-none border-2 border-gray-300 rounded w-full py-2 px-4 mb-3 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="original-type" name="job-type">
-            <% @job_types = ["", "Full Time", "Part Time", "Contract", "Internship", "Temporary"] %>
-            <% @job_types.each do |job_type| %>
-              <% if @job.job_type == job_type %>
-                <option value="<%= job_type %>" selected><%= job_type %></option>
-              <% else %>
-                <option value="<%= job_type %>"><%= job_type %></option>
-              <% end %>
-            <% end %>
-          </select>
-          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700" style="bottom: 8px; right: 5px">
-            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-          </div>
+          <select class="invisible" id="original-type" name="job-type"></select>
         </div>
-        <p class="text-gray-600 text-sm lg:text-xs italic">Let applicants know what type of job this is.</p>
       </div>
-
-      <% if (@categories) and (!@categories.empty?) %>
-      <div class="mb-4 w-5/12 inline-block">
-        <label class="block text-gray-700 text-sm font-bold mb-2">
-          Job Category <span class="text-gray-600, text-xs font-light">(optional)</span>
-        </label>
-        <div class="relative w-full">
-          <select class="appearance-none border-2 border-gray-300 rounded w-full py-2 px-4 mb-3 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="original-type" name="category">
-            <option value=""></option>
-            <% @categories.each do |category| %>
-              <% if @job.category == category.slug %>
-                <option value="<%= category.slug %>" selected><%= category.name %></option>
-              <% else %>
-                <option value="<%= category.slug %>"><%= category.name %></option>
-              <% end %>
-            <% end %>
-          </select>
-          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700" style="bottom: 8px; right: 5px">
-            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-          </div>
-        </div>
-        <p class="text-gray-600 text-sm lg:text-xs italic">Select the category that fits best.</p>
-      </div>
-      <% end %>
-
     </div>
   </div>
 </div>
@@ -147,39 +99,6 @@
       <input class="appearance-none border-2 border-gray-300 rounded w-full py-2 px-4 mb-3 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="contact" type="email" name="contact" value="<%= @job.contact %>" required>
       <p class="text-gray-600 text-sm lg:text-xs italic">Stays private, used for record keeping.</p>
     </div>
-
-    <% if (@settings.job_price.to_i > 0) and (@job.position.nil?) %>
-    <div class="mb-4">
-      <label class="block text-gray-700 lg:text-sm font-bold mb-2">
-        Credit Card Details
-      </label>
-      <p class="lg:text-sm text-gray-800">
-        You'll pay on the next page via Stripe. If you don't have a credit card handy, please come back when you do.
-      </p>
-    </div>
-    <% end %>
-
-    <% if (@settings.featured_option == "Yes") and (@settings.featured_price.to_i > 0) and (@job.position.nil?) %>
-    <div class="mb-4">
-      <label class="block text-gray-700 lg:text-sm font-bold mb-2">
-        Feature Your Job
-      </label>
-      <p class="lg:text-sm text-gray-800 mb-4">
-        A featured job will be highlighted in yellow and pinned at the top of the job board. It will get 3x the views as regular job postings. <span class="font-bold">Featuring a job costs: $<%= @settings.featured_price %></span>.
-      </p>
-      <div class="relative w-32">
-        <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" name="featured" id="featured-option">
-          <% @options = ["", "Yes"] %>
-          <% @options.each do |option| %>
-            <option value="<%= option %>"><%= option == "" ? "" : option %></option>
-          <% end %>
-        </select>
-        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700" style="bottom: 8px; right: 5px">
-          <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-        </div>
-      </div>
-    </div>
-    <% end %>
 
   </div>
 </div>

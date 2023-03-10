@@ -2,19 +2,18 @@
   <meta property="og:title" content="<%= @job.position %>, <%= @job.company_name %>">
   <meta property="og:description" content="<%= truncate(@job.description, 200) %>">
   <meta property="og:image" content="https://www.tryferret.com/now-hiring.png">
-  <!-- <meta property="og:url" content="http://www.google.com/"> -->
   <meta name="twitter:card" content="summary">
 <% end %>
 
 <% content_for :head do %>
   <script src="/marked.min.js"></script>
-  <title>Job Board - <%= @settings.org_name %></title>
+  <title>Data Umbrella Job Board</title>
 <% end %>
 
 <section class="mt-4">
   <div>
     <p class="text-red-500 font-semibold">
-      <a href="<%= @other_host ? "/" : @other_host_route %>">
+      <a href="/">
         &larr; Back to all jobs
       </a>
     </p>
@@ -47,8 +46,6 @@
   <% end %>
 
 </section>
-
-
 
 <% if Time.new(2020, 10, 24) > Time.parse(@job.date) %>
 <script>

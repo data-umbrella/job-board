@@ -5,7 +5,6 @@ source 'https://rubygems.org' do
   gem 'stripe'
 end
 
-
 # gem install dotenv
 # gem install bcrypt
 # gem install sinatra-contrib

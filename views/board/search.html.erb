@@ -36,12 +36,8 @@
     </p>
   <% elsif @jobs %>
     <% @jobs.each_with_index do |job, index| %>
-      <% if @other_host %>
         <a href="jobs/<%= job.slug %>">
-      <% else %>
-        <a href="/board/<%= params['account'] %>/jobs/<%= job.slug %>">
-      <% end %>
-          <%= erb :'shared/job_card', locals: { job: job } %>
+        <%= erb :'shared/job_card', locals: { job: job } %>
         </a>
     <% end %>
   <% end %>

@@ -29,52 +29,6 @@
         <p class="text-gray-600 text-sm lg:text-xs italic">Please share the application URL.</p>
       </div>
 
-      <div class="mb-4 w-5/12 inline-block">
-        <label class="block text-gray-700 text-sm font-bold mb-2">
-          Job Type <span class="text-gray-600, text-xs font-light">(optional)</span>
-        </label>
-        <div class="relative w-64">
-          <select class="appearance-none border-2 border-gray-300 rounded w-full py-2 px-4 mb-3 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="original-type" name="job-type">
-            <% @job_types = ["", "Full Time", "Part Time", "Contract", "Internship", "Temporary"] %>
-            <% @job_types.each do |job_type| %>
-              <% if @job.job_type == job_type %>
-                <option value="<%= job_type %>" selected><%= job_type %></option>
-              <% else %>
-                <option value="<%= job_type %>"><%= job_type %></option>
-              <% end %>
-            <% end %>
-          </select>
-          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700" style="bottom: 8px; right: 5px">
-            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-          </div>
-        </div>
-        <p class="text-gray-600 text-sm lg:text-xs italic">Let applicants know what type of job it is.</p>
-      </div>
-
-      <% if (@categories) and (!@categories.empty?) %>
-      <div class="mb-4 w-5/12 inline-block">
-        <label class="block text-gray-700 text-sm font-bold mb-2">
-          Job Category <span class="text-gray-600, text-xs font-light">(optional)</span>
-        </label>
-        <div class="relative w-full">
-          <select class="appearance-none border-2 border-gray-300 rounded w-full py-2 px-4 mb-3 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="original-type" name="category">
-            <option value=""></option>
-            <% @categories.each do |category| %>
-              <% if @job.category == category.slug %>
-                <option value="<%= category.slug %>" selected><%= category.name %></option>
-              <% else %>
-                <option value="<%= category.slug %>"><%= category.name %></option>
-              <% end %>
-            <% end %>
-          </select>
-          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700" style="bottom: 8px; right: 5px">
-            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-          </div>
-        </div>
-        <p class="text-gray-600 text-sm lg:text-xs italic">Select the category that fits best.</p>
-      </div>
-      <% end %>
-
 
     </div>
   </div>

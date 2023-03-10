@@ -1,12 +1,13 @@
 test/
 demos/
 data/
-public/logos/
+data-archive
 tmp/
 
 .DS_Store
 .env
 config.ru
-README.md
 JOB-BOARD.md
 puma.rb
+terminal-commands.md
+server-block.txt

@@ -8,16 +8,7 @@
   <div class="text-center w-2/3 mx-auto">
     <div class="mb-2">
       <p class="text-3xl font-bold text-black">
-        <% if @settings.job_price.to_i > 0 %>
-          Post a job for $<%= @settings.job_price %>
-        <% else %>
-          Post a job for free
-        <% end %>
-      </p>
-    </div>
-    <div>
-      <p class="text-gray-600">
-        <%= @settings.posting_offer %>
+        Post a job for free
       </p>
     </div>
   </div>
@@ -35,11 +26,6 @@
   </form>
 </section>
 
-<script>
-  const accentColor = "<%= @settings.accent_color %>"
-  console.log(accentColor)
-</script>
-
 <!-- Update scripts -->
 <script src="/userJobForm.js" charset="utf-8"></script>
 <style>
@@ -47,22 +33,3 @@
     height: 350px;
   }
 </style>
-
-<!-- Save form data in local storage -->
-<!-- <script>
-  const savedInputs = Array.from(document.querySelectorAll('input'));
-  savedInputs.forEach(input => persistInput(input))
-
-  function persistInput(input) {
-    var key = "input-" + input.id;
-    var storedValue = localStorage.getItem(key);
-
-    if (storedValue) {
-      input.value = storedValue;
-    }
-
-    input.addEventListener('input', function () {
-      localStorage.setItem(key, input.value);
-    });
-  }
-</script> -->

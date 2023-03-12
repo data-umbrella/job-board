@@ -1,13 +1,6 @@
-test/
-demos/
+archive/
 data/
-data-archive
-tmp/
 
 .DS_Store
 .env
-config.ru
-JOB-BOARD.md
-puma.rb
-terminal-commands.md
-server-block.txt
+local.md

@@ -1,17 +1,26 @@
 # 1 - Import packages
+
+# gem install puma
+# gem install puma-daemon
+# gem install rerun
+# gem install sinatra
 require 'sinatra'
+
+# gem install sinatra-contrib
 require 'sinatra/content_for'
 require 'sinatra/namespace'
-require 'json'
+
+# gem install bcrypt
 require 'bcrypt'
+
+# gem install dotenv
+require 'dotenv'
+
+# native modules, no install needed
 require 'securerandom'
 require 'yaml/store'
 require 'ostruct'
-require 'dotenv'
 require 'date'
-require 'mailgun-ruby'
-require 'stripe'
-require 'uri'
 
 # 2- Load settings
 Dotenv.load
@@ -21,7 +30,7 @@ set :server, :puma
 # hide errors in dev, not showing in prod
 # set :show_exceptions, false
 Tilt.register Tilt::ERBTemplate, 'html.erb'
-Stripe.api_key = ENV['STRIPE_API_KEY']
+# Stripe.api_key = ENV['STRIPE_API_KEY']
 MASTER_PASS = ENV['PASSWORD']
 
 if settings.development?

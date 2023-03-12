@@ -4,7 +4,7 @@ The application is a job board. Visitors can view jobs and submit new jobs. Admi
 
 ## How to run the code
 
-You will need to have Ruby installed. Then, install all the gems in the Gemfile as well.
+You will need to have Ruby installed. Then, install all the gems listed on top of the server.rb file.
 
 - `ruby server.rb` - Run the app locally.
 - `rerun 'ruby server.rb'` - Allows you to run the app locally and it refreshes when you update the codebase. Will need to install the `rerun` gem.

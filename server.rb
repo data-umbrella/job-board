@@ -1,19 +1,13 @@
 # 1 - Import packages
 
-# gem install puma
-# gem install puma-daemon
-# gem install rerun
-# gem install sinatra
+# gem install puma puma-daemon
+# gem install sinatra sinatra-contrib
 require 'sinatra'
-
-# gem install sinatra-contrib
 require 'sinatra/content_for'
 require 'sinatra/namespace'
 
-# gem install bcrypt
+# gem install bcrypt dotenv
 require 'bcrypt'
-
-# gem install dotenv
 require 'dotenv'
 
 # native modules, no install needed

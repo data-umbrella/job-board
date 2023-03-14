@@ -1,11 +1,14 @@
 <div class="rounded border my-8 bg-white w-2/3 p-10 mx-auto">
-
   <div class="mb-4">
     <p class="font-bold text-2xl text-black">
-      Thanks for submitting a job! If you enjoy the work that Data Umbrella does, please consider <a href="https://opencollective.com/data-umbrella" target="_blank">donating on our Open Collective page</a>.
+      Thanks for submitting a job!
     </p>
   </div>
-
+  <div class="markdown-text mb-8 text-xl lg:text-base">
+    <p class="text-black">
+      If you enjoy the work that Data Umbrella does, please consider <a href="https://opencollective.com/data-umbrella" target="_blank">donating on our Open Collective page</a>.
+    </p>
+  </div>
   <div class="markdown-text mb-8 text-xl lg:text-base">
     <p class="text-black">
       In case you want to edit your job posting, <a href="/jobs/<%= @slug %>/<%= @jid %>/edit" target="_blank">here is a private link to do so</a>. Please save this link and do not share it with anyone else outside of your company!
@@ -23,5 +26,4 @@
       </button>
     </a>
   </div>
-
 </div>

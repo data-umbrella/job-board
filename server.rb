@@ -19,8 +19,6 @@ require 'date'
 # 2- Load settings
 Dotenv.load
 set :environment, ENV['RACK_ENV'].to_sym
-set :port, 4567
-set :server, :puma
 # hide errors in dev, not showing in prod
 # set :show_exceptions, false
 Tilt.register Tilt::ERBTemplate, 'html.erb'

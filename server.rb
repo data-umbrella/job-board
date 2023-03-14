@@ -19,8 +19,6 @@ require 'date'
 # 2- Load settings
 Dotenv.load
 set :environment, ENV['RACK_ENV'].to_sym
-set :port, 4242
-set :server, :puma
 # hide errors in dev, not showing in prod
 # set :show_exceptions, false
 Tilt.register Tilt::ERBTemplate, 'html.erb'
@@ -321,7 +319,7 @@ post '/search' do
 
   all_jobs.each do |job|
     if job.position.downcase.include? search_term or job.description.downcase.include? search_term or job.location.downcase.include? search_term or job.company_name.downcase.include? search_term
-      jobs.append(job)
+      @jobs.append(job)
     end
   end
 

@@ -19,6 +19,8 @@ require 'date'
 # 2- Load settings
 Dotenv.load
 set :environment, ENV['RACK_ENV'].to_sym
+set :port, 4567
+set :server, :puma
 # hide errors in dev, not showing in prod
 # set :show_exceptions, false
 Tilt.register Tilt::ERBTemplate, 'html.erb'
@@ -480,17 +482,19 @@ end
 
 # Form to edit existing job
 get '/admin/jobs/:job/edit' do
-  slug = params['job']
+  job_slug = params['job']
   @categories = get_all_categories()
-  @job = current_job(slug)
+  @job = current_job(job_slug)
   erb :"admin/edit", :layout => :"admin/home"
 end
 
 # Update existing job
 patch '/admin/jobs/:job/update' do
-  slug = params['job']
-  job = current_job(slug)
+  job_slug = params['job']
+  job = current_job(job_slug)
   date = Time.now
+
+  puts "date", date
 
   # Upload new logo
   if params['logo'] && params['logo']['filename']
@@ -522,7 +526,7 @@ patch '/admin/jobs/:job/update' do
   # save job
   store = YAML::Store.new "./data/jobs.store"
   store.transaction do
-    store[slug] = job
+    store[job_slug] = job
   end
 
   redirect "/admin/jobs"
@@ -530,10 +534,10 @@ end
 
 # Delete existing job
 delete '/admin/jobs/:job/delete' do
-  slug = params['job']
+  job_slug = params['job']
   store = YAML::Store.new "./data/jobs.store"
   store.transaction do
-    store.delete(slug)
+    store.delete(job_slug)
   end
 
   redirect "/admin/jobs"

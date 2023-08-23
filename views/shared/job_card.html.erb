@@ -1,8 +1,4 @@
-<% if (job.featured) and (job.featured == "Yes") %>
-<div class="flex items-center rounded border border-gray-300 mb-3 hover:shadow bg-yellow-100">
-<% else %>
 <div class="flex items-center rounded border border-gray-300 mb-3 hover:shadow bg-white">
-<% end %>
   <div class="w-20 ml-4">
     <% if (job.company_logo) and (!job.company_logo.empty?) %>
     <img src="/logos/<%= job.company_logo %>" class="mx-auto" style="max-width: 80px; max-height: 60px">

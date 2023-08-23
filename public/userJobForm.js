@@ -2,6 +2,15 @@
 // Link inputs with preview
 ////////
 
+// Spam Math Check
+const submitButton = document.querySelector('#checkout-button');
+const spamInput = document.querySelector('#spam-check');
+spamInput.addEventListener('input', function(e) {
+  if (e.target.value == 13) {
+    submitButton.disabled = false;
+  }
+});
+
 // Add date
 const dateEl = document.querySelector('#preview-date')
 const date = moment().format('MMMM D');
@@ -125,17 +134,17 @@ uploadField.onchange = function(e) {
 ////////
 // Featured job
 ////////
-const featuredOption = document.querySelector('#featured-option')
-featuredOption.addEventListener('change', function() {
-  const text = featuredOption.options[featuredOption.selectedIndex].text
-  const previewCard = document.querySelector('#preview-card')
-  if (text == "Yes") {
-    previewCard.classList.remove("bg-white")
-    previewCard.classList.add("bg-yellow-100")
-    dateEl.innerHTML = "<p class='font-medium'>Featured</p>"
-  } else {
-    previewCard.classList.remove("bg-yellow-100")
-    previewCard.classList.add("bg-white")
-    dateEl.innerText = date
-  }
-})
+// const featuredOption = document.querySelector('#featured-option')
+// featuredOption.addEventListener('change', function() {
+//   const text = featuredOption.options[featuredOption.selectedIndex].text
+//   const previewCard = document.querySelector('#preview-card')
+//   if (text == "Yes") {
+//     previewCard.classList.remove("bg-white")
+//     previewCard.classList.add("bg-yellow-100")
+//     dateEl.innerHTML = "<p class='font-medium'>Featured</p>"
+//   } else {
+//     previewCard.classList.remove("bg-yellow-100")
+//     previewCard.classList.add("bg-white")
+//     dateEl.innerText = date
+//   }
+// })

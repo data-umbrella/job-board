@@ -23,11 +23,12 @@
     <table class="table-auto">
       <thead>
         <tr>
-          <th class="px-4 py-2">Job</th>
+          <th class="px-4 py-2">Job Details</th>
           <th class="px-4 py-2">View</th>
           <th class="px-4 py-2">Edit</th>
-          <th class="px-4 py-2">Customer</th>
-          <th class="px-4 py-2">Delete Job</th>
+          <th class="px-4 py-2">Customer Edit Link</th>
+          <th class="px-4 py-2">Approve</th>
+          <th class="px-4 py-2">Delete</th>
         </tr>
       </thead>
       <tbody>
@@ -53,6 +54,18 @@
                 <a href="/jobs/<%= job.slug %>/<%= job.edit_id %>/edit" target="_blank">
                   Edit Link
                 </a>
+              <% end %>
+            </td>
+
+            <!-- Approve job link -->
+            <td class="border px-4 py-2 underline">
+              <% if job.approved == false %>
+                <form method="POST" action="jobs/<%= job.slug %>/approve" onsubmit="return confirm('Are you sure you want to approve this job?');">
+                  <div style="margin:0;padding:0">
+                    <input name="_method" value="patch" type="hidden" />
+                    <button class="text-red-500 font-semibold underline" type="submit">Approve</button>
+                  </div>
+                </form>
               <% end %>
             </td>
 

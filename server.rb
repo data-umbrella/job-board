@@ -162,13 +162,17 @@ helpers do
     all_jobs = current_jobs()
 
     # checks for expired jobs and paid and approved jobs
-    expiry_days = 120
+    expiry_days = 360
     jobs = []
 
     # Sort in time order
     all_jobs.reverse!
 
     all_jobs.each_with_index do |job, index|
+
+      if job.approved == false
+        next
+      end
 
       if expiry_days > 0
         job_date = Time.parse(job.date)
@@ -234,7 +238,7 @@ helpers do
         edit_id: jid,
         date: date.to_s,
         paid: paid,
-        approved: true,
+        approved: false,
         customer_paid: '',
         slug: job_slug
       )
@@ -284,20 +288,20 @@ get '/' do
   erb :"board/jobs", :layout => :"board/layout"
 end
 
-# # View the new job form
-# get '/jobs/new' do
-#   @html_template = "<p><br></p><h2>Responsibilities </h2><ul><li>List the job responsibilities
-#     out </li></ul><p><br></p><h2>Requirements</h2><ul><li>List the job requirements
-#     out</li></ul><p><br></p><h2>Company Background</h2><p><br></p><p><br></p><p><br></p>"
-#   @categories = get_all_categories()
-#   @job = OpenStruct.new()
-#   erb :"board/new", :layout => :"board/layout"
-# end
-#
-# # Create a new job
-# post '/jobs/create' do
-#   create_new_job()
-# end
+# View the new job form
+get '/jobs/new' do
+  @html_template = "<p><br></p><h2>Responsibilities </h2><ul><li>List the job responsibilities
+    out </li></ul><p><br></p><h2>Requirements</h2><ul><li>List the job requirements
+    out</li></ul><p><br></p><h2>Company Background</h2><p><br></p><p><br></p><p><br></p>"
+  @categories = get_all_categories()
+  @job = OpenStruct.new()
+  erb :"board/new", :layout => :"board/layout"
+end
+
+# Create a new job
+post '/jobs/create' do
+  create_new_job()
+end
 
 # Creates an X-Frame embed
 get '/embed' do
@@ -520,6 +524,21 @@ patch '/admin/jobs/:job/update' do
   job.company_name= params["company-name"]
   job.location = params["location"]
   job.company_url = params["company-url"]
+
+  # save job
+  store = YAML::Store.new "./data/jobs.store"
+  store.transaction do
+    store[job_slug] = job
+  end
+
+  redirect "/admin/jobs"
+end
+
+# Approve existing
+patch '/admin/jobs/:job/approve' do
+  job_slug = params['job']
+  job = current_job(job_slug)
+  job.approved = true
 
   # save job
   store = YAML::Store.new "./data/jobs.store"

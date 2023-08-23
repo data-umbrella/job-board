@@ -19,7 +19,7 @@
   <form method="POST" action="create" enctype="multipart/form-data">
     <%= erb :'shared/job_form', locals: { job: @job } %>
     <div class="flex items-center justify-between">
-      <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" id="checkout-button" type="submit">
+      <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" id="checkout-button" type="submit" disabled>
         Submit your job
       </button>
     </div>

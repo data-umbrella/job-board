@@ -427,7 +427,7 @@ end
 
 # View all jobs
 get '/admin/jobs' do
-  @jobs = current_jobs()
+  @jobs = current_jobs().reverse
   erb :"admin/jobs", :layout => :"admin/home"
 end
 

@@ -284,20 +284,20 @@ get '/' do
   erb :"board/jobs", :layout => :"board/layout"
 end
 
-# View the new job form
-get '/jobs/new' do
-  @html_template = "<p><br></p><h2>Responsibilities </h2><ul><li>List the job responsibilities
-    out </li></ul><p><br></p><h2>Requirements</h2><ul><li>List the job requirements
-    out</li></ul><p><br></p><h2>Company Background</h2><p><br></p><p><br></p><p><br></p>"
-  @categories = get_all_categories()
-  @job = OpenStruct.new()
-  erb :"board/new", :layout => :"board/layout"
-end
-
-# Create a new job
-post '/jobs/create' do
-  create_new_job()
-end
+# # View the new job form
+# get '/jobs/new' do
+#   @html_template = "<p><br></p><h2>Responsibilities </h2><ul><li>List the job responsibilities
+#     out </li></ul><p><br></p><h2>Requirements</h2><ul><li>List the job requirements
+#     out</li></ul><p><br></p><h2>Company Background</h2><p><br></p><p><br></p><p><br></p>"
+#   @categories = get_all_categories()
+#   @job = OpenStruct.new()
+#   erb :"board/new", :layout => :"board/layout"
+# end
+#
+# # Create a new job
+# post '/jobs/create' do
+#   create_new_job()
+# end
 
 # Creates an X-Frame embed
 get '/embed' do
